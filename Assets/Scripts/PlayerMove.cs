@@ -7,19 +7,18 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float _movePower = 3;
     [SerializeField] float _jumpPower = 3;
     [SerializeField] float _gravityPower = 0.3f;
+    [SerializeField] float _turnSpeed = 8.0f;
     float h, v;
     float _animationspeed;
     Rigidbody _rb = default;
-    CharacterController _controller;
     Animator _anim = default;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
-    Vector3 _dir = Vector3.zero;
+    Vector3 _dir;
     public Vector2 move;
 
     void Start()
     {
-        //_rb = GetComponent<Rigidbody>();
-        _controller = GetComponent<CharacterController>();
+        _rb = GetComponent<Rigidbody>();
         _anim = GetComponent<Animator>();
     }
 
@@ -28,20 +27,21 @@ public class PlayerMove : MonoBehaviour
         h = Input.GetAxisRaw("Horizontal");
         v = Input.GetAxisRaw("Vertical");
         move = new Vector2(h, v);
-        _dir = new Vector3(Input.GetAxis("Horizontal"), 0.0f, Input.GetAxis("Vertical"));
+        _dir = Vector3.forward * v + Vector3.right * h;
         // カメラのローカル座標系を基準に dir を変換する
         _dir = Camera.main.transform.TransformDirection(_dir);
-        _dir = _dir * _movePower;
         // カメラは斜め下に向いているので、Y 軸の値を 0 にして「XZ 平面上のベクトル」にする
-        //_dir.y = 0;
+        _dir.y = 0;
         // キャラクターを「現在の（XZ 平面上の）進行方向」に向ける
-        Vector3 forward = _controller.velocity;
-        forward.y = 0;
-
-        if (forward != Vector3.zero)
+        if (move != Vector2.zero)
         {
-            this.transform.forward = forward;
+            Quaternion targetRotation = Quaternion.LookRotation(_dir);
+            this.transform.rotation = Quaternion.Slerp(this.transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
         }
+
+        Vector3 velo = new Vector3(_rb.velocity.x, _rb.velocity.y, _rb.velocity.x);
+        velo.y = _rb.velocity.y;
+        _rb.velocity = velo;
 
         Jump();
 
@@ -64,17 +64,18 @@ public class PlayerMove : MonoBehaviour
     void FixedUpdate()
     {
         // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
-        _controller.Move(_dir.normalized * Time.deltaTime);
+        _rb.AddForce(_dir.normalized * _movePower, ForceMode.Impulse);
     }
 
     void Jump()
     {
-        Vector3 velosity = _controller.velocity;
+        Vector3 velosity = _rb.velocity;
         if (Input.GetButtonDown("Jump"))
-            _dir.y = _jumpPower;
+            _rb.AddForce(Vector3.up * _jumpPower, ForceMode.Impulse);
         else if (!Input.GetButtonDown("Jump") && velosity.y > 0)
-            _dir.y = _dir.y - (_gravityPower * Time.deltaTime);
+            velosity.y *= _gravityPower;
 
-        _controller.Move(velosity);
+        _rb.velocity = velosity;
     }
 }
+
