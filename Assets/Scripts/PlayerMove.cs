@@ -5,11 +5,14 @@ using UnityEngine;
 public class PlayerMove : MonoBehaviour
 {
     [SerializeField] float _movePower = 3;
+    [SerializeField] float _dashmovePower = 6;
     [SerializeField] float _jumpPower = 3;
     [SerializeField] float _gravityPower = 0.3f;
     [SerializeField] float _turnSpeed = 8.0f;
     float h, v;
     float _animationspeed;
+    bool isdash = default;
+
     Rigidbody _rb = default;
     Animator _anim = default;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
@@ -45,6 +48,10 @@ public class PlayerMove : MonoBehaviour
 
         Jump();
 
+        if (Input.GetButton("Controller LT"))
+        {
+            Debug.Log("aaa");
+        }
 
     }
     private void LateUpdate()
@@ -63,8 +70,9 @@ public class PlayerMove : MonoBehaviour
 
     void FixedUpdate()
     {
+        float _targetSpeed = isdash ? _dashmovePower : _movePower;
         // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
-        _rb.AddForce(_dir.normalized * _movePower, ForceMode.Impulse);
+        _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Impulse);
     }
 
     void Jump()
