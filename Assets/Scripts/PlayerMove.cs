@@ -48,11 +48,7 @@ public class PlayerMove : MonoBehaviour
 
         Jump();
 
-        if (Input.GetButton("Controller LT"))
-        {
-            Debug.Log("aaa");
-        }
-
+        
     }
     private void LateUpdate()
     {
