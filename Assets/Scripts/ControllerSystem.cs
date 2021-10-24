@@ -26,22 +26,14 @@ public class ControllerSystem : MonoBehaviour
 		MoveInput(value.Get<Vector2>());
 	}
 
-	public void OnLook(InputValue value)
-	{
-		if (cursorInputForLook)
-		{
-			LookInput(value.Get<Vector2>());
-		}
-	}
-
 	public void OnJump(InputValue value)
 	{
 		JumpInput(value.isPressed);
 	}
 
-	public void OnSprint(InputValue value)
+	public void OnDash(InputValue value)
 	{
-		SprintInput(value.isPressed);
+		DashInput(value.isPressed);
 	}
 #else
 	// old input sys if we do decide to have it (most likely wont)...
@@ -53,19 +45,14 @@ public class ControllerSystem : MonoBehaviour
 		move = newMoveDirection;
 	}
 
-	public void LookInput(Vector2 newLookDirection)
-	{
-		look = newLookDirection;
-	}
-
 	public void JumpInput(bool newJumpState)
 	{
 		jump = newJumpState;
 	}
 
-	public void SprintInput(bool newSprintState)
+	public void DashInput(bool newDashState)
 	{
-		sprint = newSprintState;
+		sprint = newDashState;
 	}
 
 #if !UNITY_IOS || !UNITY_ANDROID
