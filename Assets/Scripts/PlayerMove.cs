@@ -10,10 +10,12 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float _jumpPower = 3;
     [SerializeField] float _gravityPower = 0.3f;
     [SerializeField] float _turnSpeed = 8.0f;
-    [SerializeField] float m_isGroundedLength = 1.1f;
+    [SerializeField] float _isGroundedLength = 1.1f;
+    [SerializeField] GameObject _magiceff = default;
+    [SerializeField] GameObject _rightattackmuzzle = default;
     float h, v;
     float _animationspeed;
-    bool isjump = default;
+    bool _isjump = default;
 
     ControllerSystem _input;
     Rigidbody _rb = default;
@@ -32,7 +34,7 @@ public class PlayerMove : MonoBehaviour
     {
         h = Input.GetAxisRaw("Horizontal");
         v = Input.GetAxisRaw("Vertical");
-        _dir = new Vector3(h ,0, v);
+        _dir = new Vector3(h, 0, v);
         _dir = Camera.main.transform.TransformDirection(_dir);
         // カメラは斜め下に向いているので、Y 軸の値を 0 にして「XZ 平面上のベクトル」にする
         _dir.y = 0;
@@ -47,7 +49,7 @@ public class PlayerMove : MonoBehaviour
         velo.y = _rb.velocity.y;
         _rb.velocity = velo;
 
-        isjump = _input.jump;
+        _isjump = _input.jump;
         Jump();
 
 
@@ -55,7 +57,7 @@ public class PlayerMove : MonoBehaviour
     private void LateUpdate()
     {
         _anim.SetBool("Grounded", IsGrounded());
-        _anim.SetBool("Jump", isjump);
+        _anim.SetBool("Jump", _isjump);
         Attack();
     }
 
@@ -97,16 +99,19 @@ public class PlayerMove : MonoBehaviour
     }
     void Attack()
     {
-        
         _anim.SetBool("Punch", _input.fire);
         _input.fire = false;
+    }
+    void Magic()
+    {
+        Instantiate(_magiceff, _rightattackmuzzle.transform.position, Quaternion.identity);
     }
     bool IsGrounded()
     {
         // Physics.Linecast() を使って足元から線を張り、そこに何かが衝突していたら true とする
         CapsuleCollider col = GetComponent<CapsuleCollider>();
         Vector3 start = this.transform.position + col.center;   // start: 体の中心
-        Vector3 end = start + Vector3.down * m_isGroundedLength;  // end: start から真下の地点
+        Vector3 end = start + Vector3.down * _isGroundedLength;  // end: start から真下の地点
         Debug.DrawLine(start, end); // 動作確認用に Scene ウィンドウ上で線を表示する
         bool isGrounded = Physics.Linecast(start, end); // 引いたラインに何かがぶつかっていたら true とする
         return isGrounded;
