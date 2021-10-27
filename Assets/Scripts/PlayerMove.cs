@@ -32,7 +32,7 @@ public class PlayerMove : MonoBehaviour
     {
         h = Input.GetAxisRaw("Horizontal");
         v = Input.GetAxisRaw("Vertical");
-        _dir = Vector3.forward * v + Vector3.right * h;
+        _dir = new Vector3(h ,0, v);
         _dir = Camera.main.transform.TransformDirection(_dir);
         // カメラは斜め下に向いているので、Y 軸の値を 0 にして「XZ 平面上のベクトル」にする
         _dir.y = 0;
@@ -56,7 +56,7 @@ public class PlayerMove : MonoBehaviour
     {
         _anim.SetBool("Grounded", IsGrounded());
         _anim.SetBool("Jump", isjump);
-        Attack();
+        //Attack();
     }
 
     void FixedUpdate()
