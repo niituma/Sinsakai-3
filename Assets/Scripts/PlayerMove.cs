@@ -56,7 +56,7 @@ public class PlayerMove : MonoBehaviour
     {
         _anim.SetBool("Grounded", IsGrounded());
         _anim.SetBool("Jump", isjump);
-        //Attack();
+        Attack();
     }
 
     void FixedUpdate()
@@ -97,14 +97,9 @@ public class PlayerMove : MonoBehaviour
     }
     void Attack()
     {
-        if (Input.GetButtonDown("Fire1"))
-        {
-            _anim.SetBool("Punch", true);
-        }
-        else
-        {
-            _anim.SetBool("Punch", false);
-        }
+        
+        _anim.SetBool("Punch", _input.fire);
+        _input.fire = false;
     }
     bool IsGrounded()
     {

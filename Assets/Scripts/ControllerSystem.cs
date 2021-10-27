@@ -7,8 +7,8 @@ public class ControllerSystem : MonoBehaviour
 {
 	[Header("Character Input Values")]
 	public Vector2 move;
-	public Vector2 look;
 	public bool jump;
+	public bool fire;
 	public bool sprint;
 
 	[Header("Movement Settings")]
@@ -26,17 +26,13 @@ public class ControllerSystem : MonoBehaviour
 		MoveInput(value.Get<Vector2>());
 	}
 
-	public void OnLook(InputValue value)
-	{
-		if (cursorInputForLook)
-		{
-			LookInput(value.Get<Vector2>());
-		}
-	}
-
 	public void OnJump(InputValue value)
 	{
 		JumpInput(value.isPressed);
+	}
+	public void OnFire(InputValue value)
+	{
+		FireInput(value.isPressed);
 	}
 
 	public void OnSprint(InputValue value)
@@ -53,14 +49,13 @@ public class ControllerSystem : MonoBehaviour
 		move = newMoveDirection;
 	}
 
-	public void LookInput(Vector2 newLookDirection)
-	{
-		look = newLookDirection;
-	}
-
 	public void JumpInput(bool newJumpState)
 	{
 		jump = newJumpState;
+	}
+	public void FireInput(bool newFireState)
+	{
+		fire = newFireState;
 	}
 
 	public void SprintInput(bool newSprintState)
