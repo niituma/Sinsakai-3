@@ -104,7 +104,7 @@ public class PlayerMove : MonoBehaviour
     }
     void Magic()
     {
-        Instantiate(_magiceff, _rightattackmuzzle.transform.position, Quaternion.identity);
+        Instantiate(_magiceff, _rightattackmuzzle.transform.position, this.transform.rotation);
     }
     bool IsGrounded()
     {
