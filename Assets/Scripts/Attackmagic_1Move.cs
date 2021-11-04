@@ -14,4 +14,9 @@ public class Attackmagic_1Move : MonoBehaviour
         _rb.velocity = this.transform.forward * _movespeed;
         Destroy(gameObject, _lifetime);
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Enemy")
+        Destroy(this.gameObject);
+    }
 }
