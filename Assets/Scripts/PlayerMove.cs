@@ -11,11 +11,16 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float _gravityPower = 0.3f;
     [SerializeField] float _turnSpeed = 8.0f;
     [SerializeField] float _isGroundedLength = 1.1f;
+    [SerializeField] float _limitAngle = 3f;
+    [SerializeField] float _nextButtonDownTime = 0.3f;
     [SerializeField] GameObject _magiceff = default;
     [SerializeField] GameObject _rightattackmuzzle = default;
     float h, v;
+    float _nowTime;
     float _animationspeed;
     bool _isjump = default;
+    public bool _push = default;
+    public bool _avd = default;
 
     ControllerSystem _input;
     Rigidbody _rb = default;
@@ -51,6 +56,7 @@ public class PlayerMove : MonoBehaviour
 
         _isjump = _input.jump;
         Jump();
+        Avodance();
 
 
     }
@@ -58,6 +64,16 @@ public class PlayerMove : MonoBehaviour
     {
         _anim.SetBool("Grounded", IsGrounded());
         _anim.SetBool("Jump", _isjump);
+        //　押した方向がリミットの角度を越えていない　かつ　制限時間内に移動キーが押されていれば走る
+        if (_nowTime <= _nextButtonDownTime && _avd)
+        {
+            _anim.SetBool("Avoidance", true);
+            _avd = false;
+        }
+        else
+        {
+            _anim.SetBool("Avoidance", false);
+        }
         Attack();
     }
 
@@ -67,18 +83,44 @@ public class PlayerMove : MonoBehaviour
     }
     void Move()
     {
-        float _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
+        
+            float _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
 
-        // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
-        _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Impulse);
+            // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
+            _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Impulse);
 
-        if (_input.move == Vector2.zero)
+            if (_input.move == Vector2.zero)
+            {
+                _targetSpeed = 0.0f;
+            }
+            _animationspeed = Mathf.Lerp(_animationspeed, _targetSpeed, Time.deltaTime * 10f);
+
+            _anim.SetFloat("Speed", _animationspeed);
+    }
+    void Avodance()
+    {
+        if (!_push)
         {
-            _targetSpeed = 0.0f;
+            if (Input.GetButtonDown("Horizontal") || Input.GetButtonDown("Vertical"))
+            {
+                _push = true;
+                _nowTime = 0f;
+            }
         }
-        _animationspeed = Mathf.Lerp(_animationspeed, _targetSpeed, Time.deltaTime * 10f);
+        else
+        {
+            //　時間計測
+            _nowTime += Time.deltaTime;
 
-        _anim.SetFloat("Speed", _animationspeed);
+            if (_nowTime > _nextButtonDownTime)
+            {
+                _push = false;
+            }
+            if(Input.GetButtonDown("Horizontal") || Input.GetButtonDown("Vertical"))
+            {
+                _avd = true;
+            }
+        }
     }
 
     void Jump()
