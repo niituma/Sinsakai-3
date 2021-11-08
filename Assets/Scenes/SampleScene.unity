@@ -21262,7 +21262,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 517099233}
   m_LocalRotation: {x: -0.03900812, y: -0, z: -0, w: 0.9992389}
-  m_LocalPosition: {x: -8.921611, y: 1.2680004, z: -4.5}
+  m_LocalPosition: {x: -8.921656, y: 1.2680004, z: -4.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1836649046}
@@ -67696,7 +67696,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.921611, y: 1.2680004, z: -4.5}
+  m_LocalPosition: {x: -8.921656, y: 1.2680004, z: -4.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -85822,9 +85822,13 @@ MonoBehaviour:
   _gravityPower: 0.98
   _turnSpeed: 7.5
   _isGroundedLength: 1.1
+  _limitAngle: 3
+  _nextButtonDownTime: 0.2
   _magiceff: {fileID: 2397955026747280116, guid: 9810e0983fcdeaa4ca6f3163cd23d444,
     type: 3}
   _rightattackmuzzle: {fileID: 1339622706604142636}
+  _push: 0
+  _avd: 0
 --- !u!136 &1226029506
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -90820,7 +90824,10 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
-  m_WarningMessage: 
+  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
+    are already bound by a Humanoid avatar. These transforms can only be changed
+    by Humanoid clips.\n\tTransform 'LeftLeg'\n\tTransform 'LeftLeg'\n\tFrom animation
+    clip 'Avoidance'"
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
