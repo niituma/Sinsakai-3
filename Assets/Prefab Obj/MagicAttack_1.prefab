@@ -9405,7 +9405,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _lifetime: 3
   _movespeed: 10
-  _lookonspeed: 12
+  _lookonspeed: 11
   _moveDistance: 3
 --- !u!54 &7562675783319094533
 Rigidbody:

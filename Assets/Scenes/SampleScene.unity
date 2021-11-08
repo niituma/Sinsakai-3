@@ -13979,6 +13979,7 @@ GameObject:
   - component: {fileID: 441931395}
   - component: {fileID: 441931394}
   - component: {fileID: 441931393}
+  - component: {fileID: 441931398}
   m_Layer: 0
   m_Name: Stairs (1)
   m_TagString: Untagged
@@ -21038,6 +21039,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &441931398
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 441931392}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 1
 --- !u!43 &462766488
 Mesh:
   m_ObjectHideFlags: 0
@@ -21262,7 +21279,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 517099233}
   m_LocalRotation: {x: -0.03900812, y: -0, z: -0, w: 0.9992389}
-  m_LocalPosition: {x: -8.921656, y: 1.2680004, z: -4.5}
+  m_LocalPosition: {x: -8.921611, y: 1.2680004, z: -4.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1836649046}
@@ -67696,7 +67713,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.921656, y: 1.2680004, z: -4.5}
+  m_LocalPosition: {x: -8.921611, y: 1.2680004, z: -4.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -85818,17 +85835,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _movePower: 3
   _dashmovePower: 6
+  _avdPower: 4.5
   _jumpPower: 6
   _gravityPower: 0.98
-  _turnSpeed: 7.5
+  _turnSpeed: 10
   _isGroundedLength: 1.1
-  _limitAngle: 3
   _nextButtonDownTime: 0.2
   _magiceff: {fileID: 2397955026747280116, guid: 9810e0983fcdeaa4ca6f3163cd23d444,
     type: 3}
   _rightattackmuzzle: {fileID: 1339622706604142636}
-  _push: 0
-  _avd: 0
+  _movedir: {x: 0, y: 0}
 --- !u!136 &1226029506
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -87177,7 +87193,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh15128
+  m_Name: pb_Mesh16056
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -88286,8 +88302,8 @@ GameObject:
   - component: {fileID: 5866666020441363872}
   - component: {fileID: 1226029507}
   - component: {fileID: 1226029506}
-  - component: {fileID: 1226029504}
   - component: {fileID: 1226029505}
+  - component: {fileID: 1226029504}
   - component: {fileID: 919132148476056929}
   m_Layer: 0
   m_Name: Player
@@ -90437,6 +90453,7 @@ GameObject:
   - component: {fileID: 4995791174236768095}
   - component: {fileID: 4995791174236768096}
   - component: {fileID: 4995791174236768097}
+  - component: {fileID: 4995791174236768098}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -90487,6 +90504,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hpcanvas: {fileID: 137977073}
+--- !u!54 &4995791174236768098
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4995791174236768094}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
 --- !u!4 &5061931979515429647
 Transform:
   m_ObjectHideFlags: 0

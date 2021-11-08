@@ -1,26 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using DG.Tweening;
 
 public class PlayerMove : MonoBehaviour
 {
     [SerializeField] float _movePower = 3;
     [SerializeField] float _dashmovePower = 6;
+    [SerializeField] float _avdPower = 1.1f;
     [SerializeField] float _jumpPower = 3;
     [SerializeField] float _gravityPower = 0.3f;
     [SerializeField] float _turnSpeed = 8.0f;
     [SerializeField] float _isGroundedLength = 1.1f;
-    [SerializeField] float _limitAngle = 3f;
     [SerializeField] float _nextButtonDownTime = 0.3f;
     [SerializeField] GameObject _magiceff = default;
     [SerializeField] GameObject _rightattackmuzzle = default;
     float h, v;
     float _nowTime;
+    float _avdTime;
     float _animationspeed;
     bool _isjump = default;
-    public bool _push = default;
-    public bool _avd = default;
+    bool _push = default;
+    bool _avd = default;
+    bool _onavd = default;
 
     ControllerSystem _input;
     Rigidbody _rb = default;
@@ -42,7 +44,7 @@ public class PlayerMove : MonoBehaviour
     {
         h = Input.GetAxisRaw("Horizontal");
         v = Input.GetAxisRaw("Vertical");
-        _movedir = new Vector2(h,v);
+        _movedir = new Vector2(h, v);
         _dir = new Vector3(h, 0, v);
         _dir = Camera.main.transform.TransformDirection(_dir);
         // カメラは斜め下に向いているので、Y 軸の値を 0 にして「XZ 平面上のベクトル」にする
@@ -61,18 +63,18 @@ public class PlayerMove : MonoBehaviour
         _isjump = _input.jump;
         Jump();
         Avodance();
-
-
     }
     private void LateUpdate()
     {
         _anim.SetBool("Grounded", IsGrounded());
         _anim.SetBool("Jump", _isjump);
         //　押した方向がリミットの角度を越えていない　かつ　制限時間内に移動キーが押されていれば走る
-        if (_nowTime <= _nextButtonDownTime && _avd && _move1dir == _move2dir)
+        if (_avd && _move1dir == _move2dir)
         {
+            //gameObject.GetComponent<Rigidbody>().DOMove(this.transform.forward * _avdPower, 0.5f);
             _anim.SetBool("Avoidance", true);
             _avd = false;
+            _onavd = true;
         }
         else
         {
@@ -87,19 +89,19 @@ public class PlayerMove : MonoBehaviour
     }
     void Move()
     {
-        
-            float _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
 
-            // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
-            _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Impulse);
+        float _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
 
-            if (_input.move == Vector2.zero)
-            {
-                _targetSpeed = 0.0f;
-            }
-            _animationspeed = Mathf.Lerp(_animationspeed, _targetSpeed, Time.deltaTime * 10f);
+        // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
+        _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Impulse);
 
-            _anim.SetFloat("Speed", _animationspeed);
+        if (_input.move == Vector2.zero)
+        {
+            _targetSpeed = 0.0f;
+        }
+        _animationspeed = Mathf.Lerp(_animationspeed, _targetSpeed, Time.deltaTime * 10f);
+
+        _anim.SetFloat("Speed", _animationspeed);
     }
     void Avodance()
     {
@@ -116,16 +118,29 @@ public class PlayerMove : MonoBehaviour
         {
             //　時間計測
             _nowTime += Time.deltaTime;
+            _avdTime += Time.deltaTime;
 
             if (_nowTime > _nextButtonDownTime)
             {
                 _push = false;
             }
-            if(Input.GetButtonDown("Horizontal") || Input.GetButtonDown("Vertical"))
+            if (Input.GetButtonDown("Horizontal") || Input.GetButtonDown("Vertical") && _nowTime <= _nextButtonDownTime)
             {
                 _move2dir = _movedir;
                 _avd = true;
             }
+        }
+
+        if (_onavd)
+        {
+            _avdTime += Time.deltaTime;
+            _rb.AddForce(transform.forward * _avdPower, ForceMode.Impulse);
+        }
+
+        if(_avdTime >= 0.8f)
+        {
+            _onavd = false;
+            _avdTime = 0;
         }
     }
 
