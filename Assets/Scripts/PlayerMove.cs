@@ -27,6 +27,9 @@ public class PlayerMove : MonoBehaviour
     Animator _anim = default;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     Vector3 _dir;
+    public Vector2 _movedir;
+    Vector2 _move1dir;
+    Vector2 _move2dir;
 
     void Start()
     {
@@ -39,6 +42,7 @@ public class PlayerMove : MonoBehaviour
     {
         h = Input.GetAxisRaw("Horizontal");
         v = Input.GetAxisRaw("Vertical");
+        _movedir = new Vector2(h,v);
         _dir = new Vector3(h, 0, v);
         _dir = Camera.main.transform.TransformDirection(_dir);
         // カメラは斜め下に向いているので、Y 軸の値を 0 にして「XZ 平面上のベクトル」にする
@@ -65,7 +69,7 @@ public class PlayerMove : MonoBehaviour
         _anim.SetBool("Grounded", IsGrounded());
         _anim.SetBool("Jump", _isjump);
         //　押した方向がリミットの角度を越えていない　かつ　制限時間内に移動キーが押されていれば走る
-        if (_nowTime <= _nextButtonDownTime && _avd)
+        if (_nowTime <= _nextButtonDownTime && _avd && _move1dir == _move2dir)
         {
             _anim.SetBool("Avoidance", true);
             _avd = false;
@@ -103,6 +107,7 @@ public class PlayerMove : MonoBehaviour
         {
             if (Input.GetButtonDown("Horizontal") || Input.GetButtonDown("Vertical"))
             {
+                _move1dir = _movedir;
                 _push = true;
                 _nowTime = 0f;
             }
@@ -118,6 +123,7 @@ public class PlayerMove : MonoBehaviour
             }
             if(Input.GetButtonDown("Horizontal") || Input.GetButtonDown("Vertical"))
             {
+                _move2dir = _movedir;
                 _avd = true;
             }
         }
