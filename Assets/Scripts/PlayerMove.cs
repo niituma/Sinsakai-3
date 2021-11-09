@@ -17,12 +17,12 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] GameObject _rightattackmuzzle = default;
     float h, v;
     float _nowTime;
-    float _avdTime;
+    public float _avdTime;
     float _animationspeed;
     bool _isjump = default;
     bool _push = default;
     bool _avd = default;
-    bool _onavd = default;
+    public bool _onavd = default;
 
     ControllerSystem _input;
     Rigidbody _rb = default;
@@ -118,7 +118,6 @@ public class PlayerMove : MonoBehaviour
         {
             //　時間計測
             _nowTime += Time.deltaTime;
-            _avdTime += Time.deltaTime;
 
             if (_nowTime > _nextButtonDownTime)
             {
