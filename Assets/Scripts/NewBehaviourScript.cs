@@ -1,23 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class NewBehaviourScript : MonoBehaviour
 {
-    [SerializeField] GameObject _camera = default;
-    [SerializeField] GameObject lookTarget = default;
+    GameObject[] _targets = default;
+    GameObject _player = default;
     void Start()
     {
-        //_camera = Camera.main.gameObject;
+        _player = GameObject.Find("Player");
     }
 
     void Update()
     {
-        
-            var direction = lookTarget.transform.position - _camera.transform.position;
-            direction.y = 0;
-
-            var lookRotation = Quaternion.LookRotation(direction, Vector3.up);
-            _camera.transform.rotation = Quaternion.Lerp(_camera.transform.rotation, lookRotation, 0.1f);
+        _targets = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject _neartarget = _targets?.OrderBy(t => Vector3.Distance(t.transform.position, _player.transform.position)).FirstOrDefault();
+        transform.position = _neartarget.transform.position + new Vector3(0,1.3f,0);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 using DG.Tweening;
 
 public class PlayerMove : MonoBehaviour
@@ -15,6 +16,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float _nextButtonDownTime = 0.3f;
     [SerializeField] GameObject _magiceff = default;
     [SerializeField] GameObject _rightattackmuzzle = default;
+    GameObject _crosshaie;
     float h, v;
     float _nowTime;
     public float _avdTime;
@@ -22,8 +24,10 @@ public class PlayerMove : MonoBehaviour
     bool _isjump = default;
     bool _push = default;
     bool _avd = default;
+    bool _lookon = default;
     public bool _onavd = default;
 
+    [SerializeField] CinemachineVirtualCamera _Camera;
     ControllerSystem _input;
     Rigidbody _rb = default;
     Animator _anim = default;
@@ -38,6 +42,7 @@ public class PlayerMove : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _anim = GetComponent<Animator>();
         _input = GetComponent<ControllerSystem>();
+        _crosshaie = GameObject.Find("LookOnCanvas");
     }
 
     void Update()
@@ -61,6 +66,7 @@ public class PlayerMove : MonoBehaviour
         _rb.velocity = velo;
 
         _isjump = _input.jump;
+        TargetLookOn();
         Jump();
         Avodance();
     }
@@ -136,13 +142,29 @@ public class PlayerMove : MonoBehaviour
             _rb.AddForce(transform.forward * _avdPower, ForceMode.Impulse);
         }
 
-        if(_avdTime >= 0.8f)
+        if (_avdTime >= 0.8f)
         {
             _onavd = false;
             _avdTime = 0;
         }
     }
 
+    void TargetLookOn()
+    {
+        _crosshaie.SetActive(_lookon);
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            _lookon = !_lookon;
+            if (_lookon)
+            {
+                _Camera.Priority = 100;
+            }
+            else
+            {
+                _Camera.Priority = 9;
+            }
+        }
+    }
     void Jump()
     {
         Vector3 velosity = _rb.velocity;
