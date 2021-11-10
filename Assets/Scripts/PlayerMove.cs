@@ -16,6 +16,9 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float _nextButtonDownTime = 0.3f;
     [SerializeField] GameObject _magiceff = default;
     [SerializeField] GameObject _rightattackmuzzle = default;
+    [SerializeField] Vector3 _attackRangeCenter = default;
+    /// <summary>攻撃範囲の半径</summary>
+    [SerializeField] float _attackRangeRadius = 1f;
     GameObject _crosshaie;
     float h, v;
     float _nowTime;
@@ -36,6 +39,7 @@ public class PlayerMove : MonoBehaviour
     public Vector2 _movedir;
     Vector2 _move1dir;
     Vector2 _move2dir;
+
 
     void Start()
     {
@@ -69,6 +73,7 @@ public class PlayerMove : MonoBehaviour
         TargetLookOn();
         Jump();
         Avodance();
+        Targets();
     }
     private void LateUpdate()
     {
@@ -92,6 +97,19 @@ public class PlayerMove : MonoBehaviour
     void FixedUpdate()
     {
         Move();
+    }
+    void OnDrawGizmosSelected()
+    {
+        // 攻撃範囲を赤い線でシーンビューに表示する
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(GetAttackRangeCenter(), _attackRangeRadius);
+    }
+    Vector3 GetAttackRangeCenter()
+    {
+        Vector3 center = this.transform.position + this.transform.forward * _attackRangeCenter.z
+            + this.transform.up * _attackRangeCenter.y
+            + this.transform.right * _attackRangeCenter.x;
+        return center;
     }
     void Move()
     {
@@ -154,15 +172,15 @@ public class PlayerMove : MonoBehaviour
         _crosshaie.SetActive(_lookon);
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            _lookon = !_lookon;
-            if (_lookon)
-            {
-                _Camera.Priority = 100;
-            }
-            else
-            {
-                _Camera.Priority = 9;
-            }
+                _lookon = !_lookon;
+                if (_lookon)
+                {
+                    _Camera.Priority = 100;
+                }
+                else
+                {
+                    _Camera.Priority = 9;
+                }
         }
     }
     void Jump()
@@ -199,6 +217,18 @@ public class PlayerMove : MonoBehaviour
         Debug.DrawLine(start, end); // 動作確認用に Scene ウィンドウ上で線を表示する
         bool isGrounded = Physics.Linecast(start, end); // 引いたラインに何かがぶつかっていたら true とする
         return isGrounded;
+    }
+    void Targets()
+    {
+        var cols = Physics.OverlapSphere(GetAttackRangeCenter(), _attackRangeRadius);
+        
+        foreach(var c in cols)
+        {
+            if(c.tag == "Enemy")
+            {
+                Destroy(c.gameObject);
+            }
+        }
     }
 }
 

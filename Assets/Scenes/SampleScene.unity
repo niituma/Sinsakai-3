@@ -85870,6 +85870,8 @@ MonoBehaviour:
   _magiceff: {fileID: 2397955026747280116, guid: 9810e0983fcdeaa4ca6f3163cd23d444,
     type: 3}
   _rightattackmuzzle: {fileID: 1339622706604142636}
+  _attackRangeCenter: {x: 0, y: 0.78, z: 0}
+  _attackRangeRadius: 5
   _avdTime: 0
   _onavd: 0
   _Camera: {fileID: 1399248151}
@@ -86308,8 +86310,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1399248149}
-  m_LocalRotation: {x: 0.024947908, y: 0.11749899, z: -0.0029527456, w: 0.99275523}
-  m_LocalPosition: {x: -9.515193, y: 1.69321, z: -4.532565}
+  m_LocalRotation: {x: 0.02494791, y: 0.117498934, z: -0.002952744, w: 0.99275523}
+  m_LocalPosition: {x: -9.515192, y: 1.69321, z: -4.532565}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 635888153}
