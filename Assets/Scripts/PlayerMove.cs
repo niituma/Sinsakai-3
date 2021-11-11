@@ -19,7 +19,9 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] Vector3 _attackRangeCenter = default;
     /// <summary>攻撃範囲の半径</summary>
     [SerializeField] float _attackRangeRadius = 1f;
-    GameObject _crosshaie;
+    public Collider[] _currentenemy;
+    GameObject _crosshair;
+    [SerializeField] GameObject _crosshaircanvas;
     float h, v;
     float _nowTime;
     public float _avdTime;
@@ -27,11 +29,12 @@ public class PlayerMove : MonoBehaviour
     bool _isjump = default;
     bool _push = default;
     bool _avd = default;
-    bool _lookon = default;
+    public bool _lookon = default;
     public bool _onavd = default;
 
     [SerializeField] CinemachineVirtualCamera _Camera;
     ControllerSystem _input;
+    TargetLookOn target;
     Rigidbody _rb = default;
     Animator _anim = default;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
@@ -46,7 +49,8 @@ public class PlayerMove : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _anim = GetComponent<Animator>();
         _input = GetComponent<ControllerSystem>();
-        _crosshaie = GameObject.Find("LookOnCanvas");
+        _crosshair = GameObject.Find("CrossHair");
+        target = _crosshaircanvas.GetComponent<TargetLookOn>();
     }
 
     void Update()
@@ -169,19 +173,32 @@ public class PlayerMove : MonoBehaviour
 
     void TargetLookOn()
     {
-        _crosshaie.SetActive(_lookon);
-        if (Input.GetKeyDown(KeyCode.Q))
+        _crosshair.SetActive(_lookon);
+
+        if (target.targeton)
         {
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
                 _lookon = !_lookon;
                 if (_lookon)
                 {
+                    target.isneartarget = false;
                     _Camera.Priority = 100;
                 }
                 else
                 {
                     _Camera.Priority = 9;
+                    target.isneartarget = true;
                 }
+            }
         }
+        else 
+        {
+            _lookon = false;
+            target.isneartarget = true;
+            _Camera.Priority = 9;
+        }
+
     }
     void Jump()
     {
@@ -220,15 +237,7 @@ public class PlayerMove : MonoBehaviour
     }
     void Targets()
     {
-        var cols = Physics.OverlapSphere(GetAttackRangeCenter(), _attackRangeRadius);
-        
-        foreach(var c in cols)
-        {
-            if(c.tag == "Enemy")
-            {
-                Destroy(c.gameObject);
-            }
-        }
+        _currentenemy = Physics.OverlapSphere(GetAttackRangeCenter(), _attackRangeRadius);
     }
 }
 
