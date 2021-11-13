@@ -5,9 +5,9 @@ public class EnemyHPBar : MonoBehaviour
 {
     [SerializeField] bool mutekimode = default;
     //最大HPと現在のHP。
-    public float maxHp = 200;
-    static public float currentHp = 200;
-    public bool playmuteki = default;
+    [SerializeField] float maxHp = 200;
+    float currentHp = 200;
+    [SerializeField] bool playmuteki = default;
     //Sliderを入れる
     [SerializeField] Slider slider;
 
