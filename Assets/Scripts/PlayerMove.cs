@@ -26,6 +26,7 @@ public class PlayerMove : MonoBehaviour
     float _nowTime;
     public float _avdTime;
     float _animationspeed;
+    [SerializeField]bool _stopmove = default;
     bool _isjump = default;
     bool _push = default;
     bool _avd = default;
@@ -63,13 +64,13 @@ public class PlayerMove : MonoBehaviour
         // カメラは斜め下に向いているので、Y 軸の値を 0 にして「XZ 平面上のベクトル」にする
         _dir.y = 0;
         // キャラクターを「現在の（XZ 平面上の）進行方向」に向ける
-        if (_input.move != Vector2.zero)
+        if (_input.move != Vector2.zero && !_stopmove)
         {
             Quaternion targetRotation = Quaternion.LookRotation(_dir);
             this.transform.rotation = Quaternion.Slerp(this.transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
         }
 
-        if (_lookon && _input.move == Vector2.zero)
+        if (_lookon && _input.move == Vector2.zero && !_stopmove)
         {
             var direction = _crosshair.transform.position - transform.position;
             direction.y = 0;
@@ -85,7 +86,7 @@ public class PlayerMove : MonoBehaviour
         _isjump = _input.jump;
         TargetLookOn();
         Jump();
-        Avodance();
+        if (!_stopmove) {Avodance(); }
         Targets();
     }
     private void LateUpdate()
@@ -130,7 +131,8 @@ public class PlayerMove : MonoBehaviour
         float _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
 
         // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
-        _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Impulse);
+        if (!_stopmove)
+            _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Impulse);
 
         if (_input.move == Vector2.zero)
         {
@@ -182,32 +184,37 @@ public class PlayerMove : MonoBehaviour
 
     void TargetLookOn()
     {
-        _crosshair.SetActive(_lookon);
 
-        if (target.targeton)
+        if (target.isneartarget)
         {
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (_input.lockon)
             {
                 _lookon = !_lookon;
                 if (_lookon)
                 {
-                    target.isneartarget = false;
+                    target.targeton = false;
                     _Camera.Priority = 100;
                 }
                 else
                 {
                     _Camera.Priority = 9;
-                    target.isneartarget = true;
+                    target.targeton = true;
                 }
+                _input.lockon = false;
             }
         }
         else
         {
             _lookon = false;
-            target.isneartarget = true;
+            target.targeton = true;
             _Camera.Priority = 9;
         }
-
+        if (_input.change)
+        {
+            target.ChangeTarget();
+            _input.change = false;
+        }
+        _crosshair.SetActive(_lookon);
     }
     void Jump()
     {
@@ -247,6 +254,10 @@ public class PlayerMove : MonoBehaviour
     void Targets()
     {
         _currentenemy = Physics.OverlapSphere(GetAttackRangeCenter(), _attackRangeRadius);
+    }
+    void StopMoveSwitch()
+    {
+        _stopmove = !_stopmove;
     }
 }
 

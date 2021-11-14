@@ -7,6 +7,8 @@ public class ControllerSystem : MonoBehaviour
 {
 	[Header("Character Input Values")]
 	public Vector2 move;
+	public bool change;
+	public bool lockon;
 	public bool jump;
 	public bool fire;
 	public bool sprint;
@@ -30,6 +32,14 @@ public class ControllerSystem : MonoBehaviour
 	{
 		JumpInput(value.isPressed);
 	}
+	public void OnChange(InputValue value)
+	{
+		ChangeInput(value.isPressed);
+	}
+	public void OnLockOn(InputValue value)
+	{
+		LockOnInput(value.isPressed);
+	}
 	public void OnFire(InputValue value)
 	{
 		FireInput(value.isPressed);
@@ -52,6 +62,14 @@ public class ControllerSystem : MonoBehaviour
 	public void JumpInput(bool newJumpState)
 	{
 		jump = newJumpState;
+	}
+	public void ChangeInput(bool newJumpState)
+	{
+		change = newJumpState;
+	}
+	public void LockOnInput(bool newJumpState)
+	{
+		lockon = newJumpState;
 	}
 	public void FireInput(bool newFireState)
 	{

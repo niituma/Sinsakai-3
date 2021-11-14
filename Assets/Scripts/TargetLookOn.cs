@@ -7,13 +7,14 @@ public class TargetLookOn : MonoBehaviour
 {
     [SerializeField] int _targetindex;
     GameObject _player = default;
-    Collider _nowtarget;
+    [SerializeField] Collider _nowtarget = null;
     [SerializeField] GameObject playercon;
     [SerializeField] float distance = 5f;
     PlayerMove targets;
-    List<Collider> targetList = new List<Collider>();
-    public bool targeton;
-    public bool isneartarget = true;
+    [SerializeField] List<Collider> targetList = new List<Collider>();
+    public bool isneartarget = default;
+    public bool targeton = true;
+    public bool targetchange = default;
 
     void Start()
     {
@@ -24,35 +25,35 @@ public class TargetLookOn : MonoBehaviour
     void Update()
     {
         targetList = targets._currentenemy?.Where(t => t.tag == "Enemy").Distinct().ToList();
-        if (isneartarget)
+        targetList = targetList?.OrderBy(t => Vector3.Distance(t.transform.position, _player.transform.position)).Distinct().ToList();
+        if (targeton)
         {
-            targetList = targetList?.OrderBy(t => Vector3.Distance(t.transform.position, _player.transform.position)).Distinct().ToList();
             _nowtarget = targetList.FirstOrDefault();
             _targetindex = 0;
         }
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            if (targetList.Count > 1)
-            {
-                _nowtarget = targetList[_targetindex % targetList.Count];
-                _targetindex++;
-            }
-        }
+        
         if (_nowtarget)
         {
-            targeton = true;
+            isneartarget = true;
             transform.position = _nowtarget.transform.position + new Vector3(0, 1.3f, 0);
         }
         else
         {
-            targeton = false;
+            isneartarget = false;
         }
 
         if (Vector3.Distance(transform.position, _player.transform.position) >= distance)
         {
-            targeton = false;
+            isneartarget = false;
             _targetindex = 0;
+        }
+    }
+    public void ChangeTarget()
+    {
+        if (targetList.Count > 1)
+        {
+            _targetindex++;
+            _nowtarget = targetList[_targetindex % targetList.Count];
         }
     }
 }
