@@ -27,16 +27,17 @@ public class TargetLookOn : MonoBehaviour
         if (isneartarget)
         {
             targetList = targetList?.OrderBy(t => Vector3.Distance(t.transform.position, _player.transform.position)).Distinct().ToList();
-            _nowtarget = targetList[_targetindex % targetList.Count];//targetList.FirstOrDefault();
+            _nowtarget = targetList.FirstOrDefault();
             _targetindex = 0;
         }
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            _targetindex++;
-            if (targetList.Count > 0)
+            if (targetList.Count > 1)
+            {
                 _nowtarget = targetList[_targetindex % targetList.Count];
-
+                _targetindex++;
+            }
         }
         if (_nowtarget)
         {

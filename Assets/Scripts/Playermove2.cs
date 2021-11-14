@@ -11,7 +11,6 @@ public class Playermove2 : MonoBehaviour
     public float _gravity = 20.0f;
     float _animationspeed;
     float h, v;
-    bool isfly = default;
 
     private Vector3 _movedir = Vector3.zero;
     Animator _anim = default;

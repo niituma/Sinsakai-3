@@ -69,6 +69,15 @@ public class PlayerMove : MonoBehaviour
             this.transform.rotation = Quaternion.Slerp(this.transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
         }
 
+        if (_lookon && _input.move == Vector2.zero)
+        {
+            var direction = _crosshair.transform.position - transform.position;
+            direction.y = 0;
+
+            var lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Lerp(transform.rotation, lookRotation, Time.deltaTime * _turnSpeed);
+        }
+
         Vector3 velo = new Vector3(_rb.velocity.x, _rb.velocity.y, _rb.velocity.x);
         velo.y = _rb.velocity.y;
         _rb.velocity = velo;
@@ -164,7 +173,7 @@ public class PlayerMove : MonoBehaviour
             _rb.AddForce(transform.forward * _avdPower, ForceMode.Impulse);
         }
 
-        if (_avdTime >= 0.8f)
+        if (_avdTime >= 0.5f)
         {
             _onavd = false;
             _avdTime = 0;
@@ -192,7 +201,7 @@ public class PlayerMove : MonoBehaviour
                 }
             }
         }
-        else 
+        else
         {
             _lookon = false;
             target.isneartarget = true;

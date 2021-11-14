@@ -9406,7 +9406,7 @@ MonoBehaviour:
   _lifetime: 3
   _movespeed: 10
   _lookonspeed: 11
-  _moveDistance: 3
+  _moveDistance: 1.4
 --- !u!54 &7562675783319094533
 Rigidbody:
   m_ObjectHideFlags: 0
