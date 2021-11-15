@@ -86,7 +86,7 @@ public class PlayerMove : MonoBehaviour
         _isjump = _input.jump;
         TargetLookOn();
         Jump();
-        if (!_stopmove) {Avodance(); }
+        if (!_stopmove && IsGrounded()) {Avodance(); }
         Targets();
     }
     private void LateUpdate()
@@ -175,7 +175,7 @@ public class PlayerMove : MonoBehaviour
             _rb.AddForce(transform.forward * _avdPower, ForceMode.Impulse);
         }
 
-        if (_avdTime >= 0.5f)
+        if (_avdTime >= 0.5f || _input.attack)
         {
             _onavd = false;
             _avdTime = 0;
@@ -234,7 +234,9 @@ public class PlayerMove : MonoBehaviour
     }
     void Attack()
     {
-        _anim.SetBool("Punch", _input.fire);
+        _anim.SetBool("Punch", _input.attack);
+        _anim.SetBool("Magic", _input.fire);
+        _input.attack = false;
         _input.fire = false;
     }
     void Magic()
