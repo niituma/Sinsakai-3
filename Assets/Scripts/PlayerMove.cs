@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
-using DG.Tweening;
+using System.Linq;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -19,14 +19,14 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] Vector3 _attackRangeCenter = default;
     /// <summary>攻撃範囲の半径</summary>
     [SerializeField] float _attackRangeRadius = 1f;
-    public Collider[] _currentenemy;
+    [SerializeField] public List<Collider> _currentenemy = new List<Collider>();
     GameObject _crosshair;
     [SerializeField] GameObject _crosshaircanvas;
     float h, v;
     float _nowTime;
     public float _avdTime;
     float _animationspeed;
-    [SerializeField]bool _stopmove = default;
+    [SerializeField] bool _stopmove = default;
     bool _isjump = default;
     bool _push = default;
     bool _avd = default;
@@ -86,7 +86,7 @@ public class PlayerMove : MonoBehaviour
         _isjump = _input.jump;
         TargetLookOn();
         Jump();
-        if (!_stopmove && IsGrounded()) {Avodance(); }
+        if (!_stopmove && IsGrounded()) { Avodance(); }
         Targets();
     }
     private void LateUpdate()
@@ -124,6 +124,18 @@ public class PlayerMove : MonoBehaviour
             + this.transform.up * _attackRangeCenter.y
             + this.transform.right * _attackRangeCenter.x;
         return center;
+    }
+    void Targets()
+    {
+        _currentenemy = FilterTargetObject(Physics.OverlapSphere(GetAttackRangeCenter(), _attackRangeRadius).ToList());
+    }
+    protected List<Collider> FilterTargetObject(List<Collider> hits)
+    {
+        return hits.Where(h => h.tag == "Enemy").Where(h =>
+        {
+            Vector3 screenPoint = Camera.main.WorldToViewportPoint(h.transform.position);
+            return screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
+        }).ToList();
     }
     void Move()
     {
@@ -184,36 +196,37 @@ public class PlayerMove : MonoBehaviour
 
     void TargetLookOn()
     {
-
-        if (target.isneartarget)
-        {
-            if (_input.lockon)
+       
+            if (target.isneartarget)
             {
-                _lookon = !_lookon;
-                if (_lookon)
+                if (_input.lockon)
                 {
-                    target.targeton = false;
-                    _Camera.Priority = 100;
+                    _lookon = !_lookon;
+                    if (_lookon)
+                    {
+                        target.targeton = false;
+                        _Camera.Priority = 100;
+                    }
+                    else
+                    {
+                        _Camera.Priority = 9;
+                        target.targeton = true;
+                    }
+                    _input.lockon = false;
                 }
-                else
-                {
-                    _Camera.Priority = 9;
-                    target.targeton = true;
-                }
-                _input.lockon = false;
             }
-        }
-        else
-        {
-            _lookon = false;
-            target.targeton = true;
-            _Camera.Priority = 9;
-        }
+            else
+            {
+                _lookon = false;
+                target.targeton = true;
+                _Camera.Priority = 9;
+            }
         if (_input.change)
         {
             target.ChangeTarget();
             _input.change = false;
         }
+        _input.lockon = false;
         _crosshair.SetActive(_lookon);
     }
     void Jump()
@@ -252,10 +265,6 @@ public class PlayerMove : MonoBehaviour
         Debug.DrawLine(start, end); // 動作確認用に Scene ウィンドウ上で線を表示する
         bool isGrounded = Physics.Linecast(start, end); // 引いたラインに何かがぶつかっていたら true とする
         return isGrounded;
-    }
-    void Targets()
-    {
-        _currentenemy = Physics.OverlapSphere(GetAttackRangeCenter(), _attackRangeRadius);
     }
     void StopMoveSwitch()
     {
