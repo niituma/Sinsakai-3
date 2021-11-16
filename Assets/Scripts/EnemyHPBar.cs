@@ -7,7 +7,6 @@ public class EnemyHPBar : MonoBehaviour
     //最大HPと現在のHP。
     [SerializeField] float maxHp = 200;
     float currentHp = 200;
-    [SerializeField] bool playmuteki = default;
     //Sliderを入れる
     [SerializeField] Slider slider;
 
@@ -32,12 +31,12 @@ public class EnemyHPBar : MonoBehaviour
     //ColliderオブジェクトのIsTriggerにチェック入れること。
     private void OnTriggerEnter(Collider collision)
     {
-        if (slider && !mutekimode && !playmuteki)
+        if (slider && !mutekimode)
         {
             //Enemyタグのオブジェクトに触れると発動
-            if (collision.gameObject.tag == "PAttack")
+            if (collision.gameObject.tag == "PMagicBall")
             {
-                //ダメージは1～100の中でランダムに決める。
+                //ダメージはこの中でランダムに決める。
                 int damage = Random.Range(15, 21);
                 Debug.Log("damage : " + damage);
 
@@ -48,9 +47,16 @@ public class EnemyHPBar : MonoBehaviour
                 //最大HPにおける現在のHPをSliderに反映。
                 //int同士の割り算は小数点以下は0になるので、
                 //(float)をつけてfloatの変数として振舞わせる。
-                slider.value = (float)currentHp / (float)maxHp; ;
+                slider.value = (float)currentHp / (float)maxHp;
                 Debug.Log("slider.value : " + slider.value);
             }
         }
+    }
+    public void Damage()
+    {
+        int damage = Random.Range(15, 21);
+        currentHp = currentHp - damage;
+        slider.value = (float)currentHp / (float)maxHp;
+        Debug.Log("aaa");
     }
 }

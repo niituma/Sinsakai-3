@@ -16,8 +16,10 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float _nextButtonDownTime = 0.3f;
     [SerializeField] GameObject _magiceff = default;
     [SerializeField] GameObject _rightattackmuzzle = default;
+    [SerializeField] Vector3 _gettargetsRangeCenter = default;
     [SerializeField] Vector3 _attackRangeCenter = default;
     /// <summary>攻撃範囲の半径</summary>
+    [SerializeField] float _targetsRangeRadius = 1f;
     [SerializeField] float _attackRangeRadius = 1f;
     [SerializeField] public List<Collider> _currentenemy = new List<Collider>();
     GameObject _crosshair;
@@ -96,7 +98,6 @@ public class PlayerMove : MonoBehaviour
         //　押した方向がリミットの角度を越えていない　かつ　制限時間内に移動キーが押されていれば走る
         if (_avd && _move1dir == _move2dir)
         {
-            //gameObject.GetComponent<Rigidbody>().DOMove(this.transform.forward * _avdPower, 0.5f);
             _anim.SetBool("Avoidance", true);
             _avd = false;
             _onavd = true;
@@ -105,7 +106,7 @@ public class PlayerMove : MonoBehaviour
         {
             _anim.SetBool("Avoidance", false);
         }
-        Attack();
+        AttackMotion();
     }
 
     void FixedUpdate()
@@ -115,6 +116,8 @@ public class PlayerMove : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         // 攻撃範囲を赤い線でシーンビューに表示する
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(GetTargetsRangeCenter(), _targetsRangeRadius);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(GetAttackRangeCenter(), _attackRangeRadius);
     }
@@ -125,13 +128,34 @@ public class PlayerMove : MonoBehaviour
             + this.transform.right * _attackRangeCenter.x;
         return center;
     }
+    Vector3 GetTargetsRangeCenter()
+    {
+        Vector3 center = this.transform.position + this.transform.forward * _gettargetsRangeCenter.z
+            + this.transform.up * _gettargetsRangeCenter.y
+            + this.transform.right * _gettargetsRangeCenter.x;
+        return center;
+    }
+    void Attack()
+    {
+        var hit = Physics.OverlapSphere(GetAttackRangeCenter(), _attackRangeRadius);
+        foreach (var c in hit)
+        {
+            EnemyR enemy = c.gameObject.GetComponent<EnemyR>();
+
+            if (enemy)
+            {
+                enemy._ishit = true;
+            }
+        }
+
+    }
     void Targets()
     {
-        _currentenemy = FilterTargetObject(Physics.OverlapSphere(GetAttackRangeCenter(), _attackRangeRadius).ToList());
+        _currentenemy = FilterTargetObject(Physics.OverlapSphere(GetTargetsRangeCenter(), _targetsRangeRadius).ToList());
     }
-    protected List<Collider> FilterTargetObject(List<Collider> hits)
+    protected List<Collider> FilterTargetObject(List<Collider> detection)
     {
-        return hits.Where(h => h.tag == "Enemy").Where(h =>
+        return detection.Where(h => h.tag == "Enemy").Where(h =>
         {
             Vector3 screenPoint = Camera.main.WorldToViewportPoint(h.transform.position);
             return screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
@@ -217,6 +241,7 @@ public class PlayerMove : MonoBehaviour
             }
             else
             {
+                _input.lockon = false;
                 _lookon = false;
                 target.targeton = true;
                 _Camera.Priority = 9;
@@ -226,7 +251,6 @@ public class PlayerMove : MonoBehaviour
             target.ChangeTarget();
             _input.change = false;
         }
-        _input.lockon = false;
         _crosshair.SetActive(_lookon);
     }
     void Jump()
@@ -245,7 +269,7 @@ public class PlayerMove : MonoBehaviour
         _rb.velocity = velosity;
         _input.jump = false;
     }
-    void Attack()
+    void AttackMotion()
     {
         _anim.SetBool("Punch", _input.attack);
         _anim.SetBool("Magic", _input.fire);

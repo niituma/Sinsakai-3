@@ -24,8 +24,8 @@ public class TargetLookOn : MonoBehaviour
 
     void Update()
     {
-        targetList = targets._currentenemy?.Where(t => t.tag == "Enemy").Distinct().ToList();
-        targetList = targetList?.OrderBy(t => Vector3.Distance(t.transform.position, _player.transform.position)).Distinct().ToList();
+        targetList = targets._currentenemy?.Where(t => t.tag == "Enemy").ToList();
+        targetList = targetList?.OrderBy(t => Vector3.Distance(t.transform.position, _player.transform.position)).ToList();
         if (targeton)
         {
             _nowtarget = targetList.FirstOrDefault();

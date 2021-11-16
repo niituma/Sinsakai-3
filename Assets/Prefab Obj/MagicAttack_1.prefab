@@ -9371,7 +9371,7 @@ GameObject:
   - component: {fileID: 871770313297897788}
   m_Layer: 0
   m_Name: MagicAttack_1
-  m_TagString: PAttack
+  m_TagString: PMagicBall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -7,7 +7,7 @@ TagManager:
   - CinemachineTarget
   - Ground
   - Enemy
-  - PAttack
+  - PMagicBall
   layers:
   - Default
   - TransparentFX
