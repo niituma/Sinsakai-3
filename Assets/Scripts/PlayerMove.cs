@@ -18,8 +18,9 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] GameObject _rightattackmuzzle = default;
     [SerializeField] Vector3 _gettargetsRangeCenter = default;
     [SerializeField] Vector3 _attackRangeCenter = default;
-    /// <summary>攻撃範囲の半径</summary>
+    /// <summary>敵のターゲットロックできる範囲の半径</summary>
     [SerializeField] float _targetsRangeRadius = 1f;
+    /// <summary>攻撃範囲の半径</summary>
     [SerializeField] float _attackRangeRadius = 1f;
     [SerializeField] public List<Collider> _currentenemy = new List<Collider>();
     GameObject _crosshair;
