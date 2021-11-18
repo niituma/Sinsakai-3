@@ -36,7 +36,10 @@ public class PlayerMove : MonoBehaviour
     public bool _lookon = default;
     public bool _onavd = default;
 
-    [SerializeField] CinemachineVirtualCamera _Camera;
+    [SerializeField] CinemachineVirtualCamera _mousecamera;
+    [SerializeField] CinemachineVirtualCamera _targetcamera;
+    [SerializeField] float _changeVerticalAxisValue = 5f;
+    CinemachinePOV aim;
     ControllerSystem _input;
     TargetLookOn target;
     Rigidbody _rb = default;
@@ -53,6 +56,8 @@ public class PlayerMove : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _anim = GetComponent<Animator>();
         _input = GetComponent<ControllerSystem>();
+        //_mousecamera = GetComponent<CinemachineVirtualCamera>();
+        aim = _mousecamera.GetCinemachineComponent<CinemachinePOV>();
         _crosshair = GameObject.Find("CrossHair");
         target = _crosshaircanvas.GetComponent<TargetLookOn>();
     }
@@ -221,32 +226,33 @@ public class PlayerMove : MonoBehaviour
 
     void TargetLookOn()
     {
-       
-            if (target.isneartarget)
+        if (target.isneartarget)
+        {
+            if (_input.lockon)
             {
-                if (_input.lockon)
+                _lookon = !_lookon;
+                if (_lookon)
                 {
-                    _lookon = !_lookon;
-                    if (_lookon)
-                    {
-                        target.targeton = false;
-                        _Camera.Priority = 100;
-                    }
-                    else
-                    {
-                        _Camera.Priority = 9;
-                        target.targeton = true;
-                    }
-                    _input.lockon = false;
+                    target.targeton = false;
+                    _targetcamera.Priority = 100;
                 }
-            }
-            else
-            {
+                else
+                {
+                    _targetcamera.Priority = 9;
+                    target.targeton = true;
+                    aim.m_HorizontalAxis.Value = _targetcamera.transform.localEulerAngles.y;
+                    aim.m_VerticalAxis.Value = _changeVerticalAxisValue;
+                }
                 _input.lockon = false;
-                _lookon = false;
-                target.targeton = true;
-                _Camera.Priority = 9;
             }
+        }
+        else
+        {
+            _input.lockon = false;
+            _lookon = false;
+            target.targeton = true;
+            _targetcamera.Priority = 9;
+        }
         if (_input.change)
         {
             target.ChangeTarget();
