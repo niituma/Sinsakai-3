@@ -12,8 +12,10 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] float _movingdis = 1f;
     [SerializeField] Collider player;
     Vector3 direction = new Vector3(0f, 0f, 10f);
+    [SerializeField]Vector2 movedir;
     GameObject _player = default;
-    float _speed = 1.0f;
+    [SerializeField] float _speed = 1.0f;
+    public float _targetspeed = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,11 +23,15 @@ public class EnemyBase : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
         Sarch();
     }
-    void OnDrawGizmosSelected()
+    public void FixedUpdate()
+    {
+        Move();
+    }
+    public void OnDrawGizmosSelected()
     {
         // 攻撃範囲を赤い線でシーンビューに表示する
         Gizmos.color = Color.yellow;
@@ -48,8 +54,28 @@ public class EnemyBase : MonoBehaviour
 
             var lookRotation = Quaternion.LookRotation(dir);
             transform.rotation = Quaternion.Lerp(transform.rotation, lookRotation, Time.deltaTime * _turnSpeed);
-            if(Vector3.Distance(transform.position, player.transform.position) >= _movingdis)
-            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, _speed * Time.deltaTime);
         }
+    }
+    private void Move()
+    {
+        if (GetComponent<Rigidbody>().IsSleeping())
+        {
+            _targetspeed = 0;
+        }
+        else
+        {
+            _targetspeed = _speed;
+        }
+
+
+        if (player)
+        {
+            if (Vector3.Distance(transform.position, player.transform.position) < _movingdis)
+                _targetspeed = 0;
+
+            if (Vector3.Distance(transform.position, player.transform.position) >= _movingdis)
+                transform.position = Vector3.MoveTowards(transform.position, player.transform.position, _targetspeed * Time.deltaTime);
+        }
+
     }
 }

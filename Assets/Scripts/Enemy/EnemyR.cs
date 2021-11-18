@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyR : MonoBehaviour
+public class EnemyR : EnemyBase
 {
     Animator _anim = default;
     EnemyHPBar _myhp = default;
@@ -15,8 +15,9 @@ public class EnemyR : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private new void Update()
     {
+        base.Update();
         if (_ishit)
         {
             _ishit = false;
@@ -24,9 +25,14 @@ public class EnemyR : MonoBehaviour
         }
 
     }
+    private new void FixedUpdate()
+    {
+        base.FixedUpdate();
+    }
     private void LateUpdate()
     {
         _anim.SetBool("Hit", _ishit);
+        _anim.SetFloat("Speed", _targetspeed);
     }
     private void OnTriggerEnter(Collider other)
     {

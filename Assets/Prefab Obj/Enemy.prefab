@@ -1443,7 +1443,6 @@ GameObject:
   - component: {fileID: 4394114294313922639}
   - component: {fileID: 4394114294313922638}
   - component: {fileID: 4394114294313922637}
-  - component: {fileID: 4394114294313922636}
   m_Layer: 9
   m_Name: Enemy
   m_TagString: Enemy
@@ -1532,7 +1531,7 @@ MonoBehaviour:
   mutekimode: 0
   maxHp: 200
   slider: {fileID: 1405800443253577984}
-  _corpse: {fileID: 575949681911773721, guid: e624b24f58eef264ca26b8943dabfbe4, type: 3}
+  _corpse: {fileID: 5394469736643330852, guid: 92db6536cfb2354459040e191eb8699f, type: 3}
 --- !u!114 &4394114294313922638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1558,24 +1557,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 399375ab59010534393b49724ac3bc27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ishit: 0
---- !u!114 &4394114294313922636
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4394114294313922627}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b9785708d8f7dc44bc52d470f4f7233, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   _sarchRangeCenter: {x: 0, y: 1, z: 0}
   _turnSpeed: 8
   _sarchsRangeRadius: 5
   _movingdis: 1
   player: {fileID: 0}
+  _speed: 1
+  _ishit: 0
 --- !u!1 &4491215291597530215
 GameObject:
   m_ObjectHideFlags: 0
@@ -2276,7 +2264,7 @@ SkinnedMeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: b04f5333abe68a9498888e0cfba438aa, type: 2}
-  - {fileID: 2100000, guid: 293ed0652b1785641960f73edd437ada, type: 2}
+  - {fileID: 2100000, guid: 803a10683545b1340ba1c56acf3ca06e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

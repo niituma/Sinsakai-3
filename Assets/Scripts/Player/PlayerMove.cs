@@ -57,7 +57,6 @@ public class PlayerMove : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _anim = GetComponent<Animator>();
         _input = GetComponent<ControllerSystem>();
-        //_mousecamera = GetComponent<CinemachineVirtualCamera>();
         aim = _mousecamera.GetCinemachineComponent<CinemachinePOV>();
         _crosshair = GameObject.Find("CrossHair");
         target = _crosshaircanvas.GetComponent<TargetLookOn>();
@@ -120,6 +119,7 @@ public class PlayerMove : MonoBehaviour
     {
         Move();
     }
+
     void OnDrawGizmosSelected()
     {
         // 攻撃範囲を赤い線でシーンビューに表示する
