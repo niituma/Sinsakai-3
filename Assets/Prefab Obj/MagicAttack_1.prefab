@@ -9369,7 +9369,7 @@ GameObject:
   - component: {fileID: -7819580843718698959}
   - component: {fileID: 7562675783319094533}
   - component: {fileID: 871770313297897788}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: MagicAttack_1
   m_TagString: PMagicBall
   m_Icon: {fileID: 0}
