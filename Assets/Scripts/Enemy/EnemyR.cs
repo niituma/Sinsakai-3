@@ -32,7 +32,7 @@ public class EnemyR : EnemyBase
     private void LateUpdate()
     {
         _anim.SetBool("Hit", _ishit);
-        _anim.SetFloat("Speed", _targetspeed);
+        _anim.SetFloat("Speed", _animationspeed);
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -40,5 +40,9 @@ public class EnemyR : EnemyBase
         {
             _anim.SetBool("Hit", true);
         }
+    }
+    void StopMoveSwitch()
+    {
+        _stopmove = !_stopmove;
     }
 }

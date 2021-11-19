@@ -5,17 +5,22 @@ using System.Linq;
 
 public class EnemyBase : MonoBehaviour
 {
-    [SerializeField] Vector3 _sarchRangeCenter = default;
     [SerializeField] float _turnSpeed = 8.0f;
     /// <summary>Player検知範囲の半径</summary>
     [SerializeField] float _sarchsRangeRadius = 1f;
+    [SerializeField] Vector3 _sarchRangeCenter = default;
+    /// <summary>攻撃範囲の半径</summary>
+    [SerializeField] float _attackRangeRadius = 1f;
+    [SerializeField] Vector3 _attackRangeCenter = default;
     [SerializeField] float _movingdis = 1f;
     [SerializeField] Collider player;
     Vector3 direction = new Vector3(0f, 0f, 10f);
     [SerializeField]Vector2 movedir;
     GameObject _player = default;
     [SerializeField] float _speed = 1.0f;
+    public float _animationspeed;
     public float _targetspeed = 0;
+    public bool _stopmove = default;
     // Start is called before the first frame update
     void Start()
     {
@@ -36,6 +41,8 @@ public class EnemyBase : MonoBehaviour
         // 攻撃範囲を赤い線でシーンビューに表示する
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(PlayerSarchRangeCenter(), _sarchsRangeRadius);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(AttackRangeCenter(), _attackRangeRadius);
     }
     Vector3 PlayerSarchRangeCenter()
     {
@@ -47,7 +54,7 @@ public class EnemyBase : MonoBehaviour
     void Sarch()
     {
         player = Physics.OverlapSphere(PlayerSarchRangeCenter(), _sarchsRangeRadius).Where(p => p.tag == "Player").FirstOrDefault();
-        if (player)
+        if (player && !_stopmove)
         {
             var dir = player.transform.position - transform.position;
             dir.y = 0;
@@ -55,6 +62,27 @@ public class EnemyBase : MonoBehaviour
             var lookRotation = Quaternion.LookRotation(dir);
             transform.rotation = Quaternion.Lerp(transform.rotation, lookRotation, Time.deltaTime * _turnSpeed);
         }
+    }
+    Vector3 AttackRangeCenter()
+    {
+        Vector3 center = this.transform.position + this.transform.forward * _attackRangeCenter.z
+            + this.transform.up * _attackRangeCenter.y
+            + this.transform.right * _attackRangeCenter.x;
+        return center;
+    }
+    void Attack()
+    {
+        var hit = Physics.OverlapSphere(AttackRangeCenter(), _attackRangeRadius);
+        foreach (var c in hit)
+        {
+            PlayerMove target = c.gameObject.GetComponent<PlayerMove>();
+
+            if (target)
+            {
+                target._ishit = true;
+            }
+        }
+
     }
     private void Move()
     {
@@ -67,8 +95,7 @@ public class EnemyBase : MonoBehaviour
             _targetspeed = _speed;
         }
 
-
-        if (player)
+        if (player && !_stopmove)
         {
             if (Vector3.Distance(transform.position, player.transform.position) < _movingdis)
                 _targetspeed = 0;
@@ -77,5 +104,10 @@ public class EnemyBase : MonoBehaviour
                 transform.position = Vector3.MoveTowards(transform.position, player.transform.position, _targetspeed * Time.deltaTime);
         }
 
+        _animationspeed = Mathf.Lerp(_animationspeed, _targetspeed, Time.deltaTime * 10f);
+    }
+    void StopMoveSwitch()
+    {
+        _stopmove = !_stopmove;
     }
 }

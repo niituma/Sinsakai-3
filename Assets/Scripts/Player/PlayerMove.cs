@@ -30,6 +30,8 @@ public class PlayerMove : MonoBehaviour
     public float _avdTime;
     float _animationspeed;
     [SerializeField] bool _stopmove = default;
+    bool _iscombo = default;
+    public bool _ishit = default;
     bool _isjump = default;
     bool _push = default;
     bool _avd = default;
@@ -101,6 +103,12 @@ public class PlayerMove : MonoBehaviour
     {
         _anim.SetBool("Grounded", IsGrounded());
         _anim.SetBool("Jump", _isjump);
+        _anim.SetBool("Combo", _iscombo);
+        _anim.SetBool("Hit", _ishit);
+
+        if (_ishit)
+            _ishit = false;
+
         //　押した方向がリミットの角度を越えていない　かつ　制限時間内に移動キーが押されていれば走る
         if (_avd && _move1dir == _move2dir)
         {
@@ -308,6 +316,14 @@ public class PlayerMove : MonoBehaviour
     void StopMoveSwitch()
     {
         _stopmove = !_stopmove;
+    }
+    void DoCombo()
+    {
+        _iscombo = true;
+    }
+    void StopCombo()
+    {
+        _iscombo = false;
     }
 }
 
