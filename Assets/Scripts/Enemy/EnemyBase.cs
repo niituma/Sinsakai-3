@@ -12,10 +12,8 @@ public class EnemyBase : MonoBehaviour
     /// <summary>攻撃範囲の半径</summary>
     [SerializeField] float _attackRangeRadius = 1f;
     [SerializeField] Vector3 _attackRangeCenter = default;
-    [SerializeField] float _movingdis = 1f;
-    [SerializeField] Collider player;
-    Vector3 direction = new Vector3(0f, 0f, 10f);
-    [SerializeField]Vector2 movedir;
+    [SerializeField] public float _movingdis = 1f;
+    [SerializeField] public Collider player;
     GameObject _player = default;
     [SerializeField] float _speed = 1.0f;
     public float _animationspeed;

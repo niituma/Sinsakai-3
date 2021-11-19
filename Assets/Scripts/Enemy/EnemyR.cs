@@ -6,6 +6,9 @@ public class EnemyR : EnemyBase
 {
     Animator _anim = default;
     EnemyHPBar _myhp = default;
+    [SerializeField] float _attacktimer = 0;
+    float _doattacktime = 5f;
+    bool _isattack;
     public bool _ishit = default;
     // Start is called before the first frame update
     void Start()
@@ -23,7 +26,7 @@ public class EnemyR : EnemyBase
             _ishit = false;
             _myhp.Damage();
         }
-
+        AttackTime();
     }
     private new void FixedUpdate()
     {
@@ -31,6 +34,7 @@ public class EnemyR : EnemyBase
     }
     private void LateUpdate()
     {
+        _anim.SetBool("Attack", _isattack);
         _anim.SetBool("Hit", _ishit);
         _anim.SetFloat("Speed", _animationspeed);
     }
@@ -39,6 +43,23 @@ public class EnemyR : EnemyBase
         if (other.tag == "PMagicBall")
         {
             _anim.SetBool("Hit", true);
+        }
+    }
+    void AttackTime()
+    {
+        if (player)
+        {
+            _attacktimer += Time.deltaTime;
+
+            if (_attacktimer > _doattacktime && Vector3.Distance(transform.position, player.transform.position) < _movingdis)
+            {
+                _isattack = true;
+                _attacktimer = 0;
+            }
+            else
+            {
+                _isattack = false;
+            }
         }
     }
     void StopMoveSwitch()
