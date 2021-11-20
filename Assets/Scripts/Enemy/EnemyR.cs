@@ -62,8 +62,19 @@ public class EnemyR : EnemyBase
             }
         }
     }
-    void StopMoveSwitch()
+    void StopMoveSwitch(int movenum)
     {
-        _stopmove = !_stopmove;
+        switch (movenum)
+        {
+            case 1:
+                _stopmove = true;
+                break;
+            case 2:
+                _stopmove = false;
+                break;
+            default:
+                Debug.LogWarning("movenumが指定の範囲外です。Animationのイベントから指定してください。");
+                break;
+        }
     }
 }
