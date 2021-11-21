@@ -1557,13 +1557,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 399375ab59010534393b49724ac3bc27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sarchRangeCenter: {x: 0, y: 1, z: 0}
   _turnSpeed: 8
   _sarchsRangeRadius: 5
+  _sarchRangeCenter: {x: 0, y: 1, z: 0}
+  _attackRangeRadius: 0.4
+  _attackRangeCenter: {x: 0, y: 1, z: 0.5}
   _movingdis: 1
   player: {fileID: 0}
-  _speed: 1
+  _speed: 3
+  _animationspeed: 0
+  _targetspeed: 0
+  _stopmove: 0
+  _attacktimer: 0
   _ishit: 0
+  _weight: 0.797
+  _bodyWeight: 0.652
+  _headWeight: 0.657
+  _eyesWeight: 0
+  _clampWeight: 0.738
 --- !u!1 &4491215291597530215
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,7 +7,7 @@ public class EnemyR : EnemyBase
     Animator _anim = default;
     EnemyHPBar _myhp = default;
     [SerializeField] float _attacktimer = 0;
-    float _doattacktime = 5f;
+    [SerializeField] float _doattacktime = 5f;
     bool _isattack;
     public bool _ishit = default;
 
@@ -59,7 +59,7 @@ public class EnemyR : EnemyBase
     void OnAnimatorIK(int layerIndex)
     {
         // LookAt の重みとターゲットを指定する
-        if (player)
+        if (player && !_stopmove)
         {
             _anim.SetLookAtWeight(_weight, _bodyWeight, _headWeight, _eyesWeight, _clampWeight);
             _anim.SetLookAtPosition(player.transform.position + new Vector3(0, 1, 0));

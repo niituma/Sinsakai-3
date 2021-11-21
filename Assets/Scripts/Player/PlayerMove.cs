@@ -13,23 +13,31 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float _gravityPower = 0.3f;
     [SerializeField] float _turnSpeed = 8.0f;
     [SerializeField] float _isGroundedLength = 1.1f;
+    [SerializeField] float _magicCoolDownSpeed = 2f;
+    [SerializeField] float _magiclimiter = 0f;
+    [SerializeField] float _magiclimit = 100f;
     [SerializeField] float _nextButtonDownTime = 0.3f;
-    [SerializeField] GameObject _magiceff = default;
-    [SerializeField] GameObject _rightattackmuzzle = default;
     [SerializeField] Vector3 _gettargetsRangeCenter = default;
-    [SerializeField] Vector3 _attackRangeCenter = default;
     /// <summary>敵のターゲットロックできる範囲の半径</summary>
     [SerializeField] float _targetsRangeRadius = 1f;
+    [SerializeField] Vector3 _attackRangeCenter = default;
     /// <summary>攻撃範囲の半径</summary>
     [SerializeField] float _attackRangeRadius = 1f;
-    [SerializeField] public List<Collider> _currentenemy = new List<Collider>();
-    GameObject _crosshair;
+    [SerializeField] GameObject _magicoverparticle = default;
+    ParticleSystem _overparticle = default;
+    [SerializeField] GameObject _magiceff = default;
+    [SerializeField] GameObject _rightattackmuzzle = default;
+    [SerializeField] CinemachineVirtualCamera _mousecamera;
+    [SerializeField] CinemachineVirtualCamera _targetcamera;
     [SerializeField] GameObject _crosshaircanvas;
+    [SerializeField] float _changeVerticalAxisValue = 5f;
+    GameObject _crosshair;
+    [SerializeField] public List<Collider> _currentenemy = new List<Collider>();
     float h, v;
     float _nowTime;
     public float _avdTime;
     float _animationspeed;
-    [SerializeField] bool _stopmove = default;
+    bool _stopmove = default;
     bool _iscombo = default;
     public bool _ishit = default;
     bool _isjump = default;
@@ -38,9 +46,6 @@ public class PlayerMove : MonoBehaviour
     public bool _lookon = default;
     public bool _onavd = default;
 
-    [SerializeField] CinemachineVirtualCamera _mousecamera;
-    [SerializeField] CinemachineVirtualCamera _targetcamera;
-    [SerializeField] float _changeVerticalAxisValue = 5f;
     CinemachinePOV aim;
     bool _oncamerachangedir = default;
     ControllerSystem _input;
@@ -50,7 +55,7 @@ public class PlayerMove : MonoBehaviour
     Animator _anim = default;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     Vector3 _dir;
-    public Vector2 _movedir;
+    Vector2 _movedir;
     Vector2 _move1dir;
     Vector2 _move2dir;
 
@@ -61,6 +66,7 @@ public class PlayerMove : MonoBehaviour
         _anim = GetComponent<Animator>();
         _hp = GetComponent<PlayerHP>();
         _input = GetComponent<ControllerSystem>();
+        _overparticle = _magicoverparticle.GetComponent<ParticleSystem>();
         aim = _mousecamera.GetCinemachineComponent<CinemachinePOV>();
         _crosshair = GameObject.Find("CrossHair");
         target = _crosshaircanvas.GetComponent<TargetLookOn>();
@@ -100,6 +106,7 @@ public class PlayerMove : MonoBehaviour
         Jump();
         if (!_stopmove && IsGrounded()) { Avodance(); }
         Targets();
+        MagicOverFlow();
     }
     private void LateUpdate()
     {
@@ -200,6 +207,7 @@ public class PlayerMove : MonoBehaviour
     }
     void Avodance()
     {
+
         if (!_push)
         {
             if (Input.GetButtonDown("Horizontal") || Input.GetButtonDown("Vertical"))
@@ -306,13 +314,46 @@ public class PlayerMove : MonoBehaviour
     void AttackMotion()
     {
         _anim.SetBool("Punch", _input.attack);
-        _anim.SetBool("Magic", _input.fire);
+        if (_magiclimiter < _magiclimit)
+        {
+            _anim.SetBool("Magic", _input.fire);
+        }
         _input.attack = false;
         _input.fire = false;
+    }
+    void MagicOverFlow()
+    {
+        var emission = _overparticle.emission;
+
+        if (_magiclimiter > 0)
+        {
+            _magiclimiter -= _magicCoolDownSpeed * Time.deltaTime;
+        }else if (_magiclimiter < 0)
+        {
+            _magiclimiter = 0;
+        }
+
+        if (_magiclimiter >= 100f)
+        {
+            emission.rateOverTime = 300f;
+        }
+        else if (_magiclimiter >= 60f)
+        {
+            emission.rateOverTime = 100f;
+        }
+        else if (_magiclimiter >= 30f)
+        {
+            emission.rateOverTime = 10f;
+        }
+        else
+        {
+            emission.rateOverTime = 0f;
+        }
     }
     void Magic()
     {
         Instantiate(_magiceff, _rightattackmuzzle.transform.position, this.transform.rotation);
+        _magiclimiter += 13f;
     }
     bool IsGrounded()
     {
