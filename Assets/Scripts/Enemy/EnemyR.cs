@@ -10,6 +10,17 @@ public class EnemyR : EnemyBase
     float _doattacktime = 5f;
     bool _isattack;
     public bool _ishit = default;
+
+    /// <summary>どれくらい見るか</summary>
+    [SerializeField, Range(0f, 1f)] float _weight = 0;
+    /// <summary>身体をどれくらい向けるか</summary>
+    [SerializeField, Range(0f, 1f)] float _bodyWeight = 0;
+    /// <summary>頭をどれくらい向けるか</summary>
+    [SerializeField, Range(0f, 1f)] float _headWeight = 0;
+    /// <summary>目をどれくらい向けるか</summary>
+    [SerializeField, Range(0f, 1f)] float _eyesWeight = 0;
+    /// <summary>関節の動きをどれくらい制限するか</summary>
+    [SerializeField, Range(0f, 1f)] float _clampWeight = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -43,6 +54,15 @@ public class EnemyR : EnemyBase
         if (other.tag == "PMagicBall")
         {
             _anim.SetBool("Hit", true);
+        }
+    }
+    void OnAnimatorIK(int layerIndex)
+    {
+        // LookAt の重みとターゲットを指定する
+        if (player)
+        {
+            _anim.SetLookAtWeight(_weight, _bodyWeight, _headWeight, _eyesWeight, _clampWeight);
+            _anim.SetLookAtPosition(player.transform.position + new Vector3(0, 1, 0));
         }
     }
     void AttackTime()

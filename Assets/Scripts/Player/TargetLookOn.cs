@@ -24,14 +24,17 @@ public class TargetLookOn : MonoBehaviour
 
     void Update()
     {
-        targetList = targets._currentenemy?.Where(t => t.tag == "Enemy").ToList();
-        targetList = targetList?.OrderBy(t => Vector3.Distance(t.transform.position, _player.transform.position)).ToList();
+        if (targets)
+        {
+            targetList = targets._currentenemy?.Where(t => t.tag == "Enemy").ToList();
+            targetList = targetList?.OrderBy(t => Vector3.Distance(t.transform.position, _player.transform.position)).ToList();
+        }
         if (targeton)
         {
             _nowtarget = targetList.FirstOrDefault();
             _targetindex = 0;
         }
-        
+
         if (_nowtarget)
         {
             isneartarget = true;
@@ -41,11 +44,13 @@ public class TargetLookOn : MonoBehaviour
         {
             isneartarget = false;
         }
-
-        if (Vector3.Distance(transform.position, _player.transform.position) >= distance)
+        if (targets)
         {
-            isneartarget = false;
-            _targetindex = 0;
+            if (Vector3.Distance(transform.position, _player.transform.position) >= distance)
+            {
+                isneartarget = false;
+                _targetindex = 0;
+            }
         }
     }
     public void ChangeTarget()

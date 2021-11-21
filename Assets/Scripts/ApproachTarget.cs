@@ -9,6 +9,7 @@ public class ApproachTarget : MonoBehaviour
     [SerializeField] float _movespeed = 3f;
     [SerializeField] float _lookonspeed = 5f;
     [SerializeField] float _moveDistance;
+    [SerializeField] GameObject _hitEff = default;
     GameObject[] _targets = default;
     Rigidbody _rb = default;
 
@@ -44,6 +45,9 @@ public class ApproachTarget : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Enemy")
+        {
+            Instantiate(_hitEff,transform.position,Quaternion.identity);
             Destroy(this.gameObject);
+        }
     }
 }

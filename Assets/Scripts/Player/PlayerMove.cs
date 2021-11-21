@@ -45,6 +45,7 @@ public class PlayerMove : MonoBehaviour
     bool _oncamerachangedir = default;
     ControllerSystem _input;
     TargetLookOn target;
+    PlayerHP _hp;
     Rigidbody _rb = default;
     Animator _anim = default;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
@@ -58,6 +59,7 @@ public class PlayerMove : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody>();
         _anim = GetComponent<Animator>();
+        _hp = GetComponent<PlayerHP>();
         _input = GetComponent<ControllerSystem>();
         aim = _mousecamera.GetCinemachineComponent<CinemachinePOV>();
         _crosshair = GameObject.Find("CrossHair");
@@ -107,7 +109,10 @@ public class PlayerMove : MonoBehaviour
         _anim.SetBool("Hit", _ishit);
 
         if (_ishit)
+        {
+            _hp.Damage();
             _ishit = false;
+        }
 
         //　押した方向がリミットの角度を越えていない　かつ　制限時間内に移動キーが押されていれば走る
         if (_avd && _move1dir == _move2dir)
@@ -259,9 +264,13 @@ public class PlayerMove : MonoBehaviour
         else
         {
             _input.lockon = false;
-            _lookon = false;
+            if (_lookon)
+            {
+                _targetcamera.Priority = 9;
+                _lookon = false;
+
+            }
             target.targeton = true;
-            _targetcamera.Priority = 9;
             if (_oncamerachangedir)
             {
                 aim.m_HorizontalAxis.Value = _targetcamera.transform.localEulerAngles.y;
@@ -269,6 +278,8 @@ public class PlayerMove : MonoBehaviour
                 _oncamerachangedir = false;
             }
         }
+
+
         if (_input.change)
         {
             target.ChangeTarget();
@@ -328,7 +339,26 @@ public class PlayerMove : MonoBehaviour
                 break;
         }
     }
-    
+    public void TargetOff(float hp)
+    {
+        if (hp <= 0)
+        {
+            _input.lockon = false;
+            if (_lookon)
+            {
+                _targetcamera.Priority = 9;
+                _crosshair.SetActive(false);
+            }
+            target.targeton = true;
+            if (_oncamerachangedir)
+            {
+                aim.m_HorizontalAxis.Value = _targetcamera.transform.localEulerAngles.y;
+                aim.m_VerticalAxis.Value = _changeVerticalAxisValue;
+                _oncamerachangedir = false;
+            }
+        }
+    }
+
     void DoCombo()
     {
         _iscombo = true;
