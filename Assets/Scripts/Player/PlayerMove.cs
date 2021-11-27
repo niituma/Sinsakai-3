@@ -314,11 +314,12 @@ public class PlayerMove : MonoBehaviour
     void AttackMotion()
     {
         _anim.SetBool("Punch", _input.attack);
+        _input.attack = false;
+
         if (_magiclimiter < _magiclimit)
         {
             _anim.SetBool("Magic", _input.fire);
         }
-        _input.attack = false;
         _input.fire = false;
     }
     void MagicOverFlow()
@@ -328,7 +329,8 @@ public class PlayerMove : MonoBehaviour
         if (_magiclimiter > 0)
         {
             _magiclimiter -= _magicCoolDownSpeed * Time.deltaTime;
-        }else if (_magiclimiter < 0)
+        }
+        else if (_magiclimiter < 0)
         {
             _magiclimiter = 0;
         }

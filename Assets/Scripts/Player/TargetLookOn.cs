@@ -26,7 +26,7 @@ public class TargetLookOn : MonoBehaviour
     {
         if (targets)
         {
-            targetList = targets._currentenemy?.Where(t => t.tag == "Enemy").ToList();
+            targetList = targetList ?? targets._currentenemy.Where(t => t.tag == "Enemy").ToList();
             targetList = targetList?.OrderBy(t => Vector3.Distance(t.transform.position, _player.transform.position)).ToList();
         }
         if (targeton)

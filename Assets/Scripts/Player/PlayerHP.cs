@@ -17,10 +17,6 @@ public class PlayerHP : MonoBehaviour
     {
         _playerCon = GetComponent<PlayerMove>();
         slider.value = 1;
-
-        if (slider)
-            Debug.Log("Start currentHp : " + currentHp);
-
     }
 
     private void Update()

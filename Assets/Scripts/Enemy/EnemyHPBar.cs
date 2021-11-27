@@ -39,7 +39,6 @@ public class EnemyHPBar : MonoBehaviour
             {
                 //ダメージはこの中でランダムに決める。
                 int damage = Random.Range(15, 21);
-                Debug.Log("damage : " + damage);
 
                 //現在のHPからダメージを引く
                 currentHp = currentHp - damage;
