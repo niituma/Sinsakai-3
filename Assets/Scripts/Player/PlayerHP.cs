@@ -11,11 +11,11 @@ public class PlayerHP : MonoBehaviour
     [SerializeField] public Slider slider;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     [SerializeField] GameObject _corpse = default;
-    PlayerMove _playerCon;
+    PlayerController _playerCon;
 
     void Start()
     {
-        _playerCon = GetComponent<PlayerMove>();
+        _playerCon = GetComponent<PlayerController>();
         slider.value = 1;
     }
 

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class OpenGade : MonoBehaviour
 {
-    [SerializeField] GameObject[] _stones = default;
     int _count = 0;
 
     // Update is called once per frame

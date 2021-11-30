@@ -73,7 +73,7 @@ public class EnemyBase : MonoBehaviour
         var hit = Physics.OverlapSphere(AttackRangeCenter(), _attackRangeRadius);
         foreach (var c in hit)
         {
-            PlayerMove target = c.gameObject.GetComponent<PlayerMove>();
+            PlayerController target = c.gameObject.GetComponent<PlayerController>();
 
             if (target)
             {

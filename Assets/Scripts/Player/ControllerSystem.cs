@@ -10,6 +10,7 @@ public class ControllerSystem : MonoBehaviour
 	public bool change;
 	public bool attack;
 	public bool lockon;
+	public bool avd;
 	public bool jump;
 	public bool fire;
 	public bool sprint;
@@ -40,6 +41,10 @@ public class ControllerSystem : MonoBehaviour
 	public void OnLockOn(InputValue value)
 	{
 		LockOnInput(value.isPressed);
+	}
+	public void OnAvd(InputValue value)
+	{
+		AvdInput(value.isPressed);
 	}
 	public void OnAttack(InputValue value)
 	{
@@ -75,6 +80,10 @@ public class ControllerSystem : MonoBehaviour
 	public void LockOnInput(bool newJumpState)
 	{
 		lockon = newJumpState;
+	}
+	public void AvdInput(bool newJumpState)
+	{
+		avd = newJumpState;
 	}
 	public void AttackInput(bool newJumpState)
 	{

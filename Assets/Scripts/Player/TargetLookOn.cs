@@ -10,7 +10,7 @@ public class TargetLookOn : MonoBehaviour
     [SerializeField] Collider _nowtarget = null;
     [SerializeField] GameObject playercon;
     [SerializeField] float distance = 5f;
-    PlayerMove targets;
+    PlayerController targets;
     [SerializeField] List<Collider> targetList = new List<Collider>();
     public bool isneartarget = default;
     public bool targeton = true;
@@ -19,7 +19,7 @@ public class TargetLookOn : MonoBehaviour
     void Start()
     {
         _player = GameObject.Find("Player");
-        targets = playercon.GetComponent<PlayerMove>();
+        targets = playercon.GetComponent<PlayerController>();
     }
 
     void Update()
