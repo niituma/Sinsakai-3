@@ -97,7 +97,6 @@ public class PlayerController : MonoBehaviour
         _isjump = _input.jump;
         TargetLookOn();
         Jump();
-        if (!_stopmove && IsGrounded()) { Avodance(); }
         Targets();
         MagicOverFlow();
     }
@@ -195,17 +194,7 @@ public class PlayerController : MonoBehaviour
     }
     void Avodance()
     {
-        if (_isavd)
-        {
-            _avdTime += Time.deltaTime;
-            _rb.AddForce(transform.forward * _avdPower, ForceMode.Impulse);
-        }
-
-        if (_avdTime >= _avdlimitTime)
-        {
-            _isavd = false;
-            _avdTime = 0;
-        }
+        
     }
 
     void TargetLookOn()
