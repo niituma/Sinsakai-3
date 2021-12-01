@@ -8,7 +8,6 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] float _movePower = 3;
     [SerializeField] float _dashmovePower = 6;
-    [SerializeField] float _avdPower = 1.1f;
     [SerializeField] float _jumpPower = 3;
     [SerializeField] float _gravityPower = 0.3f;
     [SerializeField] float _turnSpeed = 8.0f;
@@ -16,7 +15,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _magicCoolDownSpeed = 2f;
     [SerializeField] float _magiclimiter = 0f;
     [SerializeField] float _magiclimit = 100f;
-    [SerializeField] float _avdlimitTime = 3f;
     [SerializeField] Vector3 _gettargetsRangeCenter = default;
     /// <summary>敵のターゲットロックできる範囲の半径</summary>
     [SerializeField] float _targetsRangeRadius = 1f;
@@ -36,12 +34,16 @@ public class PlayerController : MonoBehaviour
     float h, v;
     public float _avdTime;
     float _animationspeed;
+    bool _stopmovedir = default;
     bool _stopmove = default;
     bool _iscombo = default;
     public bool _ishit = default;
     bool _isjump = default;
     public bool _lookon = default;
-    bool _isavd = default;
+    /// <summary>壁を検出するための ray のベクトル</summary>
+    [SerializeField] Vector3 _rayForWall = Vector3.zero;
+    [SerializeField] float _raydis = 0.5f;
+    Vector3 raydir = default;
 
     CinemachinePOV aim;
     bool _oncamerachangedir = default;
@@ -75,13 +77,13 @@ public class PlayerController : MonoBehaviour
         // カメラは斜め下に向いているので、Y 軸の値を 0 にして「XZ 平面上のベクトル」にする
         _dir.y = 0;
         // キャラクターを「現在の（XZ 平面上の）進行方向」に向ける
-        if (_input.move != Vector2.zero && !_stopmove)
+        if (_input.move != Vector2.zero && !_stopmovedir)
         {
             Quaternion targetRotation = Quaternion.LookRotation(_dir);
             this.transform.rotation = Quaternion.Slerp(this.transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
         }
 
-        if (_lookon && _input.move == Vector2.zero && !_stopmove)
+        if (_lookon && _input.move == Vector2.zero && !_stopmovedir)
         {
             var direction = _crosshaircanvas.transform.position - transform.position;
             direction.y = 0;
@@ -116,7 +118,6 @@ public class PlayerController : MonoBehaviour
 
         if (_input.avd)
         {
-            _isavd = true;
             _input.avd = false;
         }
         AttackMotion();
@@ -180,13 +181,25 @@ public class PlayerController : MonoBehaviour
 
         float _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
 
-        if (!IsGrounded())
+        Vector3 origin = this.transform.position + _rayForWall; // 原点
+        if (_dir != Vector3.zero)
+            raydir = _dir; // X軸方向を表すベクトル
+
+        Ray ray = new Ray(origin, raydir); // Rayを生成
+        Debug.DrawRay(ray.origin, ray.direction * _raydis, Color.red); // 長さ３０、赤色で可視化
+        RaycastHit hit;
+
+       
+        if (Physics.Raycast(ray, out hit, _raydis) && !IsGrounded())
         {
-            _targetSpeed = 30;
-            _animationspeed = 30;
+            if (hit.collider.tag == "Ground")
+            {
+                _targetSpeed = 20f;
+                _animationspeed = 20;
+            }
         }
         // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
-        if (!_stopmove)
+        if (!_stopmovedir && !_stopmove)
             _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Force);
 
         if (_input.move == Vector2.zero)
@@ -199,7 +212,7 @@ public class PlayerController : MonoBehaviour
     }
     void Avodance()
     {
-        
+
     }
 
     void TargetLookOn()
@@ -328,10 +341,10 @@ public class PlayerController : MonoBehaviour
         switch (movenum)
         {
             case 1:
-                _stopmove = true;
+                _stopmovedir = true;
                 break;
             case 2:
-                _stopmove = false;
+                _stopmovedir = false;
                 break;
             default:
                 Debug.LogWarning("movenumが指定の範囲外です。Animationのイベントから指定してください。");
