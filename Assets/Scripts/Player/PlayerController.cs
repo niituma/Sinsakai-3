@@ -180,9 +180,14 @@ public class PlayerController : MonoBehaviour
 
         float _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
 
+        if (!IsGrounded())
+        {
+            _targetSpeed = 30;
+            _animationspeed = 30;
+        }
         // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
         if (!_stopmove)
-            _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Impulse);
+            _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Force);
 
         if (_input.move == Vector2.zero)
         {
