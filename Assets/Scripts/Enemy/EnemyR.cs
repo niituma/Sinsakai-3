@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyR : EnemyBase
 {
@@ -22,10 +23,11 @@ public class EnemyR : EnemyBase
     /// <summary>関節の動きをどれくらい制限するか</summary>
     [SerializeField, Range(0f, 1f)] float _clampWeight = 0;
     // Start is called before the first frame update
-    void Start()
+    private new void Start()
     {
         _anim = GetComponent<Animator>();
         _myhp = GetComponent<EnemyHPBar>();
+        base.Start();
     }
 
     // Update is called once per frame
@@ -37,6 +39,10 @@ public class EnemyR : EnemyBase
             _ishit = false;
             _myhp.Damage();
         }
+
+       if(_ishit)
+            mode = Action.Wait;
+
         AttackTime();
     }
     private new void FixedUpdate()
@@ -49,11 +55,13 @@ public class EnemyR : EnemyBase
         _anim.SetBool("Hit", _ishit);
         _anim.SetFloat("Speed", _animationspeed);
     }
+    
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "PMagicBall")
         {
             _anim.SetBool("Hit", true);
+            mode = Action.Wait;
         }
     }
     void OnAnimatorIK(int layerIndex)

@@ -17,7 +17,7 @@ public class EnemyLookAtIK : EnemyBase
     [SerializeField, Range(0f, 1f)] float _clampWeight = 0;
     Animator _anim = default;
 
-    void Start()
+    private new void Start()
     {
         _anim = GetComponent<Animator>();
     }
