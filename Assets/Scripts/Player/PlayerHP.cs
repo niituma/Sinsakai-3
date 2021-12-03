@@ -39,21 +39,21 @@ public class PlayerHP : MonoBehaviour
         {
             //Enemyタグのオブジェクトに触れると発動
             //if (collision.gameObject.tag == "PMagicBall")
-            {
-                //ダメージはこの中でランダムに決める。
-                int damage = Random.Range(15, 21);
-                Debug.Log("damage : " + damage);
+            //{
+            //    //ダメージはこの中でランダムに決める。
+            //    int damage = Random.Range(15, 21);
+            //    Debug.Log("damage : " + damage);
 
-                //現在のHPからダメージを引く
-                currentHp = currentHp - damage;
-                Debug.Log("After currentHp : " + currentHp);
+            //    //現在のHPからダメージを引く
+            //    currentHp = currentHp - damage;
+            //    Debug.Log("After currentHp : " + currentHp);
 
-                //最大HPにおける現在のHPをSliderに反映。
-                //int同士の割り算は小数点以下は0になるので、
-                //(float)をつけてfloatの変数として振舞わせる。
-                slider.value = (float)currentHp / (float)maxHp;
-                Debug.Log("slider.value : " + slider.value);
-            }
+            //    //最大HPにおける現在のHPをSliderに反映。
+            //    //int同士の割り算は小数点以下は0になるので、
+            //    //(float)をつけてfloatの変数として振舞わせる。
+            //    slider.value = (float)currentHp / (float)maxHp;
+            //    Debug.Log("slider.value : " + slider.value);
+            //}
         }
     }
     public void Damage()

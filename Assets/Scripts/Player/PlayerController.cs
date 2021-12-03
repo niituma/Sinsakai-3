@@ -321,6 +321,10 @@ public class PlayerController : MonoBehaviour
             emission.rateOverTime = 0f;
         }
     }
+    public void GrabLedge(Vector3 handPos, Handle currentLedge)
+    {
+        transform.position = handPos;
+    }
     void Magic()
     {
         Instantiate(_magiceff, _rightattackmuzzle.transform.position, this.transform.rotation);

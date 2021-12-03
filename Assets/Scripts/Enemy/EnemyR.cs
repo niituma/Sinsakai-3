@@ -34,14 +34,16 @@ public class EnemyR : EnemyBase
     private new void Update()
     {
         base.Update();
+
         if (_ishit)
         {
+            if (mode != Action.Hit)
+                mode = Action.Hit;
+
             _ishit = false;
             _myhp.Damage();
         }
 
-       if(_ishit)
-            mode = Action.Wait;
 
         AttackTime();
     }
@@ -55,13 +57,13 @@ public class EnemyR : EnemyBase
         _anim.SetBool("Hit", _ishit);
         _anim.SetFloat("Speed", _animationspeed);
     }
-    
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "PMagicBall")
         {
             _anim.SetBool("Hit", true);
-            mode = Action.Wait;
+            mode = Action.Hit;
         }
     }
     void OnAnimatorIK(int layerIndex)
@@ -99,6 +101,7 @@ public class EnemyR : EnemyBase
                 break;
             case 2:
                 _stopmove = false;
+                GotoNextPoint();
                 break;
             default:
                 Debug.LogWarning("movenumが指定の範囲外です。Animationのイベントから指定してください。");

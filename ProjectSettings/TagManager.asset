@@ -8,6 +8,7 @@ TagManager:
   - Ground
   - Enemy
   - PMagicBall
+  - Ledge Chercker
   layers:
   - Default
   - TransparentFX
