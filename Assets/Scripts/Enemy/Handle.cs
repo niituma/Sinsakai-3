@@ -18,8 +18,6 @@ public class Handle : MonoBehaviour
         {
             var player = other.GetComponentInParent<PlayerController>();
             player.GrabLedge(newhandpos, this);
-            var player_rb = other.GetComponentInParent<Rigidbody>();
-            player_rb.constraints = RigidbodyConstraints.FreezePositionY|RigidbodyConstraints.FreezeRotation;
         }
     }
 

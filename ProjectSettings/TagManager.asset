@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - PMagicBall
   - Ledge Chercker
+  - Handle
   layers:
   - Default
   - TransparentFX
