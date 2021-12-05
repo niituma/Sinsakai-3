@@ -96,6 +96,10 @@ public class PlayerController : MonoBehaviour
         Vector3 velo = new Vector3(_rb.velocity.x, _rb.velocity.y, _rb.velocity.x);
         velo.y = _rb.velocity.y;
         _rb.velocity = velo;
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            _isclimd = false;
+        }
 
         _isjump = _input.jump;
         TargetLookOn();
@@ -184,8 +188,11 @@ public class PlayerController : MonoBehaviour
     }
     void Move()
     {
-
-        float _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
+        float _targetSpeed;
+        if (_isclimd)
+            _targetSpeed = h;
+        else
+            _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
 
         // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
         if (!_stopmovedir && !_stopmove)
@@ -198,6 +205,7 @@ public class PlayerController : MonoBehaviour
         _animationspeed = Mathf.Lerp(_animationspeed, _targetSpeed, Time.deltaTime * 10f);
 
         _anim.SetFloat("Speed", _animationspeed);
+        _anim.SetFloat("ClimbMoveSpeed", _animationspeed);
     }
     void Climb()
     {
@@ -329,11 +337,12 @@ public class PlayerController : MonoBehaviour
             emission.rateOverTime = 0f;
         }
     }
-    public void GrabLedge(Vector3 handPos, Handle currentLedge)
+    public void GrabLedge(Vector3 handPos, Transform yrot, Handle currentLedge)
     {
         if (_isclimd)
         {
             transform.position = handPos;
+            transform.rotation = yrot.rotation;
             _rb.isKinematic = true;
         }
     }
@@ -351,6 +360,10 @@ public class PlayerController : MonoBehaviour
         Debug.DrawLine(start, end); // 動作確認用に Scene ウィンドウ上で線を表示する
         bool isGrounded = Physics.Linecast(start, end); // 引いたラインに何かがぶつかっていたら true とする
         return isGrounded;
+    }
+    void KinematicOff()
+    {
+        _rb.isKinematic = false;
     }
     void StopMoveSwitch(int movenum)
     {
