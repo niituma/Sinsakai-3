@@ -35,17 +35,18 @@ public class PlayerController : MonoBehaviour
     public float _avdTime;
     float _animationspeed;
     bool _stopmovedir = default;
-    bool _stopmove = default;
     bool _iscombo = default;
     public bool _ishit = default;
     bool _isjump = default;
     bool _isclimd = default;
+    bool _isnextclimd = default;
     public bool _lookon = default;
     /// <summary>壁を検出するための ray のベクトル</summary>
     [SerializeField] Vector3 _rayForWall = Vector3.zero;
     [SerializeField] float _raydis = 0.5f;
     Vector3 raydir = default;
 
+    [SerializeField] GameObject _climdRay = default;
     CinemachinePOV aim;
     bool _oncamerachangedir = default;
     ControllerSystem _input;
@@ -99,13 +100,13 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
         {
             _isclimd = false;
+            _stopmovedir = true;
         }
 
         _isjump = _input.jump;
         TargetLookOn();
         Climb();
-        if (!_isclimd)
-            Jump();
+        Jump();
         Targets();
         MagicOverFlow();
     }
@@ -119,6 +120,7 @@ public class PlayerController : MonoBehaviour
         _anim.SetBool("Combo", _iscombo);
         _anim.SetBool("Hit", _ishit);
         _anim.SetBool("Avoidance", _input.avd);
+        _anim.SetBool("NextClimb", _isnextclimd);
 
         if (_ishit)
         {
@@ -195,7 +197,7 @@ public class PlayerController : MonoBehaviour
             _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
 
         // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
-        if (!_stopmovedir && !_stopmove)
+        if (!_stopmovedir)
             _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Force);
 
         if (_input.move == Vector2.zero)
@@ -209,8 +211,8 @@ public class PlayerController : MonoBehaviour
     }
     void Climb()
     {
-        Vector3 origin = this.transform.position + _rayForWall; // 原点
-        raydir = transform.forward + new Vector3(0, 3, 0); // X軸方向を表すベクトル
+        Vector3 origin = _climdRay.transform.position;// + _rayForWall; // 原点
+        raydir = transform.forward + new Vector3(0, 90, 0); // X軸方向を表すベクトル
 
         Ray ray = new Ray(origin, raydir); // Rayを生成
         Debug.DrawRay(ray.origin, ray.direction * _raydis, Color.blue); // 長さ３０、赤色で可視化
@@ -225,6 +227,15 @@ public class PlayerController : MonoBehaviour
                     _isclimd = true;
 
                 Debug.Log("つかめる！");
+            }
+            else if (_isclimd)
+            {
+                Debug.Log("次の物につかめる！");
+                if (_input.jump && v > 0)
+                    _isnextclimd = true;
+                else
+                    _isnextclimd = false;
+
             }
         }
 
@@ -282,18 +293,21 @@ public class PlayerController : MonoBehaviour
     }
     void Jump()
     {
-        Vector3 velosity = _rb.velocity;
-        if (IsGrounded())
+        if (!_isclimd)
         {
-            if (_input.jump)
+            Vector3 velosity = _rb.velocity;
+            if (IsGrounded())
             {
-                _rb.AddForce(Vector3.up * _jumpPower, ForceMode.Impulse);
+                if (_input.jump)
+                {
+                    _rb.AddForce(Vector3.up * _jumpPower, ForceMode.Impulse);
+                }
+                else if (!_input.jump && velosity.y > 0)
+                    velosity.y *= _gravityPower;
             }
-            else if (!_input.jump && velosity.y > 0)
-                velosity.y *= _gravityPower;
-        }
 
-        _rb.velocity = velosity;
+            _rb.velocity = velosity;
+        }
         _input.jump = false;
     }
     void AttackMotion()
@@ -364,6 +378,7 @@ public class PlayerController : MonoBehaviour
     void KinematicOff()
     {
         _rb.isKinematic = false;
+        _stopmovedir = false;
     }
     void StopMoveSwitch(int movenum)
     {
