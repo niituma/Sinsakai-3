@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using DG.Tweening;
 using System.Linq;
 
 public class PlayerController : MonoBehaviour
@@ -355,7 +356,7 @@ public class PlayerController : MonoBehaviour
     {
         if (_isclimd)
         {
-            transform.position = handPos;
+            this.transform.DOLocalMove(handPos, 0.4f);
             transform.rotation = yrot.rotation;
             _rb.isKinematic = true;
         }
