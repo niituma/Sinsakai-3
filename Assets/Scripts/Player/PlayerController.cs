@@ -7,6 +7,8 @@ using System.Linq;
 
 public class PlayerController : MonoBehaviour
 {
+    /// <summary>rayなどを表示/非表示にする</summary>
+    [SerializeField] bool _debug = default;
     [SerializeField] float _movePower = 3;
     [SerializeField] float _dashmovePower = 6;
     [SerializeField] float _jumpPower = 3;
@@ -48,6 +50,13 @@ public class PlayerController : MonoBehaviour
     Vector3 raydir = default;
 
     [SerializeField] GameObject _climdRay = default;
+    [SerializeField] private GameObject LHand;
+    [SerializeField] private GameObject RHand;
+    bool _isLover = default;
+    bool _isRover = default;
+    [SerializeField] Vector3 curOriginGrabOffset = new Vector3(0, 1.2f, 0);
+    [SerializeField] Vector3 _lHandRayOffset = new Vector3(0.01f, 0, 0.2f);
+    [SerializeField] Vector3 _rHandRayOffset = new Vector3(-0.15f, 0, 0.15f);
     CinemachinePOV aim;
     bool _oncamerachangedir = default;
     ControllerSystem _input;
@@ -143,11 +152,14 @@ public class PlayerController : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        // 攻撃範囲を赤い線でシーンビューに表示する
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(GetTargetsRangeCenter(), _targetsRangeRadius);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(GetAttackRangeCenter(), _attackRangeRadius);
+        if (_debug)
+        {
+            // 攻撃範囲を赤い線でシーンビューに表示する
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(GetTargetsRangeCenter(), _targetsRangeRadius);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(GetAttackRangeCenter(), _attackRangeRadius);
+        }
     }
     Vector3 GetAttackRangeCenter()
     {
@@ -193,7 +205,19 @@ public class PlayerController : MonoBehaviour
     {
         float _targetSpeed;
         if (_isclimd)
+        {
             _targetSpeed = h;
+            if (_isLover)
+            {
+                if (h < 0)
+                    _targetSpeed = 0;
+            }
+            else if (_isRover)
+            {
+                if (h > 0)
+                    _targetSpeed = 0;
+            }
+        }
         else
             _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
 
@@ -207,18 +231,34 @@ public class PlayerController : MonoBehaviour
         }
         _animationspeed = Mathf.Lerp(_animationspeed, _targetSpeed, Time.deltaTime * 10f);
 
-        _anim.SetFloat("Speed", _animationspeed);
-        _anim.SetFloat("ClimbMoveSpeed", _animationspeed);
+        if (!_isclimd)
+            _anim.SetFloat("Speed", _animationspeed);
+        else
+            _anim.SetFloat("ClimbMoveSpeed", _animationspeed);
     }
     void Climb()
     {
-        Vector3 origin = _climdRay.transform.position;// + _rayForWall; // 原点
+        Vector3 origin = _climdRay.transform.position;// 原点
+        Vector3 origin2 = LHand.transform.position;
+        Vector3 origin3 = RHand.transform.position;
+        origin2.y = transform.position.y + curOriginGrabOffset.y;
+        origin3.y = origin2.y;
         raydir = transform.forward + new Vector3(0, 90, 0); // X軸方向を表すベクトル
+        Vector3 raydir2 = transform.forward;
 
         Ray ray = new Ray(origin, raydir); // Rayを生成
+        Ray ray2 = new Ray(origin2, raydir2);
+        Ray ray3 = new Ray(origin3, raydir2);
         Debug.DrawRay(ray.origin, ray.direction * _raydis, Color.blue); // 長さ３０、赤色で可視化
-        RaycastHit hit;
+        if (_isclimd)
+        {
+        }
+            Debug.DrawRay(ray2.origin, ray2.direction * _raydis, Color.blue);
+            Debug.DrawRay(ray3.origin, ray3.direction * _raydis, Color.blue);
 
+        RaycastHit hit;
+        RaycastHit hit2;
+        RaycastHit hit3;
 
         if (Physics.Raycast(ray, out hit, _raydis))
         {
@@ -239,8 +279,23 @@ public class PlayerController : MonoBehaviour
 
             }
         }
-
-
+        if (_isclimd)
+        {
+            if (Physics.Raycast(ray2, out hit2, _raydis))
+            {
+                if (hit2.collider.tag != "Handle")
+                    _isLover = true;
+                else
+                    _isLover = false;
+            }
+            if (Physics.Raycast(ray3, out hit3, _raydis))
+            {
+                if (hit3.collider.tag != "Handle")
+                    _isRover = true;
+                else
+                    _isRover = false;
+            }
+        }
     }
 
     void TargetLookOn()
