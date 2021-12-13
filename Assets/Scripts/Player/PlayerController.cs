@@ -109,8 +109,11 @@ public class PlayerController : MonoBehaviour
         _rb.velocity = velo;
         if (Input.GetKeyDown(KeyCode.C))
         {
-            _isclimd = false;
-            _stopmovedir = true;
+            if (_isclimd)
+            {
+                _isclimd = false;
+                _stopmovedir = true;
+            }
         }
 
         _isjump = _input.jump;
@@ -253,8 +256,8 @@ public class PlayerController : MonoBehaviour
         if (_isclimd)
         {
         }
-            Debug.DrawRay(ray2.origin, ray2.direction * _raydis, Color.blue);
-            Debug.DrawRay(ray3.origin, ray3.direction * _raydis, Color.blue);
+        Debug.DrawRay(ray2.origin, ray2.direction * _raydis, Color.blue);
+        Debug.DrawRay(ray3.origin, ray3.direction * _raydis, Color.blue);
 
         RaycastHit hit;
         RaycastHit hit2;
