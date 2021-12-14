@@ -55,13 +55,13 @@ public class PlayerController : MonoBehaviour
     bool _isLover = default;
     bool _isRover = default;
     [SerializeField] Vector3 curOriginGrabOffset = new Vector3(0, 1.2f, 0);
-    [SerializeField] Vector3 _lHandRayOffset = new Vector3(0.01f, 0, 0.2f);
-    [SerializeField] Vector3 _rHandRayOffset = new Vector3(-0.15f, 0, 0.15f);
+    [SerializeField] Vector3 _wallSarchRayOffset = new Vector3(0, 0, 0);
     CinemachinePOV aim;
     bool _oncamerachangedir = default;
     ControllerSystem _input;
     TargetLookOn target;
     PlayerHP _hp;
+    ClimdIK _climdIK;
     Rigidbody _rb = default;
     Animator _anim = default;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
@@ -71,6 +71,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         _rb = GetComponent<Rigidbody>();
+        _climdIK = GetComponent<ClimdIK>();
         _anim = GetComponent<Animator>();
         _hp = GetComponent<PlayerHP>();
         _input = GetComponent<ControllerSystem>();
@@ -107,14 +108,6 @@ public class PlayerController : MonoBehaviour
         Vector3 velo = new Vector3(_rb.velocity.x, _rb.velocity.y, _rb.velocity.x);
         velo.y = _rb.velocity.y;
         _rb.velocity = velo;
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            if (_isclimd)
-            {
-                _isclimd = false;
-                _stopmovedir = true;
-            }
-        }
 
         _isjump = _input.jump;
         TargetLookOn();
@@ -237,13 +230,25 @@ public class PlayerController : MonoBehaviour
         if (!_isclimd)
             _anim.SetFloat("Speed", _animationspeed);
         else
+        {
             _anim.SetFloat("ClimbMoveSpeed", _animationspeed);
+            if (h == 0)
+            {
+                _climdIK.ChangeWeight(1f, 0.03f);
+            }
+            else
+            {
+                _climdIK.ChangeWeight(0);
+            }
+        }
+
     }
     void Climb()
     {
         Vector3 origin = _climdRay.transform.position;// 原点
         Vector3 origin2 = LHand.transform.position;
         Vector3 origin3 = RHand.transform.position;
+        Vector3 origin4 = transform.position + _wallSarchRayOffset;
         origin2.y = transform.position.y + curOriginGrabOffset.y;
         origin3.y = origin2.y;
         raydir = transform.forward + new Vector3(0, 90, 0); // X軸方向を表すベクトル
@@ -252,18 +257,29 @@ public class PlayerController : MonoBehaviour
         Ray ray = new Ray(origin, raydir); // Rayを生成
         Ray ray2 = new Ray(origin2, raydir2);
         Ray ray3 = new Ray(origin3, raydir2);
+        Ray ray4 = new Ray(origin4, raydir2);
         Debug.DrawRay(ray.origin, ray.direction * _raydis, Color.blue); // 長さ３０、赤色で可視化
+        Debug.DrawRay(ray4.origin, ray4.direction * _raydis, Color.blue);
         if (_isclimd)
         {
+            Debug.DrawRay(ray2.origin, ray2.direction * _raydis, Color.blue);
+            Debug.DrawRay(ray3.origin, ray3.direction * _raydis, Color.blue);
         }
-        Debug.DrawRay(ray2.origin, ray2.direction * _raydis, Color.blue);
-        Debug.DrawRay(ray3.origin, ray3.direction * _raydis, Color.blue);
 
         RaycastHit hit;
         RaycastHit hit2;
         RaycastHit hit3;
-
-        if (Physics.Raycast(ray, out hit, _raydis))
+        RaycastHit hit4;
+        // レイヤーの管理番号を取得
+        int layerNo = LayerMask.NameToLayer("Handle");
+        // マスクへの変換（ビットシフト）
+        int layerMask = 1 << layerNo;
+        // レイヤーの管理番号を取得
+        int layerNo2 = LayerMask.NameToLayer("Ground");
+        // マスクへの変換（ビットシフト）
+        int layerMask2 = 1 << layerNo2;
+        ;
+        if (Physics.Raycast(ray, out hit, _raydis, layerMask))
         {
             if (hit.collider.tag == "Handle" && !_isclimd)
             {
@@ -279,7 +295,6 @@ public class PlayerController : MonoBehaviour
                     _isnextclimd = true;
                 else
                     _isnextclimd = false;
-
             }
         }
         if (_isclimd)
@@ -297,6 +312,17 @@ public class PlayerController : MonoBehaviour
                     _isRover = true;
                 else
                     _isRover = false;
+            }
+            if (!Physics.Raycast(ray4, out hit4, _raydis, layerMask2))
+            {
+                if (_input.jump && v > 0)
+                {
+                    if (_isclimd)
+                    {
+                        _isclimd = false;
+                        _stopmovedir = true;
+                    }
+                }
             }
         }
     }
