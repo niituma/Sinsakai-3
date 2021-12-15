@@ -232,14 +232,6 @@ public class PlayerController : MonoBehaviour
         else
         {
             _anim.SetFloat("ClimbMoveSpeed", _animationspeed);
-            if (h == 0)
-            {
-                _climdIK.ChangeWeight(1f, 0.03f);
-            }
-            else
-            {
-                _climdIK.ChangeWeight(0);
-            }
         }
 
     }
@@ -251,7 +243,7 @@ public class PlayerController : MonoBehaviour
         Vector3 origin4 = transform.position + _wallSarchRayOffset;
         origin2.y = transform.position.y + curOriginGrabOffset.y;
         origin3.y = origin2.y;
-        raydir = transform.forward + new Vector3(0, 90, 0); // X軸方向を表すベクトル
+        raydir = transform.forward + new Vector3(0, 10, 0); // X軸方向を表すベクトル
         Vector3 raydir2 = transform.forward;
 
         Ray ray = new Ray(origin, raydir); // Rayを生成
@@ -324,6 +316,23 @@ public class PlayerController : MonoBehaviour
                     }
                 }
             }
+            if (h == 0)
+            {
+                if (Physics.Raycast(ray2, out hit2, _raydis, layerMask) && Physics.Raycast(ray3, out hit3, _raydis, layerMask))
+                {
+                    _climdIK._leftHandTarget.position = hit2.point;
+                    _climdIK._rightHandTarget.position = hit3.point;
+                    _climdIK.ChangeWeight(1f, 1f);
+                }
+            }
+            else
+            {
+                _climdIK.ChangeWeight(0,0);
+            }
+        }
+        else
+        {
+            _climdIK.ChangeWeight(0, 0);
         }
     }
 
