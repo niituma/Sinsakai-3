@@ -14,7 +14,6 @@ public class Handle : MonoBehaviour
     private void Update()
     {
         newhandpos = new Vector3(_handpos.position.x, _handpos.position.y - _yoffset, _handpos.position.z);
-        
     }
     private void OnTriggerEnter(Collider other)
     {

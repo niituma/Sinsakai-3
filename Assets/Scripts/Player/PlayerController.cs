@@ -42,15 +42,15 @@ public class PlayerController : MonoBehaviour
     public bool _ishit = default;
     bool _isjump = default;
     bool _isclimd = default;
-    bool _isUpNextClimd = default;
-    bool _isDownNextClimd = default;
+    bool _isHandleSarch = default;
+    [SerializeField] GameObject _handleSachcollider = default;
+    [SerializeField] GameObject _handleSachcollider2 = default;
     public bool _lookon = default;
-    /// <summary>壁を検出するための ray のベクトル</summary>
-    [SerializeField] Vector3 _rayForWall = Vector3.zero;
     [SerializeField] float _raydis = 0.5f;
     Vector3 raydir = default;
 
-    [SerializeField] GameObject _climdRay = default;
+    [SerializeField] GameObject _climdUpRay = default;
+    [SerializeField] GameObject _climdDownRay = default;
     [SerializeField] private GameObject LHand;
     [SerializeField] private GameObject RHand;
     bool _isLover = default;
@@ -109,6 +109,11 @@ public class PlayerController : MonoBehaviour
         Vector3 velo = new Vector3(_rb.velocity.x, _rb.velocity.y, _rb.velocity.x);
         velo.y = _rb.velocity.y;
         _rb.velocity = velo;
+        if (Input.GetKeyDown(KeyCode.C)&&_isclimd)
+        {
+            _anim.CrossFade("Braced Jump From Wall", 0.2f);
+            _isclimd = false;
+        }
 
         _isjump = _input.jump;
         TargetLookOn();
@@ -127,8 +132,6 @@ public class PlayerController : MonoBehaviour
         _anim.SetBool("Combo", _iscombo);
         _anim.SetBool("Hit", _ishit);
         _anim.SetBool("Avoidance", _input.avd);
-        _anim.SetBool("NextUpClimb", _isUpNextClimd);
-        _anim.SetBool("NextDownClimb", _isDownNextClimd);
 
         if (_ishit)
         {
@@ -239,11 +242,11 @@ public class PlayerController : MonoBehaviour
     }
     void Climb()
     {
-        Vector3 origin = _climdRay.transform.position;// 原点
+        Vector3 origin = _climdUpRay.transform.position;// 原点
         Vector3 origin2 = LHand.transform.position;
         Vector3 origin3 = RHand.transform.position;
         Vector3 origin4 = transform.position + _wallSarchRayOffset;
-        Vector3 origin5 = this.transform.position;
+        Vector3 origin5 = _climdDownRay.transform.position;
         origin2.y = transform.position.y + curOriginGrabOffset.y;
         origin3.y = origin2.y;
         raydir = transform.forward + new Vector3(0, 10, 0); // X軸方向を表すベクトル
@@ -287,20 +290,30 @@ public class PlayerController : MonoBehaviour
                 {
                     _isclimd = true;
                 }
-
-
             }
             else if (_isclimd)
             {
                 Debug.Log("次の物につかめる！");
                 if (_input.jump && v > 0)
-                    _isUpNextClimd = true;
-                else if(Physics.Raycast(ray, out hit5, _raydis, layerMask)&&v < 0)
-                    _isDownNextClimd = true;
+                    _anim.SetBool("NextUpClimb", true);
+                else
+                    _anim.SetBool("NextUpClimb", false);
+            }
+        }
+        if (Physics.Raycast(ray5, out hit5, _raydis, layerMask))
+        {
+            if (_isclimd)
+            {
+                if (_input.jump && v < 0)
+                {
+                    Debug.Log("aa");
+                    _climdIK.ChangeWeight(0, 0);
+                    _anim.SetBool("NextDownClimb", true);
+                }
                 else
                 {
-                    _isUpNextClimd = false;
-                    _isDownNextClimd = false;
+
+                    _anim.SetBool("NextDownClimb", false);
                 }
             }
         }
@@ -333,7 +346,7 @@ public class PlayerController : MonoBehaviour
             }
             if (h == 0)
             {
-                if (Physics.Raycast(ray2, out hit2, _raydis, layerMask) && Physics.Raycast(ray3, out hit3, _raydis, layerMask))
+                if (Physics.Raycast(ray2, out hit2, _raydis, layerMask) && Physics.Raycast(ray3, out hit3, _raydis, layerMask) && !_isHandleSarch)
                 {
                     _climdIK._leftHandTarget.position = hit2.point;
                     _climdIK._rightHandTarget.position = hit3.point;
@@ -354,9 +367,9 @@ public class PlayerController : MonoBehaviour
     {
         if (_isclimd)
         {
-            this.transform.DOLocalMove(handPos, 0.4f);
-            transform.rotation = yrot.rotation;
             _rb.isKinematic = true;
+            transform.rotation = yrot.rotation;
+            this.transform.DOLocalMove(handPos, 0.4f);
         }
     }
 
@@ -501,6 +514,21 @@ public class PlayerController : MonoBehaviour
                 break;
             default:
                 Debug.LogWarning("movenumが指定の範囲外です。Animationのイベントから指定してください。");
+                break;
+        }
+    }
+    void HandleSarchSwitch(int UpDown)
+    {
+        _isHandleSarch = !_isHandleSarch;
+        switch (UpDown)
+        {
+            case 1:
+                _handleSachcollider.SetActive(true);
+                _handleSachcollider2.SetActive(false);
+                break;
+            case 2:
+                _handleSachcollider.SetActive(false);
+                _handleSachcollider2.SetActive(true);
                 break;
         }
     }
