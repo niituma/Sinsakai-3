@@ -42,7 +42,8 @@ public class PlayerController : MonoBehaviour
     public bool _ishit = default;
     bool _isjump = default;
     bool _isclimd = default;
-    bool _isnextclimd = default;
+    bool _isUpNextClimd = default;
+    bool _isDownNextClimd = default;
     public bool _lookon = default;
     /// <summary>壁を検出するための ray のベクトル</summary>
     [SerializeField] Vector3 _rayForWall = Vector3.zero;
@@ -126,7 +127,8 @@ public class PlayerController : MonoBehaviour
         _anim.SetBool("Combo", _iscombo);
         _anim.SetBool("Hit", _ishit);
         _anim.SetBool("Avoidance", _input.avd);
-        _anim.SetBool("NextClimb", _isnextclimd);
+        _anim.SetBool("NextUpClimb", _isUpNextClimd);
+        _anim.SetBool("NextDownClimb", _isDownNextClimd);
 
         if (_ishit)
         {
@@ -241,27 +243,32 @@ public class PlayerController : MonoBehaviour
         Vector3 origin2 = LHand.transform.position;
         Vector3 origin3 = RHand.transform.position;
         Vector3 origin4 = transform.position + _wallSarchRayOffset;
+        Vector3 origin5 = this.transform.position;
         origin2.y = transform.position.y + curOriginGrabOffset.y;
         origin3.y = origin2.y;
         raydir = transform.forward + new Vector3(0, 10, 0); // X軸方向を表すベクトル
         Vector3 raydir2 = transform.forward;
+        Vector3 raydir3 = transform.forward + new Vector3(0, -20, 0);
 
         Ray ray = new Ray(origin, raydir); // Rayを生成
         Ray ray2 = new Ray(origin2, raydir2);
         Ray ray3 = new Ray(origin3, raydir2);
         Ray ray4 = new Ray(origin4, raydir2);
+        Ray ray5 = new Ray(origin5, raydir3);
         Debug.DrawRay(ray.origin, ray.direction * _raydis, Color.blue); // 長さ３０、赤色で可視化
         Debug.DrawRay(ray4.origin, ray4.direction * _raydis, Color.blue);
         if (_isclimd)
         {
             Debug.DrawRay(ray2.origin, ray2.direction * _raydis, Color.blue);
             Debug.DrawRay(ray3.origin, ray3.direction * _raydis, Color.blue);
+            Debug.DrawRay(ray5.origin, ray5.direction * _raydis, Color.blue);
         }
 
         RaycastHit hit;
         RaycastHit hit2;
         RaycastHit hit3;
         RaycastHit hit4;
+        RaycastHit hit5;
         // レイヤーの管理番号を取得
         int layerNo = LayerMask.NameToLayer("Handle");
         // マスクへの変換（ビットシフト）
@@ -275,18 +282,26 @@ public class PlayerController : MonoBehaviour
         {
             if (hit.collider.tag == "Handle" && !_isclimd)
             {
-                if (_input.jump)
-                    _isclimd = true;
-
                 Debug.Log("つかめる！");
+                if (_input.jump)
+                {
+                    _isclimd = true;
+                }
+
+
             }
             else if (_isclimd)
             {
                 Debug.Log("次の物につかめる！");
                 if (_input.jump && v > 0)
-                    _isnextclimd = true;
+                    _isUpNextClimd = true;
+                else if(Physics.Raycast(ray, out hit5, _raydis, layerMask)&&v < 0)
+                    _isDownNextClimd = true;
                 else
-                    _isnextclimd = false;
+                {
+                    _isUpNextClimd = false;
+                    _isDownNextClimd = false;
+                }
             }
         }
         if (_isclimd)
@@ -327,12 +342,21 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                _climdIK.ChangeWeight(0,0);
+                _climdIK.ChangeWeight(0, 0);
             }
         }
         else
         {
             _climdIK.ChangeWeight(0, 0);
+        }
+    }
+    public void GrabLedge(Vector3 handPos, Transform yrot)
+    {
+        if (_isclimd)
+        {
+            this.transform.DOLocalMove(handPos, 0.4f);
+            transform.rotation = yrot.rotation;
+            _rb.isKinematic = true;
         }
     }
 
@@ -443,15 +467,6 @@ public class PlayerController : MonoBehaviour
         else
         {
             emission.rateOverTime = 0f;
-        }
-    }
-    public void GrabLedge(Vector3 handPos, Transform yrot, Handle currentLedge)
-    {
-        if (_isclimd)
-        {
-            this.transform.DOLocalMove(handPos, 0.4f);
-            transform.rotation = yrot.rotation;
-            _rb.isKinematic = true;
         }
     }
     void Magic()

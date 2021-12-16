@@ -21,7 +21,7 @@ public class Handle : MonoBehaviour
         if (other.gameObject.tag == "Ledge Chercker")
         {
             var player = other.GetComponentInParent<PlayerController>();
-            player.GrabLedge(newhandpos,this.transform, this);
+            player.GrabLedge(newhandpos,this.transform);
         }
     }
 
