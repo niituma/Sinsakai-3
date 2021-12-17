@@ -112,6 +112,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C)&&_isclimd)
         {
             _anim.CrossFade("Braced Jump From Wall", 0.2f);
+            _stopmovedir = true;
             _isclimd = false;
         }
 
@@ -251,7 +252,7 @@ public class PlayerController : MonoBehaviour
         origin3.y = origin2.y;
         raydir = transform.forward + new Vector3(0, 10, 0); // X軸方向を表すベクトル
         Vector3 raydir2 = transform.forward;
-        Vector3 raydir3 = transform.forward + new Vector3(0, -20, 0);
+        Vector3 raydir3 = transform.forward + new Vector3(0, -90, 0);
 
         Ray ray = new Ray(origin, raydir); // Rayを生成
         Ray ray2 = new Ray(origin2, raydir2);
@@ -306,13 +307,10 @@ public class PlayerController : MonoBehaviour
             {
                 if (_input.jump && v < 0)
                 {
-                    Debug.Log("aa");
-                    _climdIK.ChangeWeight(0, 0);
                     _anim.SetBool("NextDownClimb", true);
                 }
                 else
                 {
-
                     _anim.SetBool("NextDownClimb", false);
                 }
             }
@@ -369,7 +367,7 @@ public class PlayerController : MonoBehaviour
         {
             _rb.isKinematic = true;
             transform.rotation = yrot.rotation;
-            this.transform.DOLocalMove(handPos, 0.4f);
+            this.transform.DOMove(handPos, 0.93f);
         }
     }
 
@@ -520,6 +518,7 @@ public class PlayerController : MonoBehaviour
     void HandleSarchSwitch(int UpDown)
     {
         _isHandleSarch = !_isHandleSarch;
+        _climdIK.ChangeWeight(0, 0);
         switch (UpDown)
         {
             case 1:
@@ -529,6 +528,11 @@ public class PlayerController : MonoBehaviour
             case 2:
                 _handleSachcollider.SetActive(false);
                 _handleSachcollider2.SetActive(true);
+                break;
+            case 3:
+                _climdIK.ChangeWeight(1, 1);
+                break;
+            default:
                 break;
         }
     }
