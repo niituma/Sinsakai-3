@@ -45,6 +45,7 @@ public class PlayerController : MonoBehaviour
     bool _isHandleSarch = default;
     [SerializeField] GameObject _handleSachcollider = default;
     [SerializeField] GameObject _handleSachcollider2 = default;
+    [SerializeField] GameObject _handleSachcollider3 = default;
     public bool _lookon = default;
     [SerializeField] float _raydis = 0.5f;
     Vector3 raydir = default;
@@ -57,6 +58,8 @@ public class PlayerController : MonoBehaviour
     bool _isRover = default;
     [SerializeField] Vector3 curOriginGrabOffset = new Vector3(0, 1.2f, 0);
     [SerializeField] Vector3 _wallSarchRayOffset = new Vector3(0, 0, 0);
+    [SerializeField] Vector3 _SarchRayOffset = new Vector3(0, 0, 0);
+    [SerializeField] Vector3 _SarchRayOffset2 = new Vector3(0, 0, 0);
     CinemachinePOV aim;
     bool _oncamerachangedir = default;
     ControllerSystem _input;
@@ -109,7 +112,7 @@ public class PlayerController : MonoBehaviour
         Vector3 velo = new Vector3(_rb.velocity.x, _rb.velocity.y, _rb.velocity.x);
         velo.y = _rb.velocity.y;
         _rb.velocity = velo;
-        if (Input.GetKeyDown(KeyCode.C)&&_isclimd)
+        if (Input.GetKeyDown(KeyCode.C) && _isclimd)
         {
             _anim.CrossFade("Braced Jump From Wall", 0.2f);
             _stopmovedir = true;
@@ -252,13 +255,14 @@ public class PlayerController : MonoBehaviour
         origin3.y = origin2.y;
         raydir = transform.forward + new Vector3(0, 10, 0); // X軸方向を表すベクトル
         Vector3 raydir2 = transform.forward;
-        Vector3 raydir3 = transform.forward + new Vector3(0, -90, 0);
 
         Ray ray = new Ray(origin, raydir); // Rayを生成
         Ray ray2 = new Ray(origin2, raydir2);
         Ray ray3 = new Ray(origin3, raydir2);
         Ray ray4 = new Ray(origin4, raydir2);
-        Ray ray5 = new Ray(origin5, raydir3);
+        Ray ray5 = new Ray(origin5, raydir2 + new Vector3(0, -90, 0));
+        Ray ray6 = new Ray(origin2, raydir2 + _SarchRayOffset);
+        Ray ray7 = new Ray(origin3, raydir2 + _SarchRayOffset2);
         Debug.DrawRay(ray.origin, ray.direction * _raydis, Color.blue); // 長さ３０、赤色で可視化
         Debug.DrawRay(ray4.origin, ray4.direction * _raydis, Color.blue);
         if (_isclimd)
@@ -266,13 +270,12 @@ public class PlayerController : MonoBehaviour
             Debug.DrawRay(ray2.origin, ray2.direction * _raydis, Color.blue);
             Debug.DrawRay(ray3.origin, ray3.direction * _raydis, Color.blue);
             Debug.DrawRay(ray5.origin, ray5.direction * _raydis, Color.blue);
+            Debug.DrawRay(ray6.origin, ray6.direction * _raydis, Color.blue);
+            Debug.DrawRay(ray7.origin, ray7.direction * _raydis, Color.blue);
         }
 
         RaycastHit hit;
         RaycastHit hit2;
-        RaycastHit hit3;
-        RaycastHit hit4;
-        RaycastHit hit5;
         // レイヤーの管理番号を取得
         int layerNo = LayerMask.NameToLayer("Handle");
         // マスクへの変換（ビットシフト）
@@ -286,7 +289,6 @@ public class PlayerController : MonoBehaviour
         {
             if (hit.collider.tag == "Handle" && !_isclimd)
             {
-                Debug.Log("つかめる！");
                 if (_input.jump)
                 {
                     _isclimd = true;
@@ -294,14 +296,13 @@ public class PlayerController : MonoBehaviour
             }
             else if (_isclimd)
             {
-                Debug.Log("次の物につかめる！");
                 if (_input.jump && v > 0)
                     _anim.SetBool("NextUpClimb", true);
                 else
                     _anim.SetBool("NextUpClimb", false);
             }
         }
-        if (Physics.Raycast(ray5, out hit5, _raydis, layerMask))
+        if (Physics.Raycast(ray5, out hit, _raydis, layerMask))
         {
             if (_isclimd)
             {
@@ -317,21 +318,41 @@ public class PlayerController : MonoBehaviour
         }
         if (_isclimd)
         {
-            if (Physics.Raycast(ray2, out hit2, _raydis))
+
+            if (Physics.Raycast(ray2, out hit, _raydis))
             {
-                if (hit2.collider.tag != "Handle")
+                if (hit.collider.tag != "Handle")
+                {
                     _isLover = true;
+                    if (Physics.Raycast(ray6, out hit, _raydis, layerMask))
+                    {
+                        if (hit.collider.tag == "Handle" && h < 0 && _input.jump)
+                        {
+                            _anim.CrossFade("Braced Hang Hop Left", 0.2f);
+                        }
+                    }
+
+                }
                 else
                     _isLover = false;
             }
-            if (Physics.Raycast(ray3, out hit3, _raydis))
+            if (Physics.Raycast(ray3, out hit, _raydis))
             {
-                if (hit3.collider.tag != "Handle")
+                if (hit.collider.tag != "Handle")
+                {
                     _isRover = true;
+                    if(Physics.Raycast(ray7, out hit, _raydis, layerMask))
+                    {
+                        if (hit.collider.tag == "Handle" && h > 0 && _input.jump)
+                        {
+                            _anim.CrossFade("Braced Hang Hop Right", 0.2f);
+                        }
+                    }
+                }
                 else
                     _isRover = false;
             }
-            if (!Physics.Raycast(ray4, out hit4, _raydis, layerMask2))
+            if (!Physics.Raycast(ray4, out hit, _raydis, layerMask2))
             {
                 if (_input.jump && v > 0)
                 {
@@ -344,21 +365,21 @@ public class PlayerController : MonoBehaviour
             }
             if (h == 0)
             {
-                if (Physics.Raycast(ray2, out hit2, _raydis, layerMask) && Physics.Raycast(ray3, out hit3, _raydis, layerMask) && !_isHandleSarch)
+                if (Physics.Raycast(ray2, out hit, _raydis, layerMask) && Physics.Raycast(ray3, out hit2, _raydis, layerMask) && !_isHandleSarch)
                 {
-                    _climdIK._leftHandTarget.position = hit2.point;
-                    _climdIK._rightHandTarget.position = hit3.point;
-                    _climdIK.ChangeWeight(1f, 1f);
+                    _climdIK._leftHandTarget.position = hit.point;
+                    _climdIK._rightHandTarget.position = hit2.point;
+                    _climdIK.ChangeWeight(1f, 1);
                 }
             }
             else
             {
-                _climdIK.ChangeWeight(0, 0);
+                _climdIK.ChangeWeight(0, 1);
             }
         }
         else
         {
-            _climdIK.ChangeWeight(0, 0);
+            _climdIK.ChangeWeight(0, 1);
         }
     }
     public void GrabLedge(Vector3 handPos, Transform yrot)
@@ -367,7 +388,30 @@ public class PlayerController : MonoBehaviour
         {
             _rb.isKinematic = true;
             transform.rotation = yrot.rotation;
-            this.transform.DOMove(handPos, 0.93f);
+            this.transform.DOMove(handPos, 1f);
+        }
+    }
+    void HandleSarchSwitch(int UpDown)
+    {
+        _isHandleSarch = !_isHandleSarch;
+        _climdIK.ChangeWeight(0, 1);
+        switch (UpDown)
+        {
+            case 1:
+                _handleSachcollider.SetActive(true);
+                _handleSachcollider2.SetActive(false);
+                _handleSachcollider3.SetActive(false);
+                break;
+            case 2:
+                _handleSachcollider.SetActive(false);
+                _handleSachcollider2.SetActive(true);
+                break;
+            case 3:
+                _handleSachcollider.SetActive(false);
+                _handleSachcollider3.SetActive(true);
+                break;
+            default:
+                break;
         }
     }
 
@@ -437,7 +481,8 @@ public class PlayerController : MonoBehaviour
 
             _rb.velocity = velosity;
         }
-        _input.jump = false;
+        if (_input.jump)
+            _input.jump = false;
     }
     void AttackMotion()
     {
@@ -512,27 +557,6 @@ public class PlayerController : MonoBehaviour
                 break;
             default:
                 Debug.LogWarning("movenumが指定の範囲外です。Animationのイベントから指定してください。");
-                break;
-        }
-    }
-    void HandleSarchSwitch(int UpDown)
-    {
-        _isHandleSarch = !_isHandleSarch;
-        _climdIK.ChangeWeight(0, 0);
-        switch (UpDown)
-        {
-            case 1:
-                _handleSachcollider.SetActive(true);
-                _handleSachcollider2.SetActive(false);
-                break;
-            case 2:
-                _handleSachcollider.SetActive(false);
-                _handleSachcollider2.SetActive(true);
-                break;
-            case 3:
-                _climdIK.ChangeWeight(1, 1);
-                break;
-            default:
                 break;
         }
     }
