@@ -1,5 +1,6 @@
 ﻿using UnityEngine.UI;
 using UnityEngine;
+using DG.Tweening;
 
 public class PlayerHP : MonoBehaviour
 {
@@ -60,9 +61,10 @@ public class PlayerHP : MonoBehaviour
     {
         if (slider && !mutekimode)
         {
-            int damage = Random.Range(15, 21);
+            float damage = Random.Range(15, 21);
             currentHp = currentHp - damage;
-            slider.value = (float)currentHp / (float)maxHp;
+            float value = (float)currentHp / (float)maxHp;
+            DOTween.To(() => slider.value, x => slider.value = x, value, 0.5f);
         }
     }
 }

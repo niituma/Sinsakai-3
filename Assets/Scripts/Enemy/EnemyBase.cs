@@ -148,6 +148,8 @@ public class EnemyBase : MonoBehaviour
     }
     void Attack()
     {
+        if(mode != Action.Tracking)
+         mode = Action.Wait;
         var hit = Physics.OverlapSphere(AttackRangeCenter(), _attackRangeRadius);
         foreach (var c in hit)
         {
@@ -158,7 +160,6 @@ public class EnemyBase : MonoBehaviour
                 target._ishit = true;
             }
         }
-        mode = Action.Wait;
     }
     private void Move()
     {

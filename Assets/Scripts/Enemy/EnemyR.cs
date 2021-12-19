@@ -101,7 +101,6 @@ public class EnemyR : EnemyBase
                 break;
             case 2:
                 _stopmove = false;
-                GotoNextPoint();
                 break;
             default:
                 Debug.LogWarning("movenumが指定の範囲外です。Animationのイベントから指定してください。");

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class EnemyHPBar : MonoBehaviour
 {
@@ -46,7 +47,8 @@ public class EnemyHPBar : MonoBehaviour
                 //最大HPにおける現在のHPをSliderに反映。
                 //int同士の割り算は小数点以下は0になるので、
                 //(float)をつけてfloatの変数として振舞わせる。
-                slider.value = (float)currentHp / (float)maxHp;
+                float value = (float)currentHp / (float)maxHp;
+                DOTween.To(() => slider.value, x => slider.value = x, value, 0.5f);
             }
         }
     }
@@ -54,9 +56,10 @@ public class EnemyHPBar : MonoBehaviour
     {
         if (slider && !mutekimode)
         {
-            int damage = Random.Range(15, 21);
+            float damage = Random.Range(15, 21);
             currentHp = currentHp - damage;
-            slider.value = (float)currentHp / (float)maxHp;
+            float value = (float)currentHp / (float)maxHp;
+            DOTween.To(() => slider.value, x => slider.value = x, value, 0.5f);
         }
     }
 }
