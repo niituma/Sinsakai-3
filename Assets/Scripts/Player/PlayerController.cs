@@ -227,17 +227,24 @@ public class PlayerController : MonoBehaviour
             _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
 
         // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
-        if (!_stopmovedir)
-            _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Force);
 
         if (_input.move == Vector2.zero)
         {
             _targetSpeed = 0.0f;
         }
-        _animationspeed = Mathf.Lerp(_animationspeed, _targetSpeed, Time.deltaTime * 10f);
+
+        if (!_stopmovedir)
+            _animationspeed = Mathf.Lerp(_animationspeed, _targetSpeed, Time.deltaTime * 10f);
+        else
+            _animationspeed = 0;
 
         if (!_isclimd)
+        {
+            if (!_stopmovedir)
+                _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Force);
+
             _anim.SetFloat("Speed", _animationspeed);
+        }
         else
         {
             _anim.SetFloat("ClimbMoveSpeed", _animationspeed);
@@ -341,7 +348,7 @@ public class PlayerController : MonoBehaviour
                 if (hit.collider.tag != "Handle")
                 {
                     _isRover = true;
-                    if(Physics.Raycast(ray7, out hit, _raydis, layerMask))
+                    if (Physics.Raycast(ray7, out hit, _raydis, layerMask))
                     {
                         if (hit.collider.tag == "Handle" && h > 0 && _input.jump)
                         {
