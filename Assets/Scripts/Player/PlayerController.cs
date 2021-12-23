@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] bool _debug = default;
     [SerializeField] float _movePower = 3;
     [SerializeField] float _dashmovePower = 6;
+    [SerializeField] float _skillDashPower = 6;
     [SerializeField] float _jumpPower = 3;
     [SerializeField] float _gravityPower = 0.3f;
     [SerializeField] float _turnSpeed = 8.0f;
@@ -18,6 +19,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _magicCoolDownSpeed = 2f;
     [SerializeField] float _magiclimiter = 0f;
     [SerializeField] float _magiclimit = 100f;
+    bool _isSkillDash = default;
+    float _skillDashTime = 0;
     [SerializeField] Vector3 _gettargetsRangeCenter = default;
     /// <summary>敵のターゲットロックできる範囲の半径</summary>
     [SerializeField] float _targetsRangeRadius = 1f;
@@ -117,6 +120,18 @@ public class PlayerController : MonoBehaviour
             _anim.CrossFade("Braced Jump From Wall", 0.2f);
             _stopmovedir = true;
             _isclimd = false;
+        }else if (Input.GetKeyDown(KeyCode.C) && !_isclimd)
+        {
+            _isSkillDash = true;
+        }
+        if (_isSkillDash)
+        {
+            _skillDashTime += Time.deltaTime;
+            if (_skillDashTime >= 5f) //明日の俺5f変数にして
+            {
+                _isSkillDash = false;
+                _skillDashTime = 0;
+            }
         }
 
         _isjump = _input.jump;
@@ -209,6 +224,7 @@ public class PlayerController : MonoBehaviour
     void Move()
     {
         float _targetSpeed;
+
         if (_isclimd)
         {
             _targetSpeed = h;
@@ -224,7 +240,15 @@ public class PlayerController : MonoBehaviour
             }
         }
         else
-            _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
+        {
+            if (_isSkillDash)
+            {
+                _targetSpeed = _skillDashPower;
+            }
+            else
+                _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
+
+        }
 
         // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
 
