@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _movePower = 3;
     [SerializeField] float _dashmovePower = 6;
     [SerializeField] float _skillDashPower = 6;
+    [SerializeField] float _skillDashLimitTime = 5f;
     [SerializeField] float _jumpPower = 3;
     [SerializeField] float _gravityPower = 0.3f;
     [SerializeField] float _turnSpeed = 8.0f;
@@ -120,14 +121,14 @@ public class PlayerController : MonoBehaviour
             _anim.CrossFade("Braced Jump From Wall", 0.2f);
             _stopmovedir = true;
             _isclimd = false;
-        }else if (Input.GetKeyDown(KeyCode.C) && !_isclimd)
+        }else if (Input.GetKeyDown(KeyCode.C) && !_isclimd && _input.move != Vector2.zero)
         {
             _isSkillDash = true;
         }
         if (_isSkillDash)
         {
             _skillDashTime += Time.deltaTime;
-            if (_skillDashTime >= 5f) //明日の俺5f変数にして
+            if (_skillDashTime >= _skillDashLimitTime|| _input.move == Vector2.zero)
             {
                 _isSkillDash = false;
                 _skillDashTime = 0;
