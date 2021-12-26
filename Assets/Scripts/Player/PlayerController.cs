@@ -121,7 +121,7 @@ public class PlayerController : MonoBehaviour
             _anim.CrossFade("Braced Jump From Wall", 0.2f);
             _stopmovedir = true;
             _isclimd = false;
-        }else if (Input.GetKeyDown(KeyCode.C) && _isclimd && _input.move != Vector2.zero)
+        }else if (Input.GetKeyDown(KeyCode.C) && !_isclimd && _input.move != Vector2.zero)
         {
             _isSkillDash = true;
         }
@@ -136,10 +136,6 @@ public class PlayerController : MonoBehaviour
         }
 
         _isjump = _input.jump;
-        if (_isjump)
-        {
-            Debug.Log("Aa");
-        }
         TargetLookOn();
         Climb();
         Jump();
