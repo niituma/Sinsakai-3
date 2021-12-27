@@ -29316,18 +29316,25 @@ AnimationClip:
     intParameter: 1
     messageOptions: 0
   - time: 0.5
-    functionName: DoCombo
+    functionName: ConboSwith
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 1
+    messageOptions: 0
+  - time: 0.53333336
+    functionName: Magic
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 1
-    functionName: StopCombo
+    functionName: ConboSwith
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
-    intParameter: 0
+    intParameter: 2
     messageOptions: 0
   - time: 1.0333333
     functionName: StopMoveSwitch

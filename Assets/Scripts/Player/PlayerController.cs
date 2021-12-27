@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
 {
     /// <summary>rayなどを表示/非表示にする</summary>
     [SerializeField] bool _debug = default;
+    [Header("Player")]
     [SerializeField] float _movePower = 3;
     [SerializeField] float _dashmovePower = 6;
     [SerializeField] float _skillDashPower = 6;
@@ -20,40 +21,44 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _magicCoolDownSpeed = 2f;
     [SerializeField] float _magiclimiter = 0f;
     [SerializeField] float _magiclimit = 100f;
+    /// <summary>入力された方向の XZ 平面でのベクトル</summary>
+    Vector3 _dir;
     bool _isSkillDash = default;
     float _skillDashTime = 0;
+    float h, v;
+    public float _avdTime;
+    float _animationspeed;
+    public bool _stopmovedir = default;
+    public bool _ishit = default;
+    bool _isjump = default;
+
+    [Header("索敵、攻撃範囲")]
     [SerializeField] Vector3 _gettargetsRangeCenter = default;
     /// <summary>敵のターゲットロックできる範囲の半径</summary>
     [SerializeField] float _targetsRangeRadius = 1f;
     [SerializeField] Vector3 _attackRangeCenter = default;
     /// <summary>攻撃範囲の半径</summary>
     [SerializeField] float _attackRangeRadius = 1f;
-    [SerializeField] GameObject _magicoverparticle = default;
-    ParticleSystem _overparticle = default;
-    [SerializeField] GameObject _magiceff = default;
-    [SerializeField] GameObject _rightattackmuzzle = default;
+
+    [Header("ターゲットロック")]
     [SerializeField] CinemachineVirtualCamera _mousecamera;
     [SerializeField] CinemachineVirtualCamera _targetcamera;
     [SerializeField] GameObject _crosshaircanvas;
     [SerializeField] float _changeVerticalAxisValue = 5f;
     GameObject _crosshair;
+    CinemachinePOV aim;
+    bool _oncamerachangedir = default;
+    public bool _lookon = default;
     [SerializeField] public List<Collider> _currentenemy = new List<Collider>();
-    float h, v;
-    public float _avdTime;
-    float _animationspeed;
-    public bool _stopmovedir = default;
-    bool _iscombo = default;
-    public bool _ishit = default;
-    bool _isjump = default;
-    bool _isclimd = default;
-    bool _isHandleSarch = default;
+
+    [Header("ClimdController")]
     [SerializeField] GameObject _handleSachcollider = default;
     [SerializeField] GameObject _handleSachcollider2 = default;
     [SerializeField] GameObject _handleSachcollider3 = default;
-    public bool _lookon = default;
+    bool _isclimd = default;
+    bool _isHandleSarch = default;
     [SerializeField] float _raydis = 0.5f;
     Vector3 raydir = default;
-
     [SerializeField] GameObject _climdUpRay = default;
     [SerializeField] GameObject _climdDownRay = default;
     [SerializeField] private GameObject LHand;
@@ -61,29 +66,28 @@ public class PlayerController : MonoBehaviour
     bool _isLover = default;
     bool _isRover = default;
     [SerializeField] Vector3 curOriginGrabOffset = new Vector3(0, 1.2f, 0);
-    [SerializeField] Vector3 _wallSarchRayOffset = new Vector3(0, 0, 0);
-    [SerializeField] Vector3 _SarchRayOffset = new Vector3(0, 0, 0);
-    [SerializeField] Vector3 _SarchRayOffset2 = new Vector3(0, 0, 0);
-    CinemachinePOV aim;
-    bool _oncamerachangedir = default;
+    [SerializeField] Vector3 _wallSarchRayOffset = new Vector3(0, 1.6f, 0);
+    [SerializeField] Vector3 _SarchRayOffset = new Vector3(4f, 0, 0);
+    [SerializeField] Vector3 _SarchRayOffset2 = new Vector3(-1.2f, 0, 0);
+
+
     ControllerSystem _input;
     TargetLookOn target;
+    PlayerMagic _magic;
     PlayerHP _hp;
     ClimdIK _climdIK;
     Rigidbody _rb = default;
     Animator _anim = default;
-    /// <summary>入力された方向の XZ 平面でのベクトル</summary>
-    Vector3 _dir;
 
 
     void Start()
     {
         _rb = GetComponent<Rigidbody>();
         _climdIK = GetComponent<ClimdIK>();
+        _magic = GetComponent<PlayerMagic>();
         _anim = GetComponent<Animator>();
         _hp = GetComponent<PlayerHP>();
         _input = GetComponent<ControllerSystem>();
-        _overparticle = _magicoverparticle.GetComponent<ParticleSystem>();
         aim = _mousecamera.GetCinemachineComponent<CinemachinePOV>();
         _crosshair = GameObject.Find("CrossHair");
         target = _crosshaircanvas.GetComponent<TargetLookOn>();
@@ -140,7 +144,6 @@ public class PlayerController : MonoBehaviour
         Climb();
         Jump();
         Targets();
-        MagicOverFlow();
     }
     private void LateUpdate()
     {
@@ -149,7 +152,7 @@ public class PlayerController : MonoBehaviour
         _anim.SetBool("Grounded", IsGrounded());
         if (!_isclimd)
             _anim.SetBool("Jump", _isjump);
-        _anim.SetBool("Combo", _iscombo);
+        _anim.SetBool("Combo", _magic.Iscombo);
         _anim.SetBool("Hit", _ishit);
         _anim.SetBool("Avoidance", _input.avd);
 
@@ -163,7 +166,6 @@ public class PlayerController : MonoBehaviour
         {
             _input.avd = false;
         }
-        AttackMotion();
     }
 
     void FixedUpdate()
@@ -516,52 +518,6 @@ public class PlayerController : MonoBehaviour
         if (_input.jump)
             _input.jump = false;
     }
-    void AttackMotion()
-    {
-        _anim.SetBool("Punch", _input.attack);
-        _input.attack = false;
-
-        if (_magiclimiter < _magiclimit)
-        {
-            _anim.SetBool("Magic", _input.fire);
-        }
-        _input.fire = false;
-    }
-    void MagicOverFlow()
-    {
-        var emission = _overparticle.emission;
-
-        if (_magiclimiter > 0)
-        {
-            _magiclimiter -= _magicCoolDownSpeed * Time.deltaTime;
-        }
-        else if (_magiclimiter < 0)
-        {
-            _magiclimiter = 0;
-        }
-
-        if (_magiclimiter >= 100f)
-        {
-            emission.rateOverTime = 300f;
-        }
-        else if (_magiclimiter >= 60f)
-        {
-            emission.rateOverTime = 100f;
-        }
-        else if (_magiclimiter >= 30f)
-        {
-            emission.rateOverTime = 10f;
-        }
-        else
-        {
-            emission.rateOverTime = 0f;
-        }
-    }
-    void Magic()
-    {
-        Instantiate(_magiceff, _rightattackmuzzle.transform.position, this.transform.rotation);
-        _magiclimiter += 13f;
-    }
     bool IsGrounded()
     {
         // Physics.Linecast() を使って足元から線を張り、そこに何かが衝突していたら true とする
@@ -610,15 +566,6 @@ public class PlayerController : MonoBehaviour
                 _oncamerachangedir = false;
             }
         }
-    }
-
-    void DoCombo()
-    {
-        _iscombo = true;
-    }
-    void StopCombo()
-    {
-        _iscombo = false;
     }
 }
 
