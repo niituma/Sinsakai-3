@@ -528,11 +528,6 @@ public class PlayerController : MonoBehaviour
         bool isGrounded = Physics.Linecast(start, end); // 引いたラインに何かがぶつかっていたら true とする
         return isGrounded;
     }
-    void KinematicOff()
-    {
-        _rb.isKinematic = false;
-        _stopmovedir = false;
-    }
     void StopMoveSwitch(int movenum)
     {
         switch (movenum)
@@ -541,6 +536,14 @@ public class PlayerController : MonoBehaviour
                 _stopmovedir = true;
                 break;
             case 2:
+                _stopmovedir = false;
+                break;
+            case 3:
+                _rb.isKinematic = true;
+                _stopmovedir = true;
+                break;
+            case 4:
+                _rb.isKinematic = false;
                 _stopmovedir = false;
                 break;
             default:

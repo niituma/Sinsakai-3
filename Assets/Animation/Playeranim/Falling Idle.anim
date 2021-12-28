@@ -16018,9 +16018,9 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0
-    functionName: KinematicOff
+    functionName: StopMoveSwitch
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
-    intParameter: 0
+    intParameter: 4
     messageOptions: 0
