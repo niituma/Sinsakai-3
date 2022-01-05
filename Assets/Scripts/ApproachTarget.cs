@@ -10,6 +10,7 @@ public class ApproachTarget : MonoBehaviour
     [SerializeField] float _lookonspeed = 5f;
     [SerializeField] float _moveDistance;
     [SerializeField] GameObject _hitEff = default;
+    [SerializeField] GameObject _createIce = default;
     GameObject[] _targets = default;
     Rigidbody _rb = default;
 
@@ -23,6 +24,8 @@ public class ApproachTarget : MonoBehaviour
     void Update()
     {
         GameObject _neartarget = _targets?.OrderBy(t => Vector3.Distance(t.transform.position, this.transform.position)).FirstOrDefault();
+
+        _rb.AddForce(Vector3.up * _lookonspeed);
 
         if (_neartarget != null)
         {
@@ -42,12 +45,19 @@ public class ApproachTarget : MonoBehaviour
             }
         }
     }
+    private void OnDestroy()
+    {
+        Instantiate(_createIce, transform.position, Quaternion.identity);
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Enemy")
         {
             Instantiate(_hitEff,transform.position,Quaternion.identity);
+            Instantiate(_createIce, transform.position, Quaternion.identity);
             Destroy(this.gameObject);
         }
+
+            Destroy(this.gameObject);
     }
 }

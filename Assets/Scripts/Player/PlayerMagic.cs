@@ -10,6 +10,7 @@ public class PlayerMagic : MonoBehaviour
     [SerializeField] GameObject _magiceff = default;
     [SerializeField] GameObject _impactEff = default;
     [SerializeField] GameObject _FireSEff = default;
+    [SerializeField] GameObject _IceBommerEff = default;
     [SerializeField] GameObject _rightattackmuzzle = default;
     [SerializeField] GameObject _leftattackmuzzle = default;
     [SerializeField] float _magicCoolDownSpeed = 2f;
@@ -93,6 +94,9 @@ public class PlayerMagic : MonoBehaviour
                 break;
             case 3:
                 Instantiate(_FireSEff, transform.position, Quaternion.identity);
+                break;
+            case 4:
+                Instantiate(_IceBommerEff, _rightattackmuzzle.transform.position, this.transform.rotation);
                 break;
             default:
                 break;
