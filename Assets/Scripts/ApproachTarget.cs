@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.AI;
 
 public class ApproachTarget : MonoBehaviour
 {
@@ -15,8 +16,11 @@ public class ApproachTarget : MonoBehaviour
     [SerializeField] float _targetsRangeRadius = 1f;
     [SerializeField] GameObject _hitEff = default;
     [SerializeField] GameObject _createIce = default;
+    List<Collider> _enemyList = new List<Collider>();
     GameObject[] _targets = default;
     Rigidbody _rb = default;
+
+    public List<Collider> EnemyList { get => _enemyList; set => _enemyList = value; }
 
     void Start()
     {
@@ -29,14 +33,17 @@ public class ApproachTarget : MonoBehaviour
     {
         _rb.AddForce(Vector3.up * _upspeed);
 
-        var hit = Physics.OverlapSphere(GetTargetsRangeCenter(), _targetsRangeRadius).ToList();
-        if (hit != null)
+        EnemyList = Physics.OverlapSphere(GetTargetsRangeCenter(), _targetsRangeRadius).Where(t => t.tag == "Enemy").ToList();
+        if (EnemyList != null)
         {
-            foreach (var c in hit)
+            foreach (var c in EnemyList)
             {
                 if (c.gameObject.tag == "Enemy")
                 {
                     c.GetComponent<Rigidbody>().isKinematic = true;
+                    if (c.gameObject.GetComponent<NavMeshAgent>())
+                        c.gameObject.GetComponent<NavMeshAgent>().enabled = false;
+                    c.gameObject.GetComponent<Rigidbody>().useGravity = true;
                     c.transform.position = Vector3.MoveTowards(c.transform.position, transform.position, _lookonSpeed * Time.deltaTime);
                 }
             }
@@ -78,6 +85,7 @@ public class ApproachTarget : MonoBehaviour
     private void OnDestroy()
     {
         Instantiate(_createIce, transform.position, Quaternion.identity);
+        FindObjectOfType<EnemyIskinematicOff>().ListTarget(EnemyList);
     }
     private void OnTriggerEnter(Collider other)
     {

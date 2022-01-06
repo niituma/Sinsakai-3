@@ -18,9 +18,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _gravityPower = 0.3f;
     [SerializeField] float _turnSpeed = 8.0f;
     [SerializeField] float _isGroundedLength = 1.1f;
-    [SerializeField] float _magicCoolDownSpeed = 2f;
-    [SerializeField] float _magiclimiter = 0f;
-    [SerializeField] float _magiclimit = 100f;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     Vector3 _dir;
     bool _isSkillDash = default;

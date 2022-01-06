@@ -14084,7 +14084,7 @@ GameObject:
   - component: {fileID: 4527681742987292706}
   - component: {fileID: 4997535053079309590}
   - component: {fileID: 2429670362509721903}
-  m_Layer: 11
+  m_Layer: 12
   m_Name: IceBall
   m_TagString: PMagicBall
   m_Icon: {fileID: 0}
@@ -14119,9 +14119,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _lifetime: 3
-  _movespeed: 3
-  _lookonspeed: 0.5
+  _moveSpeed: 3
+  _upspeed: 0.5
+  _lookonSpeed: 3
   _moveDistance: 1.4
+  _gettargetsRangeCenter: {x: 0, y: 0, z: 0}
+  _targetsRangeRadius: 4
   _hitEff: {fileID: 5580348257407356539, guid: 59252324180414a4292397c4f8f2fa71, type: 3}
   _createIce: {fileID: 1677257880488743452, guid: 3a2d6b0f1db51b744b3a55d56554140d,
     type: 3}
