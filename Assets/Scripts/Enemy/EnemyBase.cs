@@ -7,6 +7,7 @@ using UnityEngine.AI;
 public class EnemyBase : MonoBehaviour
 {
     NavMeshAgent _agent;
+    EnemyHPBar _myhp = default;
     [SerializeField] float _turnSpeed = 8.0f;
     /// <summary>Player検知範囲の半径</summary>
     [SerializeField] float _sarchsRangeRadius = 1f;
@@ -40,6 +41,7 @@ public class EnemyBase : MonoBehaviour
     // Start is called before the first frame update
     public void Start()
     {
+        _myhp = GetComponent<EnemyHPBar>();
         _agent = GetComponent<NavMeshAgent>();
         //目標地点に近づいても速度を落とさなくなる
         _agent.autoBraking = false;
@@ -50,6 +52,12 @@ public class EnemyBase : MonoBehaviour
     // Update is called once per frame
     public void Update()
     {
+        if (mode == Action.Hit)
+        {
+            Debug.Log("aa");
+            _myhp.Damage();
+            mode = Action.Wait;
+        }
         Sarch();
         //経路探索の準備ができておらず
         //目標地点までの距離が0.5m未満ならNavMeshAgentを止める

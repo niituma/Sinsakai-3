@@ -204,6 +204,7 @@ public class PlayerController : MonoBehaviour
 
             if (enemy)
             {
+                enemy.mode = EnemyBase.Action.Hit;
                 enemy._ishit = true;
             }
         }

@@ -36,16 +36,6 @@ public class EnemyR : EnemyBase
     {
         base.Update();
 
-        if (_ishit)
-        {
-            if (mode != Action.Hit)
-                mode = Action.Hit;
-
-            _ishit = false;
-            _myhp.Damage();
-        }
-
-
         AttackTime();
     }
     private new void FixedUpdate()
@@ -55,17 +45,19 @@ public class EnemyR : EnemyBase
     private void LateUpdate()
     {
         _anim.SetBool("Attack", _isattack);
-        _anim.SetBool("Hit", _ishit);
         _anim.SetBool("Ground", IsGrounded());
         _anim.SetFloat("Speed", _animationspeed);
+        _anim.SetBool("Hit", _ishit);
+        if(_ishit)
+        _ishit = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "PMagicBall")
         {
-            _anim.SetBool("Hit", true);
             mode = Action.Hit;
+            _anim.SetBool("Hit", true);
         }
     }
     void OnAnimatorIK(int layerIndex)

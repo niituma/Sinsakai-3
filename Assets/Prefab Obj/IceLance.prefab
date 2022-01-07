@@ -4660,7 +4660,8 @@ GameObject:
   - component: {fileID: 5679439785260251879}
   - component: {fileID: 5476641484361541287}
   - component: {fileID: 5477863008602985015}
-  m_Layer: 0
+  - component: {fileID: 5949931264976946213}
+  m_Layer: 12
   m_Name: IceLance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8381,14 +8382,14 @@ ParticleSystem:
         m_RotationOrder: 4
     minKillSpeed: 0
     maxKillSpeed: 90
-    radiusScale: 0.2
+    radiusScale: 0.3
     collidesWith:
       serializedVersion: 2
-      m_Bits: 4294967295
+      m_Bits: 7991
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
-    collisionMessages: 0
+    collisionMessages: 1
     collidesWithDynamic: 1
     interiorCollisions: 0
   TriggerModule:
@@ -9416,6 +9417,18 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &5949931264976946213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5676361892707500465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f79ce17660c4ce46969435ce5ef6be5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5676401530604491805
 GameObject:
   m_ObjectHideFlags: 0

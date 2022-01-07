@@ -7,10 +7,12 @@ public class PlayerMagic : MonoBehaviour
     [Header("攻撃")]
     [SerializeField] GameObject _magicoverparticle = default;
     ParticleSystem _overparticle = default;
+    [SerializeField] GameObject _magicMuzzle = default;
     [SerializeField] GameObject _magiceff = default;
     [SerializeField] GameObject _impactEff = default;
     [SerializeField] GameObject _FireSEff = default;
     [SerializeField] GameObject _IceBommerEff = default;
+    [SerializeField] GameObject _EarthSpikeEff = default;
     [SerializeField] GameObject _rightattackmuzzle = default;
     [SerializeField] GameObject _leftattackmuzzle = default;
     [SerializeField] float _magicCoolDownSpeed = 2f;
@@ -97,6 +99,9 @@ public class PlayerMagic : MonoBehaviour
                 break;
             case 4:
                 Instantiate(_IceBommerEff, _rightattackmuzzle.transform.position, this.transform.rotation);
+                break;
+            case 5:
+                Instantiate(_EarthSpikeEff, _magicMuzzle.transform.position , this.transform.rotation);
                 break;
             default:
                 break;
