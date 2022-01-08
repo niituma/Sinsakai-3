@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class ParticleHit : MonoBehaviour
 {
-    ParticleSystem _ps;
     
     // Start is called before the first frame update
     void Start()
     {
-        _ps = GetComponent<ParticleSystem>();
     }
     private void OnParticleCollision(GameObject obj)
     {

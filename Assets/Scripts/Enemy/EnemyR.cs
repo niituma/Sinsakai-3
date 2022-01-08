@@ -6,7 +6,6 @@ using UnityEngine.AI;
 public class EnemyR : EnemyBase
 {
     Animator _anim = default;
-    EnemyHPBar _myhp = default;
     [SerializeField] float _attacktimer = 0;
     [SerializeField] float _doattacktime = 5f;
     [SerializeField] float _isGroundedLength = 1.1f;
@@ -27,7 +26,6 @@ public class EnemyR : EnemyBase
     private new void Start()
     {
         _anim = GetComponent<Animator>();
-        _myhp = GetComponent<EnemyHPBar>();
         base.Start();
     }
 

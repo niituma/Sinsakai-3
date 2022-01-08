@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _gravityPower = 0.3f;
     [SerializeField] float _turnSpeed = 8.0f;
     [SerializeField] float _isGroundedLength = 1.1f;
+    [SerializeField] bool _rockGunOn = default;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     Vector3 _dir;
     bool _isSkillDash = default;
@@ -25,6 +26,8 @@ public class PlayerController : MonoBehaviour
     float h, v;
     public float _avdTime;
     float _animationspeed;
+    float _attackanimationspeedx;
+    float _attackanimationspeedy;
     public bool _stopmovedir = default;
     public bool _ishit = default;
     bool _isjump = default;
@@ -99,7 +102,7 @@ public class PlayerController : MonoBehaviour
         // カメラは斜め下に向いているので、Y 軸の値を 0 にして「XZ 平面上のベクトル」にする
         _dir.y = 0;
         // キャラクターを「現在の（XZ 平面上の）進行方向」に向ける
-        if (_input.move != Vector2.zero && !_stopmovedir && !_isclimd)
+        if (_input.move != Vector2.zero && !_stopmovedir && !_isclimd && !_rockGunOn)
         {
             Quaternion targetRotation = Quaternion.LookRotation(_dir);
             this.transform.rotation = Quaternion.Slerp(this.transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
@@ -274,6 +277,10 @@ public class PlayerController : MonoBehaviour
         {
             _anim.SetFloat("ClimbMoveSpeed", _animationspeed);
         }
+        _attackanimationspeedx = Mathf.Lerp(_attackanimationspeedx, h, Time.deltaTime * 10f);
+        _attackanimationspeedy = Mathf.Lerp(_attackanimationspeedy, v, Time.deltaTime * 10f);
+        _anim.SetFloat("X", _attackanimationspeedx);
+        _anim.SetFloat("Y", _attackanimationspeedy);
 
     }
     void Climb()
