@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
     public bool _stopmovedir = default;
     public bool _ishit = default;
     bool _isjump = default;
+    bool _isAimChange = default;
 
     [Header("索敵、攻撃範囲")]
     [SerializeField] Vector3 _gettargetsRangeCenter = default;
@@ -47,6 +48,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _changeVerticalAxisValue = 5f;
     GameObject _crosshair;
     CinemachinePOV aim;
+    CinemachineFramingTransposer zoom;
     bool _oncamerachangedir = default;
     public bool _lookon = default;
     [SerializeField] public List<Collider> _currentenemy = new List<Collider>();
@@ -76,6 +78,7 @@ public class PlayerController : MonoBehaviour
     PlayerMagic _magic;
     PlayerHP _hp;
     ClimdIK _climdIK;
+    AttackAimIK _aimIK;
     Rigidbody _rb = default;
     Animator _anim = default;
 
@@ -84,10 +87,12 @@ public class PlayerController : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody>();
         _climdIK = GetComponent<ClimdIK>();
+        _aimIK = GetComponent<AttackAimIK>();
         _magic = GetComponent<PlayerMagic>();
         _anim = GetComponent<Animator>();
         _hp = GetComponent<PlayerHP>();
         _input = GetComponent<ControllerSystem>();
+        zoom = _mousecamera.GetCinemachineComponent<CinemachineFramingTransposer>();
         aim = _mousecamera.GetCinemachineComponent<CinemachinePOV>();
         _crosshair = GameObject.Find("CrossHair");
         target = _crosshaircanvas.GetComponent<TargetLookOn>();
@@ -107,6 +112,10 @@ public class PlayerController : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(_dir);
             this.transform.rotation = Quaternion.Slerp(this.transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
         }
+        if (_rockGunOn)
+        {
+            transform.rotation = Quaternion.Euler(0, Camera.main.transform.transform.localEulerAngles.y, 0);
+        }
 
         if (_lookon && _input.move == Vector2.zero && !_stopmovedir && !_isclimd)
         {
@@ -125,20 +134,35 @@ public class PlayerController : MonoBehaviour
             _anim.CrossFade("Braced Jump From Wall", 0.2f);
             _stopmovedir = true;
             _isclimd = false;
-        }else if (Input.GetKeyDown(KeyCode.C) && !_isclimd && _input.move != Vector2.zero)
+        }
+        else if (Input.GetKeyDown(KeyCode.C) && !_isclimd && _input.move != Vector2.zero)
         {
             _isSkillDash = true;
+        }
+        if (_magic._magicMode == PlayerMagic.Action.Earth)
+        {
+            _rockGunOn = _input.aim;
+            if (_rockGunOn && _aimIK.IsAimChange)
+            {
+                _aimIK.chageAim(1f, 0.5f);
+                DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 1.5f, 0.5f);
+            }
+            else if (!_rockGunOn && !_aimIK.IsAimChange)
+            {
+                _aimIK.chageAim(0f, 0.5f);
+                DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 2.5f, 0.5f);
+            }
+            _anim.SetBool("RockGun", _input.aim);
         }
         if (_isSkillDash)
         {
             _skillDashTime += Time.deltaTime;
-            if (_skillDashTime >= _skillDashLimitTime|| _input.move == Vector2.zero)
+            if (_skillDashTime >= _skillDashLimitTime || _input.move == Vector2.zero)
             {
                 _isSkillDash = false;
                 _skillDashTime = 0;
             }
         }
-
         _isjump = _input.jump;
         TargetLookOn();
         Climb();
@@ -155,7 +179,6 @@ public class PlayerController : MonoBehaviour
         _anim.SetBool("Combo", _magic.Iscombo);
         _anim.SetBool("Hit", _ishit);
         _anim.SetBool("Avoidance", _input.avd);
-
         if (_ishit)
         {
             _hp.Damage();

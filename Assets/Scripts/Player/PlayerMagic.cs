@@ -20,6 +20,13 @@ public class PlayerMagic : MonoBehaviour
     [SerializeField] float _magiclimit = 100f;
     bool _iscombo = default;
     public bool Iscombo { get => _iscombo; set => _iscombo = value; }
+    public enum Action
+    {
+        Fire,
+        Ice,
+        Earth
+    }
+    public Action _magicMode;
 
     Animator _anim = default;
     ControllerSystem _input;
@@ -41,8 +48,11 @@ public class PlayerMagic : MonoBehaviour
     }
     void AttackMotion()
     {
-        _anim.SetBool("Punch", _input.attack);
-        _input.attack = false;
+        if (_magicMode == Action.Fire)
+        {
+            _anim.SetBool("Punch", _input.attack);
+            _input.attack = false;
+        }
 
         if (_magiclimiter < _magiclimit)
         {
@@ -101,7 +111,7 @@ public class PlayerMagic : MonoBehaviour
                 Instantiate(_IceBommerEff, _rightattackmuzzle.transform.position, this.transform.rotation);
                 break;
             case 5:
-                Instantiate(_EarthSpikeEff, _magicMuzzle.transform.position , this.transform.rotation);
+                Instantiate(_EarthSpikeEff, _magicMuzzle.transform.position, this.transform.rotation);
                 break;
             default:
                 break;

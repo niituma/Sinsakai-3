@@ -17,10 +17,6 @@ public class ClimdIK : MonoBehaviour
     {
         _anim = GetComponent<Animator>();
     }
-    private void Update()
-    {
-        
-    }
 
     void OnAnimatorIK(int layerIndex)
     {
@@ -81,4 +77,5 @@ public class ClimdIK : MonoBehaviour
             }
         }
     }
+    
 }
