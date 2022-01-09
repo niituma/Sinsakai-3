@@ -19,6 +19,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _turnSpeed = 8.0f;
     [SerializeField] float _isGroundedLength = 1.1f;
     [SerializeField] bool _rockGunOn = default;
+    [SerializeField] GameObject _rockAimEff = default;
+    bool _isrockAimEff = false;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     Vector3 _dir;
     bool _isSkillDash = default;
@@ -31,7 +33,6 @@ public class PlayerController : MonoBehaviour
     public bool _stopmovedir = default;
     public bool _ishit = default;
     bool _isjump = default;
-    bool _isAimChange = default;
 
     [Header("索敵、攻撃範囲")]
     [SerializeField] Vector3 _gettargetsRangeCenter = default;
@@ -151,6 +152,27 @@ public class PlayerController : MonoBehaviour
             {
                 _aimIK.chageAim(0f, 0.5f);
                 DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 2.5f, 0.5f);
+            }
+
+            if (_rockGunOn)
+            {
+                if (!_isrockAimEff)
+                {
+                    _rockAimEff.SetActive(true);
+                    _isrockAimEff = true;
+                }
+                if (_magic.Ammo > 0 && _input.shoot)
+                {
+                    StartCoroutine(_magic.ShootTimer());
+                }
+            }
+            else
+            {
+                if (_isrockAimEff)
+                {
+                    _rockAimEff.SetActive(false);
+                    _isrockAimEff = false;
+                }
             }
             _anim.SetBool("RockGun", _input.aim);
         }

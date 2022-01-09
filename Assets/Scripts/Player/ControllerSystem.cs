@@ -12,6 +12,7 @@ public class ControllerSystem : MonoBehaviour
 	public bool lockon;
 	public bool avd;
 	public bool aim;
+	public bool shoot;
 	public bool jump;
 	public bool fire;
 	public bool sprint;
@@ -64,6 +65,10 @@ public class ControllerSystem : MonoBehaviour
 	{
 		AimInput(value.isPressed);
 	}
+	public void OnShoot(InputValue value)
+	{
+		ShootInput(value.isPressed);
+	}
 #else
 	// old input sys if we do decide to have it (most likely wont)...
 #endif
@@ -101,6 +106,10 @@ public class ControllerSystem : MonoBehaviour
 	public void AimInput(bool newSprintState)
 	{
 		aim = newSprintState;
+	}
+	public void ShootInput(bool newSprintState)
+	{
+		shoot = newSprintState;
 	}
 	public void SprintInput(bool newSprintState)
 	{

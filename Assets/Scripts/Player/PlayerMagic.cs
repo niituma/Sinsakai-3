@@ -15,9 +15,26 @@ public class PlayerMagic : MonoBehaviour
     [SerializeField] GameObject _EarthSpikeEff = default;
     [SerializeField] GameObject _rightattackmuzzle = default;
     [SerializeField] GameObject _leftattackmuzzle = default;
+    [SerializeField] GameObject _shootHitEff = default;
     [SerializeField] float _magicCoolDownSpeed = 2f;
     [SerializeField] float _magiclimiter = 0f;
     [SerializeField] float _magiclimit = 100f;
+    [SerializeField]float shootInterval = 0.15f;
+    float shootRange = 50;
+    bool shooting = default;
+    [SerializeField]int maxAmmo = 100;
+    int ammo;
+    public int Ammo
+    {
+        set
+        {
+            ammo = Mathf.Clamp(value, 0, maxAmmo);
+        }
+        get
+        {
+            return ammo;
+        }
+    }
     bool _iscombo = default;
     public bool Iscombo { get => _iscombo; set => _iscombo = value; }
     public enum Action
@@ -38,6 +55,7 @@ public class PlayerMagic : MonoBehaviour
         _anim = GetComponent<Animator>();
         _input = GetComponent<ControllerSystem>();
         _overparticle = _magicoverparticle.GetComponent<ParticleSystem>();
+        Ammo = maxAmmo;
     }
 
     // Update is called once per frame
@@ -59,6 +77,36 @@ public class PlayerMagic : MonoBehaviour
             _anim.SetBool("Magic", _input.fire);
         }
         _input.fire = false;
+    }
+    public IEnumerator ShootTimer()
+    {
+        if (!shooting)
+        {
+            shooting = true;
+            
+            Shoot();
+            yield return new WaitForSeconds(shootInterval);
+            shooting = false;
+        }
+        else
+        {
+            yield return null;
+        }
+    }
+    void Shoot()
+    {
+        Ray ray = new Ray(_rightattackmuzzle.transform.position, transform.forward);
+        RaycastHit hit;
+        Debug.DrawRay(ray.origin, ray.direction * shootRange, Color.red);
+        //レイを飛ばして、ヒットしたオブジェクトの情報を得る
+        if (Physics.Raycast(ray, out hit, shootRange))
+        {
+            //ヒットエフェクトON
+            Debug.Log("Hit" + hit.collider.name);
+            Instantiate(_shootHitEff, hit.point, this.transform.rotation);
+            //★ここに敵へのダメージ処理などを追加
+        }
+        Ammo--;
     }
     void MagicOverFlow()
     {
