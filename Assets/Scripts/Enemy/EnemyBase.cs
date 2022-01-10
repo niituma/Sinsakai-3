@@ -54,7 +54,6 @@ public class EnemyBase : MonoBehaviour
     {
         if (mode == Action.Hit)
         {
-            Debug.Log("aa");
             _myhp.Damage();
             mode = Action.Wait;
         }

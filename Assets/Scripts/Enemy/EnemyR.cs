@@ -11,6 +11,7 @@ public class EnemyR : EnemyBase
     [SerializeField] float _isGroundedLength = 1.1f;
     bool _isattack;
     public bool _ishit = default;
+    public bool _isShoothit = default;
 
     /// <summary>どれくらい見るか</summary>
     [SerializeField, Range(0f, 1f)] float _weight = 0;
@@ -46,8 +47,11 @@ public class EnemyR : EnemyBase
         _anim.SetBool("Ground", IsGrounded());
         _anim.SetFloat("Speed", _animationspeed);
         _anim.SetBool("Hit", _ishit);
-        if(_ishit)
-        _ishit = false;
+        _anim.SetBool("Shoot Hit", _isShoothit);
+        if (_ishit)
+            _ishit = false;
+        if (_isShoothit)
+            _isShoothit = false;
     }
 
     private void OnTriggerEnter(Collider other)

@@ -19,10 +19,10 @@ public class PlayerMagic : MonoBehaviour
     [SerializeField] float _magicCoolDownSpeed = 2f;
     [SerializeField] float _magiclimiter = 0f;
     [SerializeField] float _magiclimit = 100f;
-    [SerializeField]float shootInterval = 0.15f;
+    [SerializeField] float shootInterval = 0.15f;
     float shootRange = 50;
     bool shooting = default;
-    [SerializeField]int maxAmmo = 100;
+    [SerializeField] int maxAmmo = 100;
     int ammo;
     public int Ammo
     {
@@ -37,13 +37,15 @@ public class PlayerMagic : MonoBehaviour
     }
     bool _iscombo = default;
     public bool Iscombo { get => _iscombo; set => _iscombo = value; }
+
     public enum Action
     {
         Fire,
         Ice,
         Earth
     }
-    public Action _magicMode;
+    [SerializeField] private Action _magicMode;
+    public Action MagicMode { get => _magicMode; set => _magicMode = value; }
 
     Animator _anim = default;
     ControllerSystem _input;
@@ -66,24 +68,21 @@ public class PlayerMagic : MonoBehaviour
     }
     void AttackMotion()
     {
-        if (_magicMode == Action.Fire)
-        {
-            _anim.SetBool("Punch", _input.attack);
-            _input.attack = false;
-        }
-
+        _anim.SetBool("Punch", _input.attack);
+        _input.attack = false;
         if (_magiclimiter < _magiclimit)
         {
             _anim.SetBool("Magic", _input.fire);
         }
         _input.fire = false;
+        _anim.SetInteger("MagicMode", (int)MagicMode);
     }
     public IEnumerator ShootTimer()
     {
         if (!shooting)
         {
             shooting = true;
-            
+
             Shoot();
             yield return new WaitForSeconds(shootInterval);
             shooting = false;
@@ -103,6 +102,16 @@ public class PlayerMagic : MonoBehaviour
         {
             //ヒットエフェクトON
             Debug.Log("Hit" + hit.collider.name);
+            if (hit.collider.tag == "Enemy")
+            {
+                EnemyR enemy = hit.collider.GetComponent<EnemyR>();
+
+                if (enemy)
+                {
+                    enemy.mode = EnemyBase.Action.Hit;
+                    enemy._isShoothit = true;
+                }
+            }
             Instantiate(_shootHitEff, hit.point, this.transform.rotation);
             //★ここに敵へのダメージ処理などを追加
         }

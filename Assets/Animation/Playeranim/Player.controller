@@ -430,10 +430,13 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: Magic
     m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: MagicMode
+    m_EventTreshold: 2
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -897100300349078638}
   m_Solo: 0
-  m_Mute: 1
+  m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
   m_TransitionDuration: 0.25000015
@@ -764,6 +767,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: RockGun
     m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: MagicMode
+    m_EventTreshold: 2
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 3315309503830278807}
   m_Solo: 0
@@ -999,6 +1005,9 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 1
     m_ConditionEvent: Punch
+    m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: MagicMode
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -7433766195032065737}
@@ -1401,6 +1410,12 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
+  - m_Name: MagicMode
+    m_Type: 3
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
   - m_Name: Punch
     m_Type: 4
     m_DefaultFloat: 0
@@ -1769,10 +1784,13 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: Magic
     m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: MagicMode
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -6325015260370513197}
   m_Solo: 0
-  m_Mute: 1
+  m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
   m_TransitionDuration: 0.25
@@ -2087,8 +2105,11 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: Magic
+    m_ConditionEvent: Punch
     m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: MagicMode
+    m_EventTreshold: 1
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -1156741984295172662}
   m_Solo: 0
@@ -2469,10 +2490,13 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: Magic
     m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: MagicMode
+    m_EventTreshold: 1
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 6838545907046487762}
   m_Solo: 0
-  m_Mute: 1
+  m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
   m_TransitionDuration: 0.16050053

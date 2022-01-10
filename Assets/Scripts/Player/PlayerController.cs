@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     float _animationspeed;
     float _attackanimationspeedx;
     float _attackanimationspeedy;
+    int _magicModeIndex = 0;
     public bool _stopmovedir = default;
     public bool _ishit = default;
     bool _isjump = default;
@@ -113,10 +114,6 @@ public class PlayerController : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(_dir);
             this.transform.rotation = Quaternion.Slerp(this.transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
         }
-        if (_rockGunOn)
-        {
-            transform.rotation = Quaternion.Euler(0, Camera.main.transform.transform.localEulerAngles.y, 0);
-        }
 
         if (_lookon && _input.move == Vector2.zero && !_stopmovedir && !_isclimd)
         {
@@ -140,8 +137,19 @@ public class PlayerController : MonoBehaviour
         {
             _isSkillDash = true;
         }
-        if (_magic._magicMode == PlayerMagic.Action.Earth)
+        if (Input.GetKeyDown(KeyCode.R))
         {
+            _magicModeIndex++;
+            _magic.MagicMode = (PlayerMagic.Action)(_magicModeIndex % System.Enum.GetNames(typeof(PlayerMagic.Action)).Length);
+            if (_magicModeIndex > 2)
+                _magicModeIndex = 0;
+        }
+        if (_magic.MagicMode == PlayerMagic.Action.Earth)
+        {
+            if (_rockGunOn)
+            {
+                transform.rotation = Quaternion.Euler(0, Camera.main.transform.transform.localEulerAngles.y, 0);
+            }
             _rockGunOn = _input.aim;
             if (_rockGunOn && _aimIK.IsAimChange)
             {
