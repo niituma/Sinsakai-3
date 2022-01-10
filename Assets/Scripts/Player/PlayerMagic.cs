@@ -101,7 +101,6 @@ public class PlayerMagic : MonoBehaviour
         if (Physics.Raycast(ray, out hit, shootRange))
         {
             //ヒットエフェクトON
-            Debug.Log("Hit" + hit.collider.name);
             if (hit.collider.tag == "Enemy")
             {
                 EnemyR enemy = hit.collider.GetComponent<EnemyR>();

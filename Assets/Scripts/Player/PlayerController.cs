@@ -61,6 +61,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameObject _handleSachcollider3 = default;
     bool _isclimd = default;
     bool _isHandleSarch = default;
+    bool _isAttackIK = default;
     [SerializeField] float _raydis = 0.5f;
     Vector3 raydir = default;
     [SerializeField] GameObject _climdUpRay = default;
@@ -364,6 +365,19 @@ public class PlayerController : MonoBehaviour
             Debug.DrawRay(ray5.origin, ray5.direction * _raydis, Color.blue);
             Debug.DrawRay(ray6.origin, ray6.direction * _raydis, Color.blue);
             Debug.DrawRay(ray7.origin, ray7.direction * _raydis, Color.blue);
+            if (_isAttackIK)
+            {
+                GetComponent<AttackAimIK>().enabled = false;
+                _isAttackIK = false;
+            }
+        }
+        else
+        {
+            if (!_isAttackIK)
+            {
+                GetComponent<AttackAimIK>().enabled = true;
+                _isAttackIK = true;
+            }
         }
 
         RaycastHit hit;
