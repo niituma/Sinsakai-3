@@ -6,11 +6,12 @@ using UnityEngine.AI;
 public class EnemyR : EnemyBase
 {
     Animator _anim = default;
-    EnemyHPBar _myhp = default;
     [SerializeField] float _attacktimer = 0;
     [SerializeField] float _doattacktime = 5f;
+    [SerializeField] float _isGroundedLength = 1.1f;
     bool _isattack;
     public bool _ishit = default;
+    public bool _isShoothit = default;
 
     /// <summary>どれくらい見るか</summary>
     [SerializeField, Range(0f, 1f)] float _weight = 0;
@@ -26,7 +27,6 @@ public class EnemyR : EnemyBase
     private new void Start()
     {
         _anim = GetComponent<Animator>();
-        _myhp = GetComponent<EnemyHPBar>();
         base.Start();
     }
 
@@ -34,16 +34,6 @@ public class EnemyR : EnemyBase
     private new void Update()
     {
         base.Update();
-
-        if (_ishit)
-        {
-            if (mode != Action.Hit)
-                mode = Action.Hit;
-
-            _ishit = false;
-            _myhp.Damage();
-        }
-
 
         AttackTime();
     }
@@ -54,16 +44,22 @@ public class EnemyR : EnemyBase
     private void LateUpdate()
     {
         _anim.SetBool("Attack", _isattack);
-        _anim.SetBool("Hit", _ishit);
+        _anim.SetBool("Ground", IsGrounded());
         _anim.SetFloat("Speed", _animationspeed);
+        _anim.SetBool("Hit", _ishit);
+        _anim.SetBool("Shoot Hit", _isShoothit);
+        if (_ishit)
+            _ishit = false;
+        if (_isShoothit)
+            _isShoothit = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "PMagicBall")
         {
-            _anim.SetBool("Hit", true);
             mode = Action.Hit;
+            _anim.SetBool("Hit", true);
         }
     }
     void OnAnimatorIK(int layerIndex)
@@ -74,6 +70,19 @@ public class EnemyR : EnemyBase
             _anim.SetLookAtWeight(_weight, _bodyWeight, _headWeight, _eyesWeight, _clampWeight);
             _anim.SetLookAtPosition(player.transform.position + new Vector3(0, 1, 0));
         }
+    }
+    bool IsGrounded()
+    {
+        int layerNo = LayerMask.NameToLayer("Ground");
+        // マスクへの変換（ビットシフト）
+        int layerMask = 1 << layerNo;
+        // Physics.Linecast() を使って足元から線を張り、そこに何かが衝突していたら true とする
+        CapsuleCollider col = GetComponent<CapsuleCollider>();
+        Vector3 start = this.transform.position + col.center;   // start: 体の中心
+        Vector3 end = start + Vector3.down * _isGroundedLength;  // end: start から真下の地点
+        Debug.DrawLine(start, end); // 動作確認用に Scene ウィンドウ上で線を表示する
+        bool isGrounded = Physics.Linecast(start, end, layerMask); // 引いたラインに何かがぶつかっていたら true とする
+        return isGrounded;
     }
     void AttackTime()
     {
@@ -91,6 +100,11 @@ public class EnemyR : EnemyBase
                 _isattack = false;
             }
         }
+    }
+    void NavimashOn()
+    {
+        gameObject.GetComponent<Rigidbody>().useGravity = false;
+        gameObject.GetComponent<NavMeshAgent>().enabled = true;
     }
     void StopMoveSwitch(int movenum)
     {

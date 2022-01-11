@@ -17,10 +17,6 @@ public class ClimdIK : MonoBehaviour
     {
         _anim = GetComponent<Animator>();
     }
-    private void Update()
-    {
-        
-    }
 
     void OnAnimatorIK(int layerIndex)
     {
@@ -33,16 +29,6 @@ public class ClimdIK : MonoBehaviour
         _anim.SetIKPosition(AvatarIKGoal.LeftHand, _leftHandTarget.position);
         _anim.SetIKRotation(AvatarIKGoal.LeftHand, _leftHandTarget.rotation);
     }
-
-    /// <summary>
-    /// 指定した値にウェイトを変更する
-    /// </summary>
-    /// <param name="targetWeight"></param>
-    //public void ChangeWeight(float targetrightpos, float targetleftpos)
-    //{
-    //    _rightPositionWeight = targetrightpos;
-    //    _leftPositionWeight = targetleftpos;
-    //}
 
     /// <summary>
     /// 指定した値にウェイトを step ずつ変更する
@@ -66,8 +52,8 @@ public class ClimdIK : MonoBehaviour
         {
             while (_rightPositionWeight < targetWeight)
             {
-                _rightPositionWeight += step;
-                _leftPositionWeight = _rightPositionWeight;
+                _leftPositionWeight += step;
+                _rightPositionWeight = _leftPositionWeight;
                 yield return null;
             }
         }
@@ -75,10 +61,11 @@ public class ClimdIK : MonoBehaviour
         {
             while (_rightPositionWeight > targetWeight)
             {
-                _rightPositionWeight -= step;
-                _leftPositionWeight = _rightPositionWeight;
+                _leftPositionWeight -= step;
+                _rightPositionWeight = _leftPositionWeight;
                 yield return null;
             }
         }
     }
+    
 }

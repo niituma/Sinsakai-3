@@ -9,47 +9,61 @@ public class PlayerController : MonoBehaviour
 {
     /// <summary>rayなどを表示/非表示にする</summary>
     [SerializeField] bool _debug = default;
+    [Header("Player")]
     [SerializeField] float _movePower = 3;
     [SerializeField] float _dashmovePower = 6;
+    [SerializeField] float _skillDashPower = 6;
+    [SerializeField] float _skillDashLimitTime = 5f;
     [SerializeField] float _jumpPower = 3;
     [SerializeField] float _gravityPower = 0.3f;
     [SerializeField] float _turnSpeed = 8.0f;
     [SerializeField] float _isGroundedLength = 1.1f;
-    [SerializeField] float _magicCoolDownSpeed = 2f;
-    [SerializeField] float _magiclimiter = 0f;
-    [SerializeField] float _magiclimit = 100f;
+    [SerializeField] bool _rockGunOn = default;
+    [SerializeField] GameObject _rockAimEff = default;
+    bool _isrockAimEff = false;
+    /// <summary>入力された方向の XZ 平面でのベクトル</summary>
+    Vector3 _dir;
+    bool _isSkillDash = default;
+    float _skillDashTime = 0;
+    float h, v;
+    public float _avdTime;
+    float _animationspeed;
+    float _attackanimationspeedx;
+    float _attackanimationspeedy;
+    int _magicModeIndex = 0;
+    public bool _stopmovedir = default;
+    public bool _ishit = default;
+    bool _isjump = default;
+
+    [Header("索敵、攻撃範囲")]
     [SerializeField] Vector3 _gettargetsRangeCenter = default;
     /// <summary>敵のターゲットロックできる範囲の半径</summary>
     [SerializeField] float _targetsRangeRadius = 1f;
     [SerializeField] Vector3 _attackRangeCenter = default;
     /// <summary>攻撃範囲の半径</summary>
     [SerializeField] float _attackRangeRadius = 1f;
-    [SerializeField] GameObject _magicoverparticle = default;
-    ParticleSystem _overparticle = default;
-    [SerializeField] GameObject _magiceff = default;
-    [SerializeField] GameObject _rightattackmuzzle = default;
+
+    [Header("ターゲットロック")]
     [SerializeField] CinemachineVirtualCamera _mousecamera;
     [SerializeField] CinemachineVirtualCamera _targetcamera;
     [SerializeField] GameObject _crosshaircanvas;
     [SerializeField] float _changeVerticalAxisValue = 5f;
     GameObject _crosshair;
+    CinemachinePOV aim;
+    CinemachineFramingTransposer zoom;
+    bool _oncamerachangedir = default;
+    public bool _lookon = default;
     [SerializeField] public List<Collider> _currentenemy = new List<Collider>();
-    float h, v;
-    public float _avdTime;
-    float _animationspeed;
-    bool _stopmovedir = default;
-    bool _iscombo = default;
-    public bool _ishit = default;
-    bool _isjump = default;
-    bool _isclimd = default;
-    bool _isHandleSarch = default;
+
+    [Header("ClimdController")]
     [SerializeField] GameObject _handleSachcollider = default;
     [SerializeField] GameObject _handleSachcollider2 = default;
     [SerializeField] GameObject _handleSachcollider3 = default;
-    public bool _lookon = default;
+    bool _isclimd = default;
+    bool _isHandleSarch = default;
+    bool _isAttackIK = default;
     [SerializeField] float _raydis = 0.5f;
     Vector3 raydir = default;
-
     [SerializeField] GameObject _climdUpRay = default;
     [SerializeField] GameObject _climdDownRay = default;
     [SerializeField] private GameObject LHand;
@@ -57,29 +71,31 @@ public class PlayerController : MonoBehaviour
     bool _isLover = default;
     bool _isRover = default;
     [SerializeField] Vector3 curOriginGrabOffset = new Vector3(0, 1.2f, 0);
-    [SerializeField] Vector3 _wallSarchRayOffset = new Vector3(0, 0, 0);
-    [SerializeField] Vector3 _SarchRayOffset = new Vector3(0, 0, 0);
-    [SerializeField] Vector3 _SarchRayOffset2 = new Vector3(0, 0, 0);
-    CinemachinePOV aim;
-    bool _oncamerachangedir = default;
+    [SerializeField] Vector3 _wallSarchRayOffset = new Vector3(0, 1.6f, 0);
+    [SerializeField] Vector3 _SarchRayOffset = new Vector3(4f, 0, 0);
+    [SerializeField] Vector3 _SarchRayOffset2 = new Vector3(-1.2f, 0, 0);
+
+
     ControllerSystem _input;
     TargetLookOn target;
+    PlayerMagic _magic;
     PlayerHP _hp;
     ClimdIK _climdIK;
+    AttackAimIK _aimIK;
     Rigidbody _rb = default;
     Animator _anim = default;
-    /// <summary>入力された方向の XZ 平面でのベクトル</summary>
-    Vector3 _dir;
 
 
     void Start()
     {
         _rb = GetComponent<Rigidbody>();
         _climdIK = GetComponent<ClimdIK>();
+        _aimIK = GetComponent<AttackAimIK>();
+        _magic = GetComponent<PlayerMagic>();
         _anim = GetComponent<Animator>();
         _hp = GetComponent<PlayerHP>();
         _input = GetComponent<ControllerSystem>();
-        _overparticle = _magicoverparticle.GetComponent<ParticleSystem>();
+        zoom = _mousecamera.GetCinemachineComponent<CinemachineFramingTransposer>();
         aim = _mousecamera.GetCinemachineComponent<CinemachinePOV>();
         _crosshair = GameObject.Find("CrossHair");
         target = _crosshaircanvas.GetComponent<TargetLookOn>();
@@ -94,7 +110,7 @@ public class PlayerController : MonoBehaviour
         // カメラは斜め下に向いているので、Y 軸の値を 0 にして「XZ 平面上のベクトル」にする
         _dir.y = 0;
         // キャラクターを「現在の（XZ 平面上の）進行方向」に向ける
-        if (_input.move != Vector2.zero && !_stopmovedir && !_isclimd)
+        if (_input.move != Vector2.zero && !_stopmovedir && !_isclimd && !_rockGunOn)
         {
             Quaternion targetRotation = Quaternion.LookRotation(_dir);
             this.transform.rotation = Quaternion.Slerp(this.transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
@@ -118,13 +134,71 @@ public class PlayerController : MonoBehaviour
             _stopmovedir = true;
             _isclimd = false;
         }
+        else if (Input.GetKeyDown(KeyCode.C) && !_isclimd && _input.move != Vector2.zero)
+        {
+            _isSkillDash = true;
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            _magicModeIndex++;
+            _magic.MagicMode = (PlayerMagic.Action)(_magicModeIndex % System.Enum.GetNames(typeof(PlayerMagic.Action)).Length);
+            if (_magicModeIndex > 2)
+                _magicModeIndex = 0;
+        }
+        if (_magic.MagicMode == PlayerMagic.Action.Earth)
+        {
+            if (_rockGunOn)
+            {
+                transform.rotation = Quaternion.Euler(0, Camera.main.transform.transform.localEulerAngles.y, 0);
+            }
+            _rockGunOn = _input.aim;
+            if (_rockGunOn && _aimIK.IsAimChange)
+            {
+                _aimIK.chageAim(1f, 0.5f);
+                DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 1.5f, 0.5f);
+            }
+            else if (!_rockGunOn && !_aimIK.IsAimChange)
+            {
+                _aimIK.chageAim(0f, 0.5f);
+                DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 2.5f, 0.5f);
+            }
 
+            if (_rockGunOn)
+            {
+                if (!_isrockAimEff)
+                {
+                    _rockAimEff.SetActive(true);
+                    _isrockAimEff = true;
+                }
+                if (_magic.Ammo > 0 && _input.shoot)
+                {
+                    StartCoroutine(_magic.ShootTimer());
+                }
+            }
+            else
+            {
+                if (_isrockAimEff)
+                {
+                    _rockAimEff.SetActive(false);
+                    _isrockAimEff = false;
+                }
+            }
+            _anim.SetBool("RockGun", _input.aim);
+        }
+        if (_isSkillDash)
+        {
+            _skillDashTime += Time.deltaTime;
+            if (_skillDashTime >= _skillDashLimitTime || _input.move == Vector2.zero)
+            {
+                _isSkillDash = false;
+                _skillDashTime = 0;
+            }
+        }
         _isjump = _input.jump;
         TargetLookOn();
         Climb();
         Jump();
         Targets();
-        MagicOverFlow();
     }
     private void LateUpdate()
     {
@@ -133,10 +207,9 @@ public class PlayerController : MonoBehaviour
         _anim.SetBool("Grounded", IsGrounded());
         if (!_isclimd)
             _anim.SetBool("Jump", _isjump);
-        _anim.SetBool("Combo", _iscombo);
+        _anim.SetBool("Combo", _magic.Iscombo);
         _anim.SetBool("Hit", _ishit);
         _anim.SetBool("Avoidance", _input.avd);
-
         if (_ishit)
         {
             _hp.Damage();
@@ -147,7 +220,6 @@ public class PlayerController : MonoBehaviour
         {
             _input.avd = false;
         }
-        AttackMotion();
     }
 
     void FixedUpdate()
@@ -189,6 +261,7 @@ public class PlayerController : MonoBehaviour
 
             if (enemy)
             {
+                enemy.mode = EnemyBase.Action.Hit;
                 enemy._ishit = true;
             }
         }
@@ -209,6 +282,7 @@ public class PlayerController : MonoBehaviour
     void Move()
     {
         float _targetSpeed;
+
         if (_isclimd)
         {
             _targetSpeed = h;
@@ -224,7 +298,15 @@ public class PlayerController : MonoBehaviour
             }
         }
         else
-            _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
+        {
+            if (_isSkillDash)
+            {
+                _targetSpeed = _skillDashPower;
+            }
+            else
+                _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
+
+        }
 
         // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
 
@@ -249,6 +331,10 @@ public class PlayerController : MonoBehaviour
         {
             _anim.SetFloat("ClimbMoveSpeed", _animationspeed);
         }
+        _attackanimationspeedx = Mathf.Lerp(_attackanimationspeedx, h, Time.deltaTime * 10f);
+        _attackanimationspeedy = Mathf.Lerp(_attackanimationspeedy, v, Time.deltaTime * 10f);
+        _anim.SetFloat("X", _attackanimationspeedx);
+        _anim.SetFloat("Y", _attackanimationspeedy);
 
     }
     void Climb()
@@ -279,6 +365,19 @@ public class PlayerController : MonoBehaviour
             Debug.DrawRay(ray5.origin, ray5.direction * _raydis, Color.blue);
             Debug.DrawRay(ray6.origin, ray6.direction * _raydis, Color.blue);
             Debug.DrawRay(ray7.origin, ray7.direction * _raydis, Color.blue);
+            if (_isAttackIK)
+            {
+                GetComponent<AttackAimIK>().enabled = false;
+                _isAttackIK = false;
+            }
+        }
+        else
+        {
+            if (!_isAttackIK)
+            {
+                GetComponent<AttackAimIK>().enabled = true;
+                _isAttackIK = true;
+            }
         }
 
         RaycastHit hit;
@@ -491,52 +590,6 @@ public class PlayerController : MonoBehaviour
         if (_input.jump)
             _input.jump = false;
     }
-    void AttackMotion()
-    {
-        _anim.SetBool("Punch", _input.attack);
-        _input.attack = false;
-
-        if (_magiclimiter < _magiclimit)
-        {
-            _anim.SetBool("Magic", _input.fire);
-        }
-        _input.fire = false;
-    }
-    void MagicOverFlow()
-    {
-        var emission = _overparticle.emission;
-
-        if (_magiclimiter > 0)
-        {
-            _magiclimiter -= _magicCoolDownSpeed * Time.deltaTime;
-        }
-        else if (_magiclimiter < 0)
-        {
-            _magiclimiter = 0;
-        }
-
-        if (_magiclimiter >= 100f)
-        {
-            emission.rateOverTime = 300f;
-        }
-        else if (_magiclimiter >= 60f)
-        {
-            emission.rateOverTime = 100f;
-        }
-        else if (_magiclimiter >= 30f)
-        {
-            emission.rateOverTime = 10f;
-        }
-        else
-        {
-            emission.rateOverTime = 0f;
-        }
-    }
-    void Magic()
-    {
-        Instantiate(_magiceff, _rightattackmuzzle.transform.position, this.transform.rotation);
-        _magiclimiter += 13f;
-    }
     bool IsGrounded()
     {
         // Physics.Linecast() を使って足元から線を張り、そこに何かが衝突していたら true とする
@@ -547,11 +600,6 @@ public class PlayerController : MonoBehaviour
         bool isGrounded = Physics.Linecast(start, end); // 引いたラインに何かがぶつかっていたら true とする
         return isGrounded;
     }
-    void KinematicOff()
-    {
-        _rb.isKinematic = false;
-        _stopmovedir = false;
-    }
     void StopMoveSwitch(int movenum)
     {
         switch (movenum)
@@ -560,6 +608,14 @@ public class PlayerController : MonoBehaviour
                 _stopmovedir = true;
                 break;
             case 2:
+                _stopmovedir = false;
+                break;
+            case 3:
+                _rb.isKinematic = true;
+                _stopmovedir = true;
+                break;
+            case 4:
+                _rb.isKinematic = false;
                 _stopmovedir = false;
                 break;
             default:
@@ -585,15 +641,6 @@ public class PlayerController : MonoBehaviour
                 _oncamerachangedir = false;
             }
         }
-    }
-
-    void DoCombo()
-    {
-        _iscombo = true;
-    }
-    void StopCombo()
-    {
-        _iscombo = false;
     }
 }
 

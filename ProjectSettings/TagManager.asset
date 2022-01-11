@@ -4,12 +4,12 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - CinemachineTarget
+  - Shootable
   - Ground
-  - Enemy
-  - PMagicBall
-  - Ledge Chercker
   - Handle
+  - Ledge Chercker
+  - PMagicBall
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -19,13 +19,13 @@ TagManager:
   - UI
   - 
   - 
-  - Player
-  - Enemy
-  - Dead Enemy
-  - PMagic
-  - Post Processing1
+  - Lighting
   - Ground
+  - Postprocessing
   - Handle
+  - Particle
+  - Player
+  - 
   - 
   - 
   - 
@@ -44,6 +44,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Fire
+    uniqueID: 3804908061
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

@@ -7,6 +7,7 @@ using UnityEngine.AI;
 public class EnemyBase : MonoBehaviour
 {
     NavMeshAgent _agent;
+    EnemyHPBar _myhp = default;
     [SerializeField] float _turnSpeed = 8.0f;
     /// <summary>Player検知範囲の半径</summary>
     [SerializeField] float _sarchsRangeRadius = 1f;
@@ -40,6 +41,7 @@ public class EnemyBase : MonoBehaviour
     // Start is called before the first frame update
     public void Start()
     {
+        _myhp = GetComponent<EnemyHPBar>();
         _agent = GetComponent<NavMeshAgent>();
         //目標地点に近づいても速度を落とさなくなる
         _agent.autoBraking = false;
@@ -50,10 +52,15 @@ public class EnemyBase : MonoBehaviour
     // Update is called once per frame
     public void Update()
     {
+        if (mode == Action.Hit)
+        {
+            _myhp.Damage();
+            mode = Action.Wait;
+        }
         Sarch();
         //経路探索の準備ができておらず
         //目標地点までの距離が0.5m未満ならNavMeshAgentを止める
-        if (!_agent.pathPending && _agent.remainingDistance < 0.5f || mode == Action.Tracking || mode == Action.Wait || mode == Action.Hit)
+        if (_agent.pathStatus != NavMeshPathStatus.PathInvalid && !_agent.pathPending && _agent.remainingDistance < 0.5f || mode == Action.Tracking || mode == Action.Wait || mode == Action.Hit)
             StopHere();
 
         if (mode == Action.Tracking && !player && mode != Action.Hit)
@@ -65,46 +72,52 @@ public class EnemyBase : MonoBehaviour
     }
     public void GotoNextPoint()
     {
-        if (mode != Action.Hit)
+        if (_agent.pathStatus != NavMeshPathStatus.PathInvalid)
         {
-            if (mode != Action.Walk)
-                mode = Action.Walk;
-            //NavMeshAgentのストップを解除
-            _agent.isStopped = false;
+            //navMeshAgentの操作
+            if (mode != Action.Hit)
+            {
+                if (mode != Action.Walk)
+                    mode = Action.Walk;
+                //NavMeshAgentのストップを解除
+                _agent.isStopped = false;
 
-            //目標地点のX軸、Z軸をランダムで決める
-            float posX = Random.Range(-1 * _radius, _radius);
-            float posZ = Random.Range(-1 * _radius, _radius);
+                //目標地点のX軸、Z軸をランダムで決める
+                float posX = Random.Range(-1 * _radius, _radius);
+                float posZ = Random.Range(-1 * _radius, _radius);
 
-            //CentralPointの位置にPosXとPosZを足す
-            Vector3 pos = central.position;
-            pos.x += posX;
-            pos.z += posZ;
+                //CentralPointの位置にPosXとPosZを足す
+                Vector3 pos = central.position;
+                pos.x += posX;
+                pos.z += posZ;
 
-            //NavMeshAgentに目標地点を設定する
-            _agent.destination = pos;
+                //NavMeshAgentに目標地点を設定する
+                _agent.destination = pos;
+            }
         }
-
     }
 
     void StopHere()
     {
-        if (mode != Action.Wait && !player)
-            mode = Action.Wait;
-        //NavMeshAgentを止める
-        _agent.isStopped = true;
-
-        if (mode != Action.Tracking)
+        if (_agent.pathStatus != NavMeshPathStatus.PathInvalid)
         {
-            //待ち時間を数える
-            _time += Time.deltaTime;
+            if (mode != Action.Wait && !player)
+                mode = Action.Wait;
+            //NavMeshAgentを止める
+            _agent.isStopped = true;
 
-            //待ち時間が設定された数値を超えると発動
-            if (_time > _waitTime)
+            if (mode != Action.Tracking)
             {
-                //目標地点を設定し直す
-                GotoNextPoint();
-                _time = 0;
+                //待ち時間を数える
+                _time += Time.deltaTime;
+
+                //待ち時間が設定された数値を超えると発動
+                if (_time > _waitTime)
+                {
+                    //目標地点を設定し直す
+                    GotoNextPoint();
+                    _time = 0;
+                }
             }
         }
     }
@@ -148,8 +161,8 @@ public class EnemyBase : MonoBehaviour
     }
     void Attack()
     {
-        if(mode != Action.Tracking)
-         mode = Action.Wait;
+        if (mode != Action.Tracking)
+            mode = Action.Wait;
         var hit = Physics.OverlapSphere(AttackRangeCenter(), _attackRangeRadius);
         foreach (var c in hit)
         {
@@ -177,7 +190,7 @@ public class EnemyBase : MonoBehaviour
             if (Vector3.Distance(transform.position, player.transform.position) < _movingdis)
                 _targetspeed = 0;
 
-            if (Vector3.Distance(transform.position, player.transform.position) >= _movingdis)
+            if (Vector3.Distance(transform.position, player.transform.position) >= _movingdis && _agent.enabled)
             {
                 if (mode != Action.Tracking)
                     mode = Action.Tracking;
