@@ -18,9 +18,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _gravityPower = 0.3f;
     [SerializeField] float _turnSpeed = 8.0f;
     [SerializeField] float _isGroundedLength = 1.1f;
-    [SerializeField] bool _rockGunOn = default;
     [SerializeField] GameObject _rockAimEff = default;
+    bool _rockGunOn = default;
     bool _isrockAimEff = false;
+    bool _isattacklockdir = default;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     Vector3 _dir;
     bool _isSkillDash = default;
@@ -116,7 +117,7 @@ public class PlayerController : MonoBehaviour
             this.transform.rotation = Quaternion.Slerp(this.transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
         }
 
-        if (_lookon && _input.move == Vector2.zero && !_stopmovedir && !_isclimd)
+        if (_lookon && _input.move == Vector2.zero && !_isclimd || _isattacklockdir)
         {
             var direction = _crosshaircanvas.transform.position - transform.position;
             direction.y = 0;
@@ -257,12 +258,10 @@ public class PlayerController : MonoBehaviour
         var hit = Physics.OverlapSphere(GetAttackRangeCenter(), _attackRangeRadius);
         foreach (var c in hit)
         {
-            EnemyR enemy = c.gameObject.GetComponent<EnemyR>();
-
+            EnemyBase enemy = c.gameObject.GetComponent<EnemyBase>();
             if (enemy)
             {
                 enemy.mode = EnemyBase.Action.Hit;
-                enemy._ishit = true;
             }
         }
 
@@ -622,6 +621,11 @@ public class PlayerController : MonoBehaviour
                 Debug.LogWarning("movenumが指定の範囲外です。Animationのイベントから指定してください。");
                 break;
         }
+    }
+    void LockAttack()
+    {
+        if (_lookon)
+            _isattacklockdir = !_isattacklockdir;
     }
     public void TargetOff(float hp)
     {

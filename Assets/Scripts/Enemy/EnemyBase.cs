@@ -7,7 +7,7 @@ using UnityEngine.AI;
 public class EnemyBase : MonoBehaviour
 {
     NavMeshAgent _agent;
-    EnemyHPBar _myhp = default;
+    protected EnemyHPBar _myhp = default;
     [SerializeField] float _turnSpeed = 8.0f;
     /// <summary>Player検知範囲の半径</summary>
     [SerializeField] float _sarchsRangeRadius = 1f;
@@ -19,9 +19,18 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] public Collider player;
     [SerializeField] float _speed = 1.0f;
     [SerializeField] float _changespeed = 10f;
+    float _attackResetGoTimer = 1;
     public float _animationspeed;
     public float _targetspeed = 0;
     public bool _stopmove = default;
+    bool _ishit = default;
+    public bool Ishit { get => _ishit; set => _ishit = value; }
+    bool _isbighit = default;
+    public bool Isbighit { get => _isbighit; set => _isbighit = value; }
+    bool _isShoothit = default;
+    public bool IsShoothit { get => _isShoothit; set => _isShoothit = value; }
+
+
     //ランダムで決める数値の最大値
     [SerializeField] float _radius = 3;
     //設定した待機時間
@@ -34,9 +43,12 @@ public class EnemyBase : MonoBehaviour
         Walk,
         Wait,
         Tracking,
-        Hit
+        Hit,
+        BHit,
+        SHit
     }
     public Action mode;
+
 
     // Start is called before the first frame update
     public void Start()
@@ -54,13 +66,28 @@ public class EnemyBase : MonoBehaviour
     {
         if (mode == Action.Hit)
         {
-            _myhp.Damage();
+            Ishit = true;
+            if(player)
+                _time = 0;
+            _myhp.Damage(15, 20);
             mode = Action.Wait;
+        }
+        else if (mode == Action.SHit)
+        {
+            IsShoothit = true;
+            _myhp.Damage(5, 10);
+            mode = Action.Wait;
+        }
+        else if (mode == Action.BHit)
+        {
+            _time = 0;
+            Isbighit = true;
+            StartCoroutine(ChangeModeWait(2));
         }
         Sarch();
         //経路探索の準備ができておらず
         //目標地点までの距離が0.5m未満ならNavMeshAgentを止める
-        if (_agent.pathStatus != NavMeshPathStatus.PathInvalid && !_agent.pathPending && _agent.remainingDistance < 0.5f || mode == Action.Tracking || mode == Action.Wait || mode == Action.Hit)
+        if (_agent.pathStatus != NavMeshPathStatus.PathInvalid && !_agent.pathPending && _agent.remainingDistance < 0.5f || mode != Action.Walk)
             StopHere();
 
         if (mode == Action.Tracking && !player && mode != Action.Hit)
@@ -106,7 +133,7 @@ public class EnemyBase : MonoBehaviour
             //NavMeshAgentを止める
             _agent.isStopped = true;
 
-            if (mode != Action.Tracking)
+            if (mode == Action.Wait)
             {
                 //待ち時間を数える
                 _time += Time.deltaTime;
@@ -192,7 +219,7 @@ public class EnemyBase : MonoBehaviour
 
             if (Vector3.Distance(transform.position, player.transform.position) >= _movingdis && _agent.enabled)
             {
-                if (mode != Action.Tracking)
+                if (mode != Action.Tracking && mode != Action.Hit && mode != Action.BHit)
                     mode = Action.Tracking;
 
                 transform.position = Vector3.MoveTowards(transform.position, player.transform.position, _targetspeed * Time.deltaTime);
@@ -200,6 +227,15 @@ public class EnemyBase : MonoBehaviour
         }
 
         _animationspeed = Mathf.Lerp(_animationspeed, _targetspeed, Time.deltaTime * _changespeed);
+    }
+    IEnumerator ChangeModeWait(float time)
+    {
+        yield return new WaitForSeconds(time);
+        mode = Action.Wait;
+    }
+    private void ResetTimer()
+    {
+        _time = 0;
     }
     void StopMoveSwitch()
     {

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3452314055588590855}
   m_Layer: 0
   m_Name: GameObject (1)
-  m_TagString: PMagicBall
+  m_TagString: PBigMagic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -56,7 +56,7 @@ GameObject:
   - component: {fileID: 3452314055937649071}
   m_Layer: 0
   m_Name: GameObject
-  m_TagString: PMagicBall
+  m_TagString: PBigMagic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -32839,7 +32839,7 @@ GameObject:
   - component: {fileID: 3803246354296580125}
   m_Layer: 0
   m_Name: EarthShatter
-  m_TagString: Untagged
+  m_TagString: PBigMagic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

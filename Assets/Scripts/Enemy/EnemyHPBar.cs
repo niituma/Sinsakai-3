@@ -52,11 +52,11 @@ public class EnemyHPBar : MonoBehaviour
             }
         }
     }
-    public void Damage()
+    public void Damage(float min , float max)
     {
         if (slider && !mutekimode)
         {
-            float damage = Random.Range(15, 21);
+            float damage = Random.Range(min, max);
             currentHp = currentHp - damage;
             float value = (float)currentHp / (float)maxHp;
             DOTween.To(() => slider.value, x => slider.value = x, value, 0.5f);

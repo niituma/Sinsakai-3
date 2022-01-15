@@ -10,8 +10,6 @@ public class EnemyR : EnemyBase
     [SerializeField] float _doattacktime = 5f;
     [SerializeField] float _isGroundedLength = 1.1f;
     bool _isattack;
-    public bool _ishit = default;
-    public bool _isShoothit = default;
 
     /// <summary>どれくらい見るか</summary>
     [SerializeField, Range(0f, 1f)] float _weight = 0;
@@ -46,20 +44,30 @@ public class EnemyR : EnemyBase
         _anim.SetBool("Attack", _isattack);
         _anim.SetBool("Ground", IsGrounded());
         _anim.SetFloat("Speed", _animationspeed);
-        _anim.SetBool("Hit", _ishit);
-        _anim.SetBool("Shoot Hit", _isShoothit);
-        if (_ishit)
-            _ishit = false;
-        if (_isShoothit)
-            _isShoothit = false;
+        _anim.SetBool("Hit", Ishit);
+        _anim.SetBool("Big Hit", Isbighit);
+        _anim.SetBool("Shoot Hit", IsShoothit);
+        if (Isbighit)
+            Isbighit = false;
+        if (Ishit)
+            Ishit = false;
+        if (IsShoothit)
+            IsShoothit = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "PMagicBall")
+        if (other.tag == "PMagic")
         {
             mode = Action.Hit;
+            _myhp.Damage(15, 20);
             _anim.SetBool("Hit", true);
+        }
+        else if (other.tag == "PBigMagic")
+        {
+            mode = Action.BHit;
+            _myhp.Damage(40, 50);
+            _anim.SetBool("Big Hit", true);
         }
     }
     void OnAnimatorIK(int layerIndex)

@@ -10,7 +10,7 @@ public class EnemyIskinematicOff : MonoBehaviour
 
     private void OnDestroy()
     {
-        _targetList?.ToList().ForEach(t =>
+        _targetList?.Where(t => t != null).ToList().ForEach(t =>
         {
             t.gameObject.GetComponent<Rigidbody>().isKinematic = false;
             //if (t.gameObject.GetComponent<NavMeshAgent>())

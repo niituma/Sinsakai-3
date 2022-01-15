@@ -9184,6 +9184,7 @@ GameObject:
   - component: {fileID: 1279095534695918976}
   - component: {fileID: 1372775407721426690}
   - component: {fileID: 1372402643197564944}
+  - component: {fileID: 1393451417109748502}
   m_Layer: 0
   m_Name: FireBurst
   m_TagString: Untagged
@@ -9199,7 +9200,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1282556630542936960}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.338242, y: 0, z: 48.64865}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.5, y: 1.4999998, z: 1.4999998}
   m_Children:
   - {fileID: 1287963055517137244}
@@ -9845,7 +9846,7 @@ ParticleSystem:
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: -90, y: 0, z: 0}
-    m_Scale: {x: 0.1, y: 0.1, z: 0.01}
+    m_Scale: {x: 0.1, y: 0.1, z: 0.1}
     placementMode: 0
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
@@ -13941,6 +13942,20 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &1393451417109748502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1282556630542936960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55948edf14993754a857ec1e46d6c549, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _attackRangeRadius: 2.5
+  _attackRangeCenter: {x: 0, y: 0, z: 0}
 --- !u!1 &1282603789608663496
 GameObject:
   m_ObjectHideFlags: 0
@@ -28409,7 +28424,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4729052905925801766}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: 0.3}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4731746771396646950}
@@ -33221,7 +33236,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4729072668567330650}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.6040001, y: 0.80581105, z: -0.0047779083}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4734591520894840560}

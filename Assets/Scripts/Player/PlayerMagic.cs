@@ -107,8 +107,7 @@ public class PlayerMagic : MonoBehaviour
 
                 if (enemy)
                 {
-                    enemy.mode = EnemyBase.Action.Hit;
-                    enemy._isShoothit = true;
+                    enemy.mode = EnemyBase.Action.SHit;
                 }
             }
             Instantiate(_shootHitEff, hit.point, this.transform.rotation);
