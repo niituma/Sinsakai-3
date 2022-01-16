@@ -19,6 +19,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _turnSpeed = 8.0f;
     [SerializeField] float _isGroundedLength = 1.1f;
     [SerializeField] GameObject _rockAimEff = default;
+    [SerializeField] GameObject _shockWave = default;
+    [SerializeField] GameObject _speedRightFoot = default;
+    [SerializeField] GameObject _speedLeftFoot = default;
     bool _rockGunOn = default;
     bool _isrockAimEff = false;
     bool _isattacklockdir = default;
@@ -32,7 +35,7 @@ public class PlayerController : MonoBehaviour
     float _attackanimationspeedx;
     float _attackanimationspeedy;
     int _magicModeIndex = 0;
-    public bool _stopmovedir = default;
+    bool _stopmovedir = default;
     public bool _ishit = default;
     bool _isjump = default;
 
@@ -135,9 +138,10 @@ public class PlayerController : MonoBehaviour
             _stopmovedir = true;
             _isclimd = false;
         }
-        else if (Input.GetKeyDown(KeyCode.C) && !_isclimd && _input.move != Vector2.zero)
+        else if (Input.GetKeyDown(KeyCode.C) && !_isclimd && _input.move != Vector2.zero && !_isSkillDash)
         {
             _isSkillDash = true;
+            Instantiate(_shockWave, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -146,56 +150,23 @@ public class PlayerController : MonoBehaviour
             if (_magicModeIndex > 2)
                 _magicModeIndex = 0;
         }
-        if (_magic.MagicMode == PlayerMagic.Action.Earth)
-        {
-            if (_rockGunOn)
-            {
-                transform.rotation = Quaternion.Euler(0, Camera.main.transform.transform.localEulerAngles.y, 0);
-            }
-            _rockGunOn = _input.aim;
-            if (_rockGunOn && _aimIK.IsAimChange)
-            {
-                _aimIK.chageAim(1f, 0.5f);
-                DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 1.5f, 0.5f);
-            }
-            else if (!_rockGunOn && !_aimIK.IsAimChange)
-            {
-                _aimIK.chageAim(0f, 0.5f);
-                DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 2.5f, 0.5f);
-            }
-
-            if (_rockGunOn)
-            {
-                if (!_isrockAimEff)
-                {
-                    _rockAimEff.SetActive(true);
-                    _isrockAimEff = true;
-                }
-                if (_magic.Ammo > 0 && _input.shoot)
-                {
-                    StartCoroutine(_magic.ShootTimer());
-                }
-            }
-            else
-            {
-                if (_isrockAimEff)
-                {
-                    _rockAimEff.SetActive(false);
-                    _isrockAimEff = false;
-                }
-            }
-            _anim.SetBool("RockGun", _input.aim);
-        }
         if (_isSkillDash)
         {
+            _speedRightFoot.SetActive(true);
+            _speedLeftFoot.SetActive(true);
+            DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 3.5f, 0.5f);
             _skillDashTime += Time.deltaTime;
             if (_skillDashTime >= _skillDashLimitTime || _input.move == Vector2.zero)
             {
                 _isSkillDash = false;
+                _speedRightFoot.SetActive(false);
+                _speedLeftFoot.SetActive(false);
+                DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 2.5f, 0.5f);
                 _skillDashTime = 0;
             }
         }
         _isjump = _input.jump;
+        RockAttack();
         TargetLookOn();
         Climb();
         Jump();
@@ -264,8 +235,51 @@ public class PlayerController : MonoBehaviour
                 enemy.mode = EnemyBase.Action.Hit;
             }
         }
-
     }
+    void RockAttack()
+    {
+        if (_magic.MagicMode == PlayerMagic.Action.Earth)
+        {
+            if (_rockGunOn)
+            {
+                transform.rotation = Quaternion.Euler(0, Camera.main.transform.transform.localEulerAngles.y, 0);
+            }
+            _rockGunOn = _input.aim;
+            if (_rockGunOn && _aimIK.IsAimChange)
+            {
+                _aimIK.chageAim(1f, 0.5f);
+                DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 1.5f, 0.5f);
+            }
+            else if (!_rockGunOn && !_aimIK.IsAimChange)
+            {
+                _aimIK.chageAim(0f, 0.5f);
+                DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 2.5f, 0.5f);
+            }
+
+            if (_rockGunOn)
+            {
+                if (!_isrockAimEff)
+                {
+                    _rockAimEff.SetActive(true);
+                    _isrockAimEff = true;
+                }
+                if (_magic.Ammo > 0 && _input.shoot)
+                {
+                    StartCoroutine(_magic.ShootTimer());
+                }
+            }
+            else
+            {
+                if (_isrockAimEff)
+                {
+                    _rockAimEff.SetActive(false);
+                    _isrockAimEff = false;
+                }
+            }
+            _anim.SetBool("RockGun", _input.aim);
+        }
+    }
+
     void Targets()
     {
         _currentenemy = FilterTargetObject(Physics.OverlapSphere(GetTargetsRangeCenter(), _targetsRangeRadius).ToList());

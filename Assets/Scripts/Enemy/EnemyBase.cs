@@ -19,7 +19,6 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] public Collider player;
     [SerializeField] float _speed = 1.0f;
     [SerializeField] float _changespeed = 10f;
-    float _attackResetGoTimer = 1;
     public float _animationspeed;
     public float _targetspeed = 0;
     public bool _stopmove = default;

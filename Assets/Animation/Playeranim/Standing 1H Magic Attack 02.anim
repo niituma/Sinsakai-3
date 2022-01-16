@@ -92927,7 +92927,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 1
     messageOptions: 0
-  - time: 0.56666666
+  - time: 0.6333333
     functionName: Magic
     data: 
     objectReferenceParameter: {fileID: 0}
