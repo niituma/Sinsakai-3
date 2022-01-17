@@ -55,6 +55,7 @@ public class PlayerController : MonoBehaviour
     GameObject _crosshair;
     CinemachinePOV aim;
     CinemachineFramingTransposer zoom;
+    CinemachineFramingTransposer zoom2;
     bool _oncamerachangedir = default;
     public bool _lookon = default;
     [SerializeField] public List<Collider> _currentenemy = new List<Collider>();
@@ -100,6 +101,7 @@ public class PlayerController : MonoBehaviour
         _hp = GetComponent<PlayerHP>();
         _input = GetComponent<ControllerSystem>();
         zoom = _mousecamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+        zoom2 = _targetcamera.GetCinemachineComponent<CinemachineFramingTransposer>();
         aim = _mousecamera.GetCinemachineComponent<CinemachinePOV>();
         _crosshair = GameObject.Find("CrossHair");
         target = _crosshaircanvas.GetComponent<TargetLookOn>();
@@ -120,7 +122,7 @@ public class PlayerController : MonoBehaviour
             this.transform.rotation = Quaternion.Slerp(this.transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
         }
 
-        if (_lookon && _input.move == Vector2.zero && !_isclimd || _isattacklockdir)
+        if (_lookon && _input.move == Vector2.zero && !_isclimd && !_stopmovedir || _isattacklockdir)
         {
             var direction = _crosshaircanvas.transform.position - transform.position;
             direction.y = 0;
@@ -138,7 +140,7 @@ public class PlayerController : MonoBehaviour
             _stopmovedir = true;
             _isclimd = false;
         }
-        else if (Input.GetKeyDown(KeyCode.C) && !_isclimd && _input.move != Vector2.zero && !_isSkillDash)
+        else if (Input.GetKeyDown(KeyCode.C) && !_isclimd && _input.move != Vector2.zero && !_isSkillDash && !_rockGunOn)
         {
             _isSkillDash = true;
             Instantiate(_shockWave, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
@@ -156,7 +158,7 @@ public class PlayerController : MonoBehaviour
             _speedLeftFoot.SetActive(true);
             DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 3.5f, 0.5f);
             _skillDashTime += Time.deltaTime;
-            if (_skillDashTime >= _skillDashLimitTime || _input.move == Vector2.zero)
+            if (_skillDashTime >= _skillDashLimitTime || _input.move == Vector2.zero || _rockGunOn || _stopmovedir)
             {
                 _isSkillDash = false;
                 _speedRightFoot.SetActive(false);
@@ -197,6 +199,68 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         Move();
+    }
+    void Move()
+    {
+        float _targetSpeed;
+
+        if (_isclimd)
+        {
+            _targetSpeed = h;
+            if (_isLover)
+            {
+                if (h < 0)
+                    _targetSpeed = 0;
+            }
+            else if (_isRover)
+            {
+                if (h > 0)
+                    _targetSpeed = 0;
+            }
+        }
+        else
+        {
+            if (_isSkillDash)
+            {
+                _targetSpeed = _skillDashPower;
+            }
+            else if (_rockGunOn)
+            {
+                _targetSpeed = _movePower;
+            }
+            else
+                _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
+
+        }
+
+        // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
+
+        if (_input.move == Vector2.zero)
+        {
+            _targetSpeed = 0.0f;
+        }
+
+        if (!_stopmovedir)
+            _animationspeed = Mathf.Lerp(_animationspeed, _targetSpeed, Time.deltaTime * 10f);
+        else
+            _animationspeed = 0;
+
+        if (!_isclimd)
+        {
+            if (!_stopmovedir)
+                _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Force);
+
+            _anim.SetFloat("Speed", _animationspeed);
+        }
+        else
+        {
+            _anim.SetFloat("ClimbMoveSpeed", _animationspeed);
+        }
+        _attackanimationspeedx = Mathf.Lerp(_attackanimationspeedx, h, Time.deltaTime * 10f);
+        _attackanimationspeedy = Mathf.Lerp(_attackanimationspeedy, v, Time.deltaTime * 10f);
+        _anim.SetFloat("X", _attackanimationspeedx);
+        _anim.SetFloat("Y", _attackanimationspeedy);
+
     }
 
     void OnDrawGizmosSelected()
@@ -245,15 +309,18 @@ public class PlayerController : MonoBehaviour
                 transform.rotation = Quaternion.Euler(0, Camera.main.transform.transform.localEulerAngles.y, 0);
             }
             _rockGunOn = _input.aim;
+
             if (_rockGunOn && _aimIK.IsAimChange)
             {
                 _aimIK.chageAim(1f, 0.5f);
                 DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 1.5f, 0.5f);
+                DOTween.To(() => zoom2.m_CameraDistance, num => zoom2.m_CameraDistance = num, 1.5f, 0.5f);
             }
             else if (!_rockGunOn && !_aimIK.IsAimChange)
             {
                 _aimIK.chageAim(0f, 0.5f);
                 DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 2.5f, 0.5f);
+                DOTween.To(() => zoom2.m_CameraDistance, num => zoom2.m_CameraDistance = num, 2f, 0.5f);
             }
 
             if (_rockGunOn)
@@ -291,64 +358,6 @@ public class PlayerController : MonoBehaviour
             Vector3 screenPoint = Camera.main.WorldToViewportPoint(h.transform.position);
             return screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > -0.25 && screenPoint.y < 0.9;
         }).ToList();
-    }
-    void Move()
-    {
-        float _targetSpeed;
-
-        if (_isclimd)
-        {
-            _targetSpeed = h;
-            if (_isLover)
-            {
-                if (h < 0)
-                    _targetSpeed = 0;
-            }
-            else if (_isRover)
-            {
-                if (h > 0)
-                    _targetSpeed = 0;
-            }
-        }
-        else
-        {
-            if (_isSkillDash)
-            {
-                _targetSpeed = _skillDashPower;
-            }
-            else
-                _targetSpeed = _input.sprint ? _dashmovePower : _movePower;
-
-        }
-
-        // 「力を加える」処理は力学的処理なので FixedUpdate で行うこと
-
-        if (_input.move == Vector2.zero)
-        {
-            _targetSpeed = 0.0f;
-        }
-
-        if (!_stopmovedir)
-            _animationspeed = Mathf.Lerp(_animationspeed, _targetSpeed, Time.deltaTime * 10f);
-        else
-            _animationspeed = 0;
-
-        if (!_isclimd)
-        {
-            if (!_stopmovedir)
-                _rb.AddForce(_dir.normalized * _targetSpeed, ForceMode.Force);
-
-            _anim.SetFloat("Speed", _animationspeed);
-        }
-        else
-        {
-            _anim.SetFloat("ClimbMoveSpeed", _animationspeed);
-        }
-        _attackanimationspeedx = Mathf.Lerp(_attackanimationspeedx, h, Time.deltaTime * 10f);
-        _attackanimationspeedy = Mathf.Lerp(_attackanimationspeedy, v, Time.deltaTime * 10f);
-        _anim.SetFloat("X", _attackanimationspeedx);
-        _anim.SetFloat("Y", _attackanimationspeedy);
-
     }
     void Climb()
     {
@@ -565,14 +574,14 @@ public class PlayerController : MonoBehaviour
                 _targetcamera.Priority = 9;
                 _lookon = false;
 
+                if (_oncamerachangedir)
+                {
+                    aim.m_HorizontalAxis.Value = _targetcamera.transform.localEulerAngles.y;
+                    aim.m_VerticalAxis.Value = _changeVerticalAxisValue;
+                    _oncamerachangedir = false;
+                }
             }
             target.targeton = true;
-            if (_oncamerachangedir)
-            {
-                aim.m_HorizontalAxis.Value = _targetcamera.transform.localEulerAngles.y;
-                aim.m_VerticalAxis.Value = _changeVerticalAxisValue;
-                _oncamerachangedir = false;
-            }
         }
 
 

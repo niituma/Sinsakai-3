@@ -89,7 +89,7 @@ public class ApproachTarget : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag != "Enemy")
+        if (other.tag != "Enemy" && other.tag != "Player")
         {
             Instantiate(_hitEff, transform.position, Quaternion.identity);
             Instantiate(_createIce, transform.position, Quaternion.identity);
