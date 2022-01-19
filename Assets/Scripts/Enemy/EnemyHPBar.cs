@@ -57,6 +57,7 @@ public class EnemyHPBar : MonoBehaviour
         if (slider && !mutekimode)
         {
             float damage = Random.Range(min, max);
+            Debug.Log("a");
             currentHp = currentHp - damage;
             float value = (float)currentHp / (float)maxHp;
             DOTween.To(() => slider.value, x => slider.value = x, value, 0.5f);

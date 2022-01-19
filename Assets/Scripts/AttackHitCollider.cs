@@ -6,6 +6,12 @@ public class AttackHitCollider : MonoBehaviour
 {
     [SerializeField] float _attackRangeRadius = 1f;
     [SerializeField] Vector3 _attackRangeCenter = default;
+    public enum Action
+    {
+        NomalAttack,
+        BigAttack
+    }
+    public Action _hitmode;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,10 +20,17 @@ public class AttackHitCollider : MonoBehaviour
         {
             EnemyBase enemy = c.gameObject.GetComponent<EnemyBase>();
             EnemyHPBar Ehp = c.gameObject.GetComponent<EnemyHPBar>();
+
             if (enemy)
             {
-                enemy.mode = EnemyBase.Action.BHit;
-                Ehp.Damage(40, 50);
+                if (_hitmode == Action.BigAttack)
+                {
+                    enemy.mode = EnemyBase.Action.BHit;
+                    Ehp.Damage(40, 50);
+                }
+                else
+                    enemy.mode = EnemyBase.Action.Hit;
+
             }
         }
     }

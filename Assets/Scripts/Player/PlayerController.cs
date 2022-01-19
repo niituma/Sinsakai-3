@@ -43,9 +43,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Vector3 _gettargetsRangeCenter = default;
     /// <summary>敵のターゲットロックできる範囲の半径</summary>
     [SerializeField] float _targetsRangeRadius = 1f;
-    [SerializeField] Vector3 _attackRangeCenter = default;
-    /// <summary>攻撃範囲の半径</summary>
-    [SerializeField] float _attackRangeRadius = 1f;
 
     [Header("ターゲットロック")]
     [SerializeField] CinemachineVirtualCamera _mousecamera;
@@ -270,16 +267,7 @@ public class PlayerController : MonoBehaviour
             // 攻撃範囲を赤い線でシーンビューに表示する
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(GetTargetsRangeCenter(), _targetsRangeRadius);
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(GetAttackRangeCenter(), _attackRangeRadius);
         }
-    }
-    Vector3 GetAttackRangeCenter()
-    {
-        Vector3 center = this.transform.position + this.transform.forward * _attackRangeCenter.z
-            + this.transform.up * _attackRangeCenter.y
-            + this.transform.right * _attackRangeCenter.x;
-        return center;
     }
     Vector3 GetTargetsRangeCenter()
     {
@@ -287,18 +275,6 @@ public class PlayerController : MonoBehaviour
             + this.transform.up * _gettargetsRangeCenter.y
             + this.transform.right * _gettargetsRangeCenter.x;
         return center;
-    }
-    void Attack()
-    {
-        var hit = Physics.OverlapSphere(GetAttackRangeCenter(), _attackRangeRadius);
-        foreach (var c in hit)
-        {
-            EnemyBase enemy = c.gameObject.GetComponent<EnemyBase>();
-            if (enemy)
-            {
-                enemy.mode = EnemyBase.Action.Hit;
-            }
-        }
     }
     void RockAttack()
     {

@@ -7,7 +7,7 @@ public class StoneActive : MonoBehaviour
     [SerializeField] GameObject _stone = default;
     [SerializeField] GameObject _eff = default;
     [SerializeField] GameObject _eff2 = default;
-    [SerializeField] string _attackname = "PMagicBall";
+    [SerializeField] string _attackname = "PMagic";
     ObjSpin _spin = default;
     Animator _anim = default;
 

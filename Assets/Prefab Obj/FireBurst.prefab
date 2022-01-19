@@ -13956,6 +13956,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _attackRangeRadius: 2.5
   _attackRangeCenter: {x: 0, y: 0, z: 0}
+  _hitmode: 1
 --- !u!1 &1282603789608663496
 GameObject:
   m_ObjectHideFlags: 0

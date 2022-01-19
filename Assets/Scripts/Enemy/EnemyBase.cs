@@ -68,7 +68,7 @@ public class EnemyBase : MonoBehaviour
             Ishit = true;
             if(player)
                 _time = 0;
-            _myhp.Damage(15, 20);
+            _myhp.Damage(10, 15);
             mode = Action.Wait;
         }
         else if (mode == Action.SHit)

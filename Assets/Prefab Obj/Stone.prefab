@@ -4988,7 +4988,7 @@ MonoBehaviour:
   _stone: {fileID: 7537030195899768495}
   _eff: {fileID: 7537030195899780465}
   _eff2: {fileID: 7537030195899763281}
-  _attackname: PMagicBall
+  _attackname: PMagic
 --- !u!95 &402551385
 Animator:
   serializedVersion: 3
