@@ -846,9 +846,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2994826341656490714}
+  - component: {fileID: 2982736530276396438}
   m_Layer: 0
   m_Name: mixamorig:RightHand
-  m_TagString: Untagged
+  m_TagString: EnemyHit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -872,6 +873,19 @@ Transform:
   m_Father: {fileID: 1416716969899555002}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &2982736530276396438
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1555377099835383827}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Radius: 0.23
+  m_Center: {x: 0, y: 0.12, z: 0}
 --- !u!1 &1703072199120457503
 GameObject:
   m_ObjectHideFlags: 0
@@ -1561,8 +1575,8 @@ MonoBehaviour:
   _turnSpeed: 8
   _sarchsRangeRadius: 4
   _sarchRangeCenter: {x: 0, y: 1, z: 3.53}
-  _attackRangeRadius: 0.4
-  _attackRangeCenter: {x: 0, y: 1, z: 0.5}
+  _attackRangeRadius: 0
+  _attackRangeCenter: {x: 0, y: 0, z: 0}
   _movingdis: 1
   player: {fileID: 0}
   _speed: 3
@@ -1578,7 +1592,6 @@ MonoBehaviour:
   _attacktimer: 3
   _doattacktime: 4
   _isGroundedLength: 1.1
-  _ishit: 0
   _weight: 0.797
   _bodyWeight: 0.652
   _headWeight: 0.657

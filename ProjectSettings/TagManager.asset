@@ -11,6 +11,7 @@ TagManager:
   - Enemy
   - PMagic
   - PBigMagic
+  - EnemyHit
   layers:
   - Default
   - TransparentFX

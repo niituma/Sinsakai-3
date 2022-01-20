@@ -12,6 +12,7 @@ public class PlayerHP : MonoBehaviour
     [SerializeField] public Slider slider;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     [SerializeField] GameObject _corpse = default;
+    [SerializeField] GameObject _gard = default;
     PlayerController _playerCon;
 
     void Start()
@@ -38,23 +39,11 @@ public class PlayerHP : MonoBehaviour
     {
         if (slider && !mutekimode)
         {
-            //Enemyタグのオブジェクトに触れると発動
-            //if (collision.gameObject.tag == "PMagicBall")
-            //{
-            //    //ダメージはこの中でランダムに決める。
-            //    int damage = Random.Range(15, 21);
-            //    Debug.Log("damage : " + damage);
-
-            //    //現在のHPからダメージを引く
-            //    currentHp = currentHp - damage;
-            //    Debug.Log("After currentHp : " + currentHp);
-
-            //    //最大HPにおける現在のHPをSliderに反映。
-            //    //int同士の割り算は小数点以下は0になるので、
-            //    //(float)をつけてfloatの変数として振舞わせる。
-            //    slider.value = (float)currentHp / (float)maxHp;
-            //    Debug.Log("slider.value : " + slider.value);
-            //}
+            Vector3 hitPos = collision.bounds.ClosestPoint(this.transform.position);
+            if (collision.tag == "EnemyHit")
+            {
+                Instantiate(_gard, hitPos, Quaternion.identity);
+            }
         }
     }
     public void Damage()

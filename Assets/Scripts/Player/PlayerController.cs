@@ -197,6 +197,13 @@ public class PlayerController : MonoBehaviour
     {
         Move();
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "EnemyHit")
+        {
+            _ishit = true;
+        }
+    }
     void Move()
     {
         float _targetSpeed;
