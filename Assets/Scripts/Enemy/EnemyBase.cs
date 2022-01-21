@@ -132,7 +132,7 @@ public class EnemyBase : MonoBehaviour
             //NavMeshAgentを止める
             _agent.isStopped = true;
 
-            if (mode == Action.Wait)
+            if (mode == Action.Wait && !player)
             {
                 //待ち時間を数える
                 _time += Time.deltaTime;
