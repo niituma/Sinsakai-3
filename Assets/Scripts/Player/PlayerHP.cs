@@ -64,7 +64,7 @@ public class PlayerHP : MonoBehaviour
     //ColliderオブジェクトのIsTriggerにチェック入れること。
     private void OnTriggerEnter(Collider collision)
     {
-        if (slider && !mutekimode)
+        if (slider && !mutekimode && !_playerCon.JustAvo)
         {
             if (_shieldCount > 0)
             {

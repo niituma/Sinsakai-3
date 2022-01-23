@@ -5,14 +5,9 @@ using System.Linq;
 
 public class NewBehaviourScript : MonoBehaviour
 {
-    [SerializeField] GameObject _gard = default;
-    // Start is called before the first frame update
-    private void OnTriggerEnter(Collider other)
+    [SerializeField, Range(0.0f, 1.0f)] float _timeScale = 1;
+    private void Update()
     {
-        Vector3 hitPos = other.bounds.ClosestPoint(this.transform.position);
-        if (other.tag == "EnemyHit")
-        {
-            Instantiate(_gard, hitPos, Quaternion.identity);
-        }
+        Time.timeScale = _timeScale;
     }
 }

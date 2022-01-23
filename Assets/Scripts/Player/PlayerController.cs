@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
@@ -25,12 +26,15 @@ public class PlayerController : MonoBehaviour
     bool _rockGunOn = default;
     bool _isrockAimEff = false;
     bool _isattacklockdir = default;
+    float _slowtime = 0.3f;
+    bool _isAvo = default;
+    bool _justAvo = default;
+    public bool JustAvo { get => _justAvo; set => _justAvo = value; }
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     Vector3 _dir;
     bool _isSkillDash = default;
     float _skillDashTime = 0;
     float h, v;
-    public float _avdTime;
     float _animationspeed;
     float _attackanimationspeedx;
     float _attackanimationspeedy;
@@ -165,6 +169,11 @@ public class PlayerController : MonoBehaviour
             }
         }
         _isjump = _input.jump;
+        if (_input.avd)
+        {
+            _isAvo = _input.avd;
+            StartCoroutine(DelayMethod(0.3f, () => _isAvo = false));
+        }
         RockAttack();
         TargetLookOn();
         Climb();
@@ -199,7 +208,17 @@ public class PlayerController : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "EnemyHit")
+        if (other.tag == "EnemyHit" && _isAvo)
+        {
+            JustAvo = true;
+            Time.timeScale = _slowtime;
+            StartCoroutine(DelayMethod(0.3f, () =>
+            {
+                JustAvo = false;
+                Time.timeScale = 1;
+            }));
+        }
+        else if (other.tag == "EnemyHit" && !JustAvo)
         {
             _ishit = true;
         }
@@ -245,7 +264,7 @@ public class PlayerController : MonoBehaviour
         }
 
         if (!_stopmovedir)
-            _animationspeed = Mathf.Lerp(_animationspeed, _targetSpeed, Time.deltaTime * 10f);
+            _animationspeed = Mathf.Lerp(_animationspeed, _targetSpeed, Time.deltaTime * 5f);
         else
             _animationspeed = 0;
 
@@ -605,6 +624,12 @@ public class PlayerController : MonoBehaviour
         bool isGrounded = Physics.Linecast(start, end); // 引いたラインに何かがぶつかっていたら true とする
         return isGrounded;
     }
+    IEnumerator DelayMethod(float time, Action action)
+    {
+        yield return new WaitForSeconds(time);
+        action?.Invoke();
+    }
+
     void StopMoveSwitch(int movenum)
     {
         switch (movenum)
