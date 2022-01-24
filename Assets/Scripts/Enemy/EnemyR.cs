@@ -60,7 +60,6 @@ public class EnemyR : EnemyBase
         if (other.tag == "PMagic")
         {
             mode = Action.Hit;
-            _anim.SetBool("Hit", true);
         }
         else if (other.tag == "PBigMagic")
         {
