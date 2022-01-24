@@ -47,6 +47,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Vector3 _gettargetsRangeCenter = default;
     /// <summary>敵のターゲットロックできる範囲の半径</summary>
     [SerializeField] float _targetsRangeRadius = 1f;
+    /// <summary>敵のターゲットロックできる範囲の半径</summary>
+    [SerializeField] Vector3 _attackRangeCenter = default;
+    [SerializeField] float _attackRangeRadius = 1f;
 
     [Header("ターゲットロック")]
     [SerializeField] CinemachineVirtualCamera _mousecamera;
@@ -302,36 +305,49 @@ public class PlayerController : MonoBehaviour
             + this.transform.right * _gettargetsRangeCenter.x;
         return center;
     }
+    //Vector3 AttackRangeCenter()
+    //{
+    //    Vector3 center = this.transform.position + this.transform.forward * _attackRangeCenter.z
+    //        + this.transform.up * _attackRangeCenter.y
+    //        + this.transform.right * _attackRangeCenter.x;
+    //    return center;
+    //}
+    //void Attack()
+    //{
+    //    var hit = Physics.OverlapSphere(AttackRangeCenter(), _attackRangeRadius);
+    //    foreach (var c in hit)
+    //    {
+    //        EnemyBase enemy = c.gameObject.GetComponent<EnemyBase>();
+
+    //        if (enemy)
+    //        {
+    //            enemy.mode = EnemyBase.Action.Hit;
+    //        }
+    //    }
+    //}
     void RockAttack()
     {
         if (_magic.MagicMode == PlayerMagic.Action.Earth)
         {
+            _rockGunOn = _input.aim;
+
             if (_rockGunOn)
             {
                 transform.rotation = Quaternion.Euler(0, Camera.main.transform.transform.localEulerAngles.y, 0);
-            }
-            _rockGunOn = _input.aim;
 
-            if (_rockGunOn && _aimIK.IsAimChange)
-            {
-                _aimIK.chageAim(1f, 0.5f);
-                DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 1.5f, 0.5f);
-                DOTween.To(() => zoom2.m_CameraDistance, num => zoom2.m_CameraDistance = num, 1.5f, 0.5f);
-            }
-            else if (!_rockGunOn && !_aimIK.IsAimChange)
-            {
-                _aimIK.chageAim(0f, 0.5f);
-                DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 2.5f, 0.5f);
-                DOTween.To(() => zoom2.m_CameraDistance, num => zoom2.m_CameraDistance = num, 2f, 0.5f);
-            }
+                if (_aimIK.IsAimChange)
+                {
+                    _aimIK.chageAim(1f, 0.5f);
+                    DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 1.5f, 0.5f);
+                    DOTween.To(() => zoom2.m_CameraDistance, num => zoom2.m_CameraDistance = num, 1.5f, 0.5f);
+                }
 
-            if (_rockGunOn)
-            {
                 if (!_isrockAimEff)
                 {
                     _rockAimEff.SetActive(true);
                     _isrockAimEff = true;
                 }
+
                 if (_magic.Ammo > 0 && _input.shoot)
                 {
                     StartCoroutine(_magic.ShootTimer());
@@ -339,6 +355,12 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                if (!_aimIK.IsAimChange)
+                {
+                    _aimIK.chageAim(0f, 0.5f);
+                    DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 2.5f, 0.5f);
+                    DOTween.To(() => zoom2.m_CameraDistance, num => zoom2.m_CameraDistance = num, 2f, 0.5f);
+                }
                 if (_isrockAimEff)
                 {
                     _rockAimEff.SetActive(false);
@@ -346,6 +368,20 @@ public class PlayerController : MonoBehaviour
                 }
             }
             _anim.SetBool("RockGun", _input.aim);
+        }
+        else if (_rockGunOn && !_aimIK.IsAimChange && _magic.MagicMode != PlayerMagic.Action.Earth)
+        {
+            _aimIK.chageAim(0f, 0.5f);
+            DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 2.5f, 0.5f);
+            DOTween.To(() => zoom2.m_CameraDistance, num => zoom2.m_CameraDistance = num, 2f, 0.5f);
+
+            _rockGunOn = false;
+            if (_isrockAimEff)
+            {
+                _rockAimEff.SetActive(false);
+                _isrockAimEff = false;
+            }
+            _anim.SetBool("RockGun", false);
         }
     }
 

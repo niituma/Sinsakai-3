@@ -65,9 +65,10 @@ public class EnemyBase : MonoBehaviour
     {
         if (mode == Action.Hit)
         {
-            Ishit = true;
-            if(player)
+            if (player)
                 _time = 0;
+            if (!Ishit)
+                Ishit = true;
             _myhp.Damage(10, 15);
             mode = Action.Wait;
         }
@@ -82,6 +83,10 @@ public class EnemyBase : MonoBehaviour
             _time = 0;
             Isbighit = true;
             StartCoroutine(ChangeModeWait(2));
+        }
+        else if (Ishit)
+        {
+            Ishit = false;
         }
         Sarch();
         //経路探索の準備ができておらず

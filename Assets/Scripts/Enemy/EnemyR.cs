@@ -32,29 +32,27 @@ public class EnemyR : EnemyBase
     private new void Update()
     {
         base.Update();
-
         AttackTime();
-    }
-    private new void FixedUpdate()
-    {
-        base.FixedUpdate();
     }
     private void LateUpdate()
     {
         _anim.SetBool("Attack", _isattack);
         _anim.SetBool("Ground", IsGrounded());
         _anim.SetFloat("Speed", _animationspeed);
-        _anim.SetBool("Hit", Ishit);
         _anim.SetBool("Big Hit", Isbighit);
-        _anim.SetBool("Shoot Hit", IsShoothit);
         if (Isbighit)
             Isbighit = false;
-        if (Ishit)
-            Ishit = false;
+        _anim.SetBool("Shoot Hit", IsShoothit);
         if (IsShoothit)
             IsShoothit = false;
+        _anim.SetBool("Hit", Ishit);
+        if (Ishit)
+            Ishit = false;
     }
-
+    private new void FixedUpdate()
+    {
+        base.FixedUpdate();
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "PMagic")
@@ -68,6 +66,7 @@ public class EnemyR : EnemyBase
             _anim.SetBool("Big Hit", true);
         }
     }
+
     void OnAnimatorIK(int layerIndex)
     {
         // LookAt の重みとターゲットを指定する

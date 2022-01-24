@@ -15,6 +15,7 @@ public class EnemyHPBar : MonoBehaviour
 
     void Start()
     {
+        currentHp = maxHp;
         slider.value = 1;
     }
 
@@ -25,9 +26,6 @@ public class EnemyHPBar : MonoBehaviour
             Instantiate(_corpse, this.transform.position, this.transform.rotation);
             Destroy(this.gameObject);
         }
-
-        if (currentHp >= maxHp)
-            currentHp = maxHp;
     }
 
     //ColliderオブジェクトのIsTriggerにチェック入れること。
@@ -52,7 +50,7 @@ public class EnemyHPBar : MonoBehaviour
             }
         }
     }
-    public void Damage(float min , float max)
+    public void Damage(float min, float max)
     {
         if (slider && !mutekimode)
         {

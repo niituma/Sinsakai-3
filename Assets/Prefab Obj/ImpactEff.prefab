@@ -14390,7 +14390,7 @@ GameObject:
   - component: {fileID: 1831050035351377606}
   - component: {fileID: 1997585730261069854}
   - component: {fileID: 1999469844796874806}
-  - component: {fileID: 5278244308434317090}
+  - component: {fileID: 2007478452514132945}
   m_Layer: 0
   m_Name: ImpactEff
   m_TagString: PMagic
@@ -19113,7 +19113,7 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
---- !u!114 &5278244308434317090
+--- !u!114 &2007478452514132945
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

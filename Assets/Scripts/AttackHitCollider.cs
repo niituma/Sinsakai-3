@@ -29,7 +29,10 @@ public class AttackHitCollider : MonoBehaviour
                     Ehp.Damage(40, 50);
                 }
                 else
+                {
+                    enemy.Ishit = true;
                     enemy.mode = EnemyBase.Action.Hit;
+                }
 
             }
         }
