@@ -24,6 +24,7 @@ public class PlayerMagic : MonoBehaviour
     bool shooting = default;
     [SerializeField] int maxAmmo = 100;
     int ammo;
+    [SerializeField] GameObject _world = default;
     public int Ammo
     {
         set
@@ -147,30 +148,34 @@ public class PlayerMagic : MonoBehaviour
     }
     void Magic(int magics)
     {
+        GameObject obj = null;
+
         switch (magics)
         {
             case 0:
-                Instantiate(_impactEff, _leftattackmuzzle.transform.position, this.transform.rotation);
+                obj = Instantiate(_impactEff, _leftattackmuzzle.transform.position, this.transform.rotation);
                 break;
             case 1:
-                Instantiate(_impactEff, _rightattackmuzzle.transform.position, this.transform.rotation);
+                obj = Instantiate(_impactEff, _rightattackmuzzle.transform.position, this.transform.rotation);
                 break;
             case 2:
-                Instantiate(_magiceff, _rightattackmuzzle.transform.position, this.transform.rotation);
+                obj = Instantiate(_magiceff, _rightattackmuzzle.transform.position, this.transform.rotation);
                 _magiclimiter += 13f;
                 break;
             case 3:
-                Instantiate(_FireSEff, transform.position, Quaternion.identity);
+                obj = Instantiate(_FireSEff, transform.position, Quaternion.identity);
                 break;
             case 4:
-                Instantiate(_IceBommerEff, _rightattackmuzzle.transform.position, this.transform.rotation);
+                obj = Instantiate(_IceBommerEff, _rightattackmuzzle.transform.position, this.transform.rotation);
                 break;
             case 5:
-                Instantiate(_EarthSpikeEff, _magicMuzzle.transform.position, this.transform.rotation);
+                obj = Instantiate(_EarthSpikeEff, _magicMuzzle.transform.position, this.transform.rotation);
                 break;
             default:
                 break;
         }
+
+        obj.transform.parent = _world.transform;
     }
     void ConboSwith(int OnOff)
     {
