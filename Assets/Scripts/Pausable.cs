@@ -71,7 +71,7 @@ public class Pausable : MonoBehaviour
         {
             _pausingAnimators[i].speed = 0;
         }
-        for (int i = 0; i < _pausingAnimators.Length; i++)
+        for (int i = 0; i < _particles.Length; i++)
         {
             _particles[i].Pause();
         }
@@ -112,7 +112,7 @@ public class Pausable : MonoBehaviour
         {
             _pausingAnimators[i].speed = 1;
         }
-        for (int i = 0; i < _pausingAnimators.Length; i++)
+        for (int i = 0; i < _particles.Length; i++)
         {
             _particles[i].Play();
         }
