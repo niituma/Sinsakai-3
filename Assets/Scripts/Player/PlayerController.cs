@@ -553,7 +553,7 @@ public class PlayerController : MonoBehaviour
         if (_isclimd)
         {
             _rb.isKinematic = true;
-            transform.rotation = yrot.rotation;
+            this.transform.eulerAngles = yrot.eulerAngles;
             this.transform.DOMove(handPos, 1f);
         }
     }
