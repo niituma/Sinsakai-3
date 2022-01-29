@@ -553,9 +553,10 @@ public class PlayerController : MonoBehaviour
         if (_isclimd)
         {
             _rb.isKinematic = true;
-            this.transform.eulerAngles = yrot.eulerAngles;
+            transform.eulerAngles = yrot.transform.eulerAngles;
             this.transform.DOMove(handPos, 1f);
         }
+
     }
     void HandleSarchSwitch(int UpDown)
     {
