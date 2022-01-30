@@ -94,6 +94,8 @@ public class PlayerController : MonoBehaviour
     Rigidbody _rb = default;
     Animator _anim = default;
 
+    Vector3 yrot = new Vector3(0, 0, 0);
+
 
     void Start()
     {
@@ -113,6 +115,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+
         h = Input.GetAxisRaw("Horizontal");
         v = Input.GetAxisRaw("Vertical");
         _dir = new Vector3(h, 0, v);
@@ -182,10 +185,11 @@ public class PlayerController : MonoBehaviour
         Climb();
         Jump();
         Targets();
+
+
     }
     private void LateUpdate()
     {
-
         _anim.SetBool("Climb", _isclimd);
         _anim.SetBool("Grounded", IsGrounded());
         if (!_isclimd)
@@ -229,6 +233,7 @@ public class PlayerController : MonoBehaviour
     void Move()
     {
         float _targetSpeed;
+        yrot = transform.eulerAngles;
 
         if (_isclimd)
         {
@@ -286,7 +291,6 @@ public class PlayerController : MonoBehaviour
         _attackanimationspeedy = Mathf.Lerp(_attackanimationspeedy, v, Time.deltaTime * 10f);
         _anim.SetFloat("X", _attackanimationspeedx);
         _anim.SetFloat("Y", _attackanimationspeedy);
-
     }
 
     void OnDrawGizmosSelected()
@@ -430,6 +434,7 @@ public class PlayerController : MonoBehaviour
                 GetComponent<AttackAimIK>().enabled = false;
                 _isAttackIK = false;
             }
+            YrotAnim();
         }
         else
         {
@@ -463,15 +468,20 @@ public class PlayerController : MonoBehaviour
             else if (_isclimd)
             {
                 if (_input.jump && v > 0)
+                {
                     _anim.SetBool("NextUpClimb", true);
+                }
                 else
+                {
                     _anim.SetBool("NextUpClimb", false);
+                }
             }
         }
         if (Physics.Raycast(ray5, out hit, _raydis, layerMask))
         {
             if (_isclimd)
             {
+
                 if (_input.jump && v < 0)
                 {
                     _anim.SetBool("NextDownClimb", true);
@@ -548,16 +558,16 @@ public class PlayerController : MonoBehaviour
             _climdIK.ChangeWeight(0, 1);
         }
     }
-    public void GrabLedge(Vector3 handPos, Transform yrot)
+    public void GrabLedge(Vector3 handPos, Transform yrotC)
     {
         if (_isclimd)
         {
             _rb.isKinematic = true;
-            transform.eulerAngles = yrot.transform.eulerAngles;
+            yrot = yrotC.eulerAngles;
             this.transform.DOMove(handPos, 1f);
         }
-
     }
+
     void HandleSarchSwitch(int UpDown)
     {
         _isHandleSarch = !_isHandleSarch;
@@ -714,5 +724,11 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
+    public void YrotAnim()
+    {
+        transform.eulerAngles = yrot;
+    }
+
 }
 
