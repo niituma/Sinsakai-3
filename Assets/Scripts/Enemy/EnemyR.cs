@@ -57,11 +57,11 @@ public class EnemyR : EnemyBase
     {
         if (other.tag == "PMagic")
         {
-            mode = Action.Hit;
+            _stateMode = State.Hit;
         }
         else if (other.tag == "PBigMagic")
         {
-            mode = Action.BHit;
+            _stateMode = State.BHit;
             _myhp.Damage(40, 50);
             _anim.SetBool("Big Hit", true);
         }

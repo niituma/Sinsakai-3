@@ -25,13 +25,13 @@ public class AttackHitCollider : MonoBehaviour
             {
                 if (_hitmode == Action.BigAttack)
                 {
-                    enemy.mode = EnemyBase.Action.BHit;
+                    enemy._stateMode = EnemyBase.State.BHit;
                     Ehp.Damage(40, 50);
                 }
                 else
                 {
                     enemy.Ishit = true;
-                    enemy.mode = EnemyBase.Action.Hit;
+                    enemy._stateMode = EnemyBase.State.Hit;
                 }
 
             }

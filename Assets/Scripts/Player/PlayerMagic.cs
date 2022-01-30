@@ -104,11 +104,11 @@ public class PlayerMagic : MonoBehaviour
             //ヒットエフェクトON
             if (hit.collider.tag == "Enemy")
             {
-                EnemyR enemy = hit.collider.GetComponent<EnemyR>();
+                EnemyBase enemy = hit.collider.GetComponent<EnemyBase>();
 
                 if (enemy)
                 {
-                    enemy.mode = EnemyBase.Action.SHit;
+                    enemy._stateMode = EnemyBase.State.SHit;
                 }
             }
             Instantiate(_shootHitEff, hit.point, this.transform.rotation);

@@ -11,7 +11,7 @@ public class ParticleHit : MonoBehaviour
             EnemyBase enemy = obj.gameObject.GetComponent<EnemyBase>();
             if (enemy)
             {
-                enemy.mode = EnemyBase.Action.Hit;
+                enemy._stateMode = EnemyBase.State.Hit;
             }
         }
     }

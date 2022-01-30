@@ -37,7 +37,14 @@ public class EnemyBase : MonoBehaviour
     //待機時間を数える
     [SerializeField] float _time = 0;
     [SerializeField] Transform central;
-    public enum Action
+
+    public enum EnemyAction
+    {
+        Wandering,
+        Standing
+    }
+    public EnemyAction _actionMode;
+    public enum State
     {
         Walk,
         Wait,
@@ -46,7 +53,7 @@ public class EnemyBase : MonoBehaviour
         BHit,
         SHit
     }
-    public Action mode;
+    public State _stateMode;
 
 
     // Start is called before the first frame update
@@ -54,31 +61,34 @@ public class EnemyBase : MonoBehaviour
     {
         _myhp = GetComponent<EnemyHPBar>();
         _agent = GetComponent<NavMeshAgent>();
-        //目標地点に近づいても速度を落とさなくなる
-        _agent.autoBraking = false;
-        //目標地点を決める
-        GotoNextPoint();
+        if (_actionMode == EnemyAction.Wandering)
+        {
+            //目標地点に近づいても速度を落とさなくなる
+            _agent.autoBraking = false;
+            //目標地点を決める
+            GotoNextPoint();
+        }
     }
 
     // Update is called once per frame
     public void Update()
     {
-        if (mode == Action.Hit)
+        if (_stateMode == State.Hit)
         {
             if (player)
                 _time = 0;
             if (!Ishit)
                 Ishit = true;
             _myhp.Damage(10, 15);
-            mode = Action.Wait;
+            _stateMode = State.Wait;
         }
-        else if (mode == Action.SHit)
+        else if (_stateMode == State.SHit)
         {
             IsShoothit = true;
             _myhp.Damage(5, 10);
-            mode = Action.Wait;
+            _stateMode = State.Wait;
         }
-        else if (mode == Action.BHit)
+        else if (_stateMode == State.BHit)
         {
             _time = 0;
             Isbighit = true;
@@ -89,27 +99,30 @@ public class EnemyBase : MonoBehaviour
             Ishit = false;
         }
         Sarch();
-        //経路探索の準備ができておらず
-        //目標地点までの距離が0.5m未満ならNavMeshAgentを止める
-        if (_agent.pathStatus != NavMeshPathStatus.PathInvalid && !_agent.pathPending && _agent.remainingDistance < 0.5f || mode != Action.Walk)
-            StopHere();
-
-        if (mode == Action.Tracking && !player && mode != Action.Hit)
+        if (_actionMode == EnemyAction.Wandering)
         {
-            GotoNextPoint();
-            _time = 0;
+            //経路探索の準備ができておらず
+            //目標地点までの距離が0.5m未満ならNavMeshAgentを止める
+            if (_agent.pathStatus != NavMeshPathStatus.PathInvalid && !_agent.pathPending && _agent.remainingDistance < 0.5f || _stateMode != State.Walk)
+                StopHere();
+
+            if (_stateMode == State.Tracking && !player && _stateMode != State.Hit)
+            {
+                GotoNextPoint();
+                _time = 0;
+            }
         }
-        Debug.Log(mode);
+        Debug.Log(_stateMode);
     }
     public void GotoNextPoint()
     {
         if (_agent.pathStatus != NavMeshPathStatus.PathInvalid)
         {
             //navMeshAgentの操作
-            if (mode != Action.Hit)
+            if (_stateMode != State.Hit)
             {
-                if (mode != Action.Walk)
-                    mode = Action.Walk;
+                if (_stateMode != State.Walk)
+                    _stateMode = State.Walk;
                 //NavMeshAgentのストップを解除
                 _agent.isStopped = false;
 
@@ -132,12 +145,12 @@ public class EnemyBase : MonoBehaviour
     {
         if (_agent.pathStatus != NavMeshPathStatus.PathInvalid)
         {
-            if (mode != Action.Wait && !player)
-                mode = Action.Wait;
+            if (_stateMode != State.Wait && !player)
+                _stateMode = State.Wait;
             //NavMeshAgentを止める
             _agent.isStopped = true;
 
-            if (mode == Action.Wait && !player)
+            if (_stateMode == State.Wait && !player)
             {
                 //待ち時間を数える
                 _time += Time.deltaTime;
@@ -182,6 +195,11 @@ public class EnemyBase : MonoBehaviour
             var lookRotation = Quaternion.LookRotation(dir);
             transform.rotation = Quaternion.Lerp(transform.rotation, lookRotation, Time.deltaTime * _turnSpeed);
         }
+        else
+        {
+            if (_stateMode != State.Wait && _actionMode == EnemyAction.Standing)
+                _stateMode = State.Wait;
+        }
     }
     Vector3 AttackRangeCenter()
     {
@@ -192,8 +210,8 @@ public class EnemyBase : MonoBehaviour
     }
     void Attack()
     {
-        if (mode != Action.Tracking)
-            mode = Action.Wait;
+        if (_stateMode != State.Tracking)
+            _stateMode = State.Wait;
         var hit = Physics.OverlapSphere(AttackRangeCenter(), _attackRangeRadius);
         foreach (var c in hit)
         {
@@ -207,27 +225,31 @@ public class EnemyBase : MonoBehaviour
     }
     private void Move()
     {
-        if (mode == Action.Tracking || mode == Action.Walk)
+        if (_stateMode == State.Tracking || _stateMode == State.Walk)
         {
             _targetspeed = _speed;
         }
-        else if (GetComponent<Rigidbody>().IsSleeping() || mode == Action.Wait)
+        else if (GetComponent<Rigidbody>().IsSleeping() || _stateMode == State.Wait)
         {
             _targetspeed = 0;
         }
+
 
         if (player && !_stopmove)
         {
             if (Vector3.Distance(transform.position, player.transform.position) < _movingdis)
                 _targetspeed = 0;
-
-            if (Vector3.Distance(transform.position, player.transform.position) >= _movingdis && _agent.enabled)
+            if (Vector3.Distance(transform.position, player.transform.position) >= _movingdis)
             {
-                if (mode != Action.Tracking && mode != Action.Hit && mode != Action.BHit)
-                    mode = Action.Tracking;
+                if (_actionMode == EnemyAction.Standing || _actionMode == EnemyAction.Wandering && _agent.enabled)
+                {
+                    if (_stateMode != State.Tracking && _stateMode != State.Hit && _stateMode != State.BHit && _stateMode != State.SHit)
+                        _stateMode = State.Tracking;
 
-                transform.position = Vector3.MoveTowards(transform.position, player.transform.position, _targetspeed * Time.deltaTime);
+                    transform.position = Vector3.MoveTowards(transform.position, player.transform.position, _targetspeed * Time.deltaTime);
+                }
             }
+
         }
 
         _animationspeed = Mathf.Lerp(_animationspeed, _targetspeed, Time.deltaTime * _changespeed);
@@ -235,7 +257,7 @@ public class EnemyBase : MonoBehaviour
     IEnumerator ChangeModeWait(float time)
     {
         yield return new WaitForSeconds(time);
-        mode = Action.Wait;
+        _stateMode = State.Wait;
     }
     private void ResetTimer()
     {
