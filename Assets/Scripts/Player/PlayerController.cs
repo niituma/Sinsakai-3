@@ -47,9 +47,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Vector3 _gettargetsRangeCenter = default;
     /// <summary>敵のターゲットロックできる範囲の半径</summary>
     [SerializeField] float _targetsRangeRadius = 1f;
-    /// <summary>敵のターゲットロックできる範囲の半径</summary>
-    [SerializeField] Vector3 _attackRangeCenter = default;
-    [SerializeField] float _attackRangeRadius = 1f;
 
     [Header("ターゲットロック")]
     [SerializeField] CinemachineVirtualCamera _mousecamera;
@@ -207,6 +204,15 @@ public class PlayerController : MonoBehaviour
         {
             _input.avd = false;
         }
+
+        if (_input.move == Vector2.zero)
+        {
+            _anim.SetBool("Standing", true);
+        }
+        else
+        {
+            _anim.SetBool("Standing", false);
+        }
     }
 
     void FixedUpdate()
@@ -309,26 +315,6 @@ public class PlayerController : MonoBehaviour
             + this.transform.right * _gettargetsRangeCenter.x;
         return center;
     }
-    //Vector3 AttackRangeCenter()
-    //{
-    //    Vector3 center = this.transform.position + this.transform.forward * _attackRangeCenter.z
-    //        + this.transform.up * _attackRangeCenter.y
-    //        + this.transform.right * _attackRangeCenter.x;
-    //    return center;
-    //}
-    //void Attack()
-    //{
-    //    var hit = Physics.OverlapSphere(AttackRangeCenter(), _attackRangeRadius);
-    //    foreach (var c in hit)
-    //    {
-    //        EnemyBase enemy = c.gameObject.GetComponent<EnemyBase>();
-
-    //        if (enemy)
-    //        {
-    //            enemy.mode = EnemyBase.Action.Hit;
-    //        }
-    //    }
-    //}
     void RockAttack()
     {
         if (_magic.MagicMode == PlayerMagic.Action.Earth)
@@ -703,7 +689,10 @@ public class PlayerController : MonoBehaviour
     void LockAttack()
     {
         if (_lookon)
-            _isattacklockdir = !_isattacklockdir;
+        {
+            _isattacklockdir = true;
+            StartCoroutine(DelayMethod(0.5f, () => _isattacklockdir = false));
+        }
     }
     public void TargetOff(float hp)
     {
