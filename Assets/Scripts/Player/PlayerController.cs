@@ -80,7 +80,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Vector3 _wallSarchRayOffset = new Vector3(0, 1.6f, 0);
     [SerializeField] Vector3 _SarchRayOffset = new Vector3(4f, 0, 0);
     [SerializeField] Vector3 _SarchRayOffset2 = new Vector3(-1.2f, 0, 0);
-
+    [SerializeField] bool _isSwoop;
 
     ControllerSystem _input;
     TargetLookOn target;
@@ -177,6 +177,10 @@ public class PlayerController : MonoBehaviour
             _isAvo = _input.avd;
             StartCoroutine(DelayMethod(0.3f, () => _isAvo = false));
         }
+        if (_isSwoop)
+        {
+            _rb.AddForce(transform.up * -1f,ForceMode.Impulse);
+        }
         RockAttack();
         TargetLookOn();
         Climb();
@@ -194,6 +198,7 @@ public class PlayerController : MonoBehaviour
         _anim.SetBool("Combo", _magic.Iscombo);
         _anim.SetBool("Hit", _ishit);
         _anim.SetBool("Avoidance", _input.avd);
+        _anim.SetBool("LockOn", _lookon);
         if (_ishit)
         {
             _hp.Damage();
@@ -713,7 +718,18 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
+    public void AttackJump()
+    {
+        _rb.AddForce((transform.forward*5 + transform.up*4) * 20, ForceMode.Impulse);
+    }
+    public void Swoop()
+    {
+        _isSwoop = true;
+    }
+    public void Landing()
+    {
+        _isSwoop = false;
+    }
     public void YrotAnim()
     {
         transform.eulerAngles = yrot;
