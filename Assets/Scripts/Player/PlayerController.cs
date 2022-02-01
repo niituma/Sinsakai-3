@@ -179,7 +179,7 @@ public class PlayerController : MonoBehaviour
         }
         if (_isSwoop)
         {
-            _rb.AddForce(transform.up * -1f,ForceMode.Impulse);
+            _rb.AddForce(transform.up * -1f, ForceMode.Impulse);
         }
         RockAttack();
         TargetLookOn();
@@ -643,8 +643,8 @@ public class PlayerController : MonoBehaviour
                 {
                     _rb.AddForce(Vector3.up * _jumpPower, ForceMode.Impulse);
                 }
-                else if (!_input.jump && velosity.y > 0)
-                    velosity.y *= _gravityPower;
+                //else if (!_input.jump && velosity.y > 0)
+                //    velosity.y *= _gravityPower;
             }
 
             _rb.velocity = velosity;
@@ -720,14 +720,23 @@ public class PlayerController : MonoBehaviour
     }
     public void AttackJump()
     {
-        _rb.AddForce((transform.forward*5 + transform.up*4) * 20, ForceMode.Impulse);
+        _rb.AddForce(transform.up * 200, ForceMode.Impulse);
     }
     public void Swoop()
     {
+        DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 5f, 0.1f);
+        DOTween.To(() => zoom2.m_CameraDistance, num => zoom2.m_CameraDistance = num, 5f, 0.1f);
         _isSwoop = true;
     }
     public void Landing()
     {
+
+        StartCoroutine(DelayMethod(1f, () =>
+        {
+            DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 2.5f, 0.5f);
+            DOTween.To(() => zoom2.m_CameraDistance, num => zoom2.m_CameraDistance = num, 2f, 0.5f);
+        }
+        ));
         _isSwoop = false;
     }
     public void YrotAnim()
