@@ -643,8 +643,8 @@ public class PlayerController : MonoBehaviour
                 {
                     _rb.AddForce(Vector3.up * _jumpPower, ForceMode.Impulse);
                 }
-                //else if (!_input.jump && velosity.y > 0)
-                //    velosity.y *= _gravityPower;
+                else if (!_input.jump && velosity.y > 0)
+                    velosity.y *= _gravityPower;
             }
 
             _rb.velocity = velosity;
@@ -724,8 +724,8 @@ public class PlayerController : MonoBehaviour
     }
     public void Swoop()
     {
-        DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 5f, 0.1f);
-        DOTween.To(() => zoom2.m_CameraDistance, num => zoom2.m_CameraDistance = num, 5f, 0.1f);
+        DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 4.5f, 0.1f);
+        DOTween.To(() => zoom2.m_CameraDistance, num => zoom2.m_CameraDistance = num, 4.5f, 0.1f);
         _isSwoop = true;
     }
     public void Landing()
