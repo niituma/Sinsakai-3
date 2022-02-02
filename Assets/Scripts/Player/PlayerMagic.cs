@@ -15,6 +15,7 @@ public class PlayerMagic : MonoBehaviour
     [SerializeField] GameObject _EarthSpikeEff = default;
     [SerializeField] GameObject _rightattackmuzzle = default;
     [SerializeField] GameObject _leftattackmuzzle = default;
+    [SerializeField] GameObject _rockAimPoint = default;
     [SerializeField] GameObject _shootHitEff = default;
     [SerializeField] float _magicCoolDownSpeed = 2f;
     [SerializeField] float _magiclimiter = 0f;
@@ -95,7 +96,7 @@ public class PlayerMagic : MonoBehaviour
     }
     void Shoot()
     {
-        Ray ray = new Ray(_rightattackmuzzle.transform.position, transform.forward);
+        Ray ray = new Ray(_rockAimPoint.transform.position, _rockAimPoint.transform.forward);
         RaycastHit hit;
         Debug.DrawRay(ray.origin, ray.direction * shootRange, Color.red);
         //レイを飛ばして、ヒットしたオブジェクトの情報を得る
