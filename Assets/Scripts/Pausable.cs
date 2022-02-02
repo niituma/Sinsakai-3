@@ -18,8 +18,10 @@ public class RigidbodyVelocity
 
 public class Pausable : MonoBehaviour
 {
+    /// <summary>/// 動かなくするPlayer/// </summary>
+    [SerializeField] GameObject _player;
     /// <summary>/// 無視するGameObject/// </summary>
-    public GameObject[] _ignoreGameObjects;
+    [SerializeField] GameObject[] _ignoreGameObjects;
     /// <summary>/// ポーズ状態が変更された瞬間を調べるため、前回のポーズ状況を記録しておく/// </summary>
     bool prevPausing;
     /// <summary>/// Rigidbodyのポーズ前の速度の配列/// </summary>
@@ -48,6 +50,8 @@ public class Pausable : MonoBehaviour
     /// <summary>///中断/// </summary>
     void Pause()
     {
+        //playerの物理的な動きを止める
+        _player.GetComponent<Rigidbody>().isKinematic = true;
         // Rigidbodyの停止
         // 子要素から、スリープ中でなく、IgnoreGameObjectsに含まれていないRigidbodyを抽出
         Predicate<Rigidbody> rigidbodyPredicate =
@@ -101,6 +105,8 @@ public class Pausable : MonoBehaviour
     /// <summary>/// 再開/// </summary>
     void Resume()
     {
+        //playerの物理的な動きを再開
+        _player.GetComponent<Rigidbody>().isKinematic = false;
         // Rigidbodyの再開
         for (int i = 0; i < _pausingRigidbodies.Length; i++)
         {

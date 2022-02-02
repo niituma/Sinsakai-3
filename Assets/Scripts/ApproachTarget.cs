@@ -14,9 +14,9 @@ public class ApproachTarget : MonoBehaviour
     [SerializeField] Vector3 _gettargetsRangeCenter = default;
     /// <summary>敵のターゲットロックできる範囲の半径</summary>
     [SerializeField] float _targetsRangeRadius = 1f;
-    [SerializeField] GameObject _hitEff = default;
     [SerializeField] GameObject _createIce = default;
     List<Collider> _enemyList = new List<Collider>();
+    GameObject _world = default;
     GameObject[] _targets = default;
     Rigidbody _rb = default;
 
@@ -25,6 +25,7 @@ public class ApproachTarget : MonoBehaviour
     void Start()
     {
         _rb = GetComponent<Rigidbody>();
+        _world = GameObject.FindGameObjectWithTag("World");
         _targets = GameObject.FindGameObjectsWithTag("Enemy");
         _rb.velocity = this.transform.forward * _moveSpeed;
         Destroy(gameObject, _lifetime);
@@ -48,27 +49,6 @@ public class ApproachTarget : MonoBehaviour
                 }
             }
         }
-
-        //GameObject _neartarget = _targets?.OrderBy(t => Vector3.Distance(t.transform.position, this.transform.position)).FirstOrDefault();
-
-        //if (_neartarget != null)
-        //{
-        //    Vector3 targetPos = _neartarget.transform.position;
-
-        //    targetPos.y = transform.position.y;
-        //    // オブジェクトを変数 targetPos の座標方向に向かせる
-        //    transform.LookAt(targetPos);
-
-        //    float distance = Vector3.Distance(transform.position, _neartarget.transform.position);
-        //    // オブジェクトとターゲットオブジェクトの距離判定
-        //    // 変数 distance（ターゲットオブジェクトとオブジェクトの距離）が変数 moveDistance の値より小さければ
-        //    if (distance <= _moveDistance)
-        //    {
-        //        // 変数 lookonSpeed を乗算した速度でオブジェクトを移動させる
-        //        this.transform.position = Vector3.MoveTowards(this.transform.position, targetPos, _lookonspeed * Time.deltaTime);
-        //    }
-        //}
-
     }
     void OnDrawGizmosSelected()
     {
@@ -84,15 +64,14 @@ public class ApproachTarget : MonoBehaviour
     }
     private void OnDestroy()
     {
-        Instantiate(_createIce, transform.position, Quaternion.identity);
+        var obj = Instantiate(_createIce, transform.position, Quaternion.identity);
+        obj.transform.parent = _world.transform;
         FindObjectOfType<EnemyIskinematicOff>().ListTarget(EnemyList);
     }
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag != "Enemy" && other.tag != "Player")
         {
-            Instantiate(_hitEff, transform.position, Quaternion.identity);
-            Instantiate(_createIce, transform.position, Quaternion.identity);
             Destroy(this.gameObject);
         }
     }

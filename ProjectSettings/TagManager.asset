@@ -12,6 +12,7 @@ TagManager:
   - PMagic
   - PBigMagic
   - EnemyHit
+  - World
   layers:
   - Default
   - TransparentFX

@@ -112,7 +112,8 @@ public class PlayerMagic : MonoBehaviour
                     enemy._stateMode = EnemyBase.State.SHit;
                 }
             }
-            Instantiate(_shootHitEff, hit.point, this.transform.rotation);
+            var obj=　Instantiate(_shootHitEff, hit.point, this.transform.rotation);
+            obj.transform.parent = _world.transform;
             //★ここに敵へのダメージ処理などを追加
         }
         Ammo--;

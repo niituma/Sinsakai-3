@@ -20,11 +20,6 @@ public class ControllerSystem : MonoBehaviour
 	[Header("Movement Settings")]
 	public bool analogMovement;
 
-#if !UNITY_IOS || !UNITY_ANDROID
-	[Header("Mouse Cursor Settings")]
-	public bool cursorLocked = true;
-	public bool cursorInputForLook = true;
-#endif
 
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 	public void OnMove(InputValue value)
@@ -115,20 +110,4 @@ public class ControllerSystem : MonoBehaviour
 	{
 		sprint = newSprintState;
 	}
-
-#if !UNITY_IOS || !UNITY_ANDROID
-
-	private void OnApplicationFocus(bool hasFocus)
-	{
-		SetCursorState(cursorLocked);
-	}
-
-	private void SetCursorState(bool newState)
-	{
-		Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
-	}
-
-#endif
-
-
 }
