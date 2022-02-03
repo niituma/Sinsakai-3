@@ -1,22 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance => _instance;
-    private static GameManager _instance;
-
-    [SerializeField] GameObject PausePanel = default;
     [SerializeField] bool cursorLocked = true;
     bool _ispause = default;
     public bool Ispause { get => _ispause; set => _ispause = value; }
-    private void Awake()
-    {
-        _instance = this;
-        DontDestroyOnLoad(this.gameObject);
-    }
     private void Start()
     {
         Cursor.visible = false;
@@ -27,7 +18,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetButtonDown("Cancel"))
         {
             SetCursorState();
-            PauseResume();
+            _ispause = !_ispause;
         }
     }
     public void SetCursorState()
@@ -36,20 +27,12 @@ public class GameManager : MonoBehaviour
         Cursor.visible = cursorLocked ? false : true;
         Cursor.lockState = cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
     }
-    public void PauseResume()
+    public void ClosePauseUI()
     {
-        Ispause = !Ispause;
-
-        if (Ispause)
-        {
-            PausePanel.SetActive(true);
-            Cursor.visible = true;
-        }
-        else
-        {
-            PausePanel.SetActive(false);
-            Cursor.visible = false;
-        }
-
+        _ispause = false;
+    }
+    public void LoadScene(int num)
+    {
+        SceneManager.LoadScene(num);
     }
 }

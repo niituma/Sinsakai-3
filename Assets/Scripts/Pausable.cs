@@ -20,6 +20,9 @@ public class Pausable : MonoBehaviour
 {
     /// <summary>/// 動かなくするPlayer/// </summary>
     [SerializeField] GameObject _player;
+    [SerializeField] GameObject _pausePanel = default;
+    /// <summary>/// OnOffの信号を送るGameManager/// </summary>
+    [SerializeField] GameManager _gameManager;
     /// <summary>/// 無視するGameObject/// </summary>
     [SerializeField] GameObject[] _ignoreGameObjects;
     /// <summary>/// ポーズ状態が変更された瞬間を調べるため、前回のポーズ状況を記録しておく/// </summary>
@@ -34,16 +37,22 @@ public class Pausable : MonoBehaviour
     MonoBehaviour[] _pausingMonoBehaviours;
     NavMeshAgent[] pausingNav;
     ParticleSystem[] _particles;
-
-
     void Update()
     {
         // ポーズ状態が変更されていたら、Pause/Resumeを呼び出す。
-        if (prevPausing != GameManager.Instance.Ispause)
+        if (prevPausing != _gameManager.Ispause)
         {
-            if (GameManager.Instance.Ispause) Pause();
-            else Resume();
-            prevPausing = GameManager.Instance.Ispause;
+            if (_gameManager.Ispause)
+            {
+                _pausePanel.SetActive(true);
+                Pause();
+            }
+            else
+            {
+                Resume();
+                _pausePanel.SetActive(false);
+            }
+            prevPausing = _gameManager.Ispause;
         }
     }
 

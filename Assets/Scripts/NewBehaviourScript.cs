@@ -5,7 +5,7 @@ using System.Linq;
 
 public class NewBehaviourScript : MonoBehaviour
 {
-    [SerializeField, Range(0.0f, 1.0f)] float _timeScale = 1;
+    //[SerializeField, Range(0.0f, 1.0f)] float _timeScale = 1;
     Rigidbody _rb;
     private void Start()
     {
