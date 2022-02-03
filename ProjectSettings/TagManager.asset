@@ -29,8 +29,8 @@ TagManager:
   - Particle
   - Player
   - DeadEnemy
-  - 
-  - 
+  - Map
+  - MapUI
   - 
   - 
   - 
