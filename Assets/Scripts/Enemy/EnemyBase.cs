@@ -6,6 +6,7 @@ using UnityEngine.AI;
 
 public class EnemyBase : MonoBehaviour
 {
+    [Tooltip("scene上の一部表示のオンオフ"), SerializeField] bool _debug;
     NavMeshAgent _agent;
     protected EnemyHPBar _myhp = default;
     [SerializeField] float _turnSpeed = 8.0f;
@@ -112,7 +113,11 @@ public class EnemyBase : MonoBehaviour
                 _time = 0;
             }
         }
-        Debug.Log(_stateMode);
+        if (_debug)
+        {
+            Debug.Log(_stateMode);
+        }
+
     }
     public void GotoNextPoint()
     {
@@ -131,7 +136,7 @@ public class EnemyBase : MonoBehaviour
                 float posZ = Random.Range(-1 * _radius, _radius);
 
                 //CentralPointの位置にPosXとPosZを足す
-                Vector3 pos = central.position;
+                Vector3 pos = this.transform.parent.position;
                 pos.x += posX;
                 pos.z += posZ;
 
@@ -172,10 +177,14 @@ public class EnemyBase : MonoBehaviour
     public void OnDrawGizmosSelected()
     {
         // 攻撃範囲を赤い線でシーンビューに表示する
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(PlayerSarchRangeCenter(), _sarchsRangeRadius);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(AttackRangeCenter(), _attackRangeRadius);
+        if (_debug)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(PlayerSarchRangeCenter(), _sarchsRangeRadius);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(AttackRangeCenter(), _attackRangeRadius);
+        }
+
     }
     Vector3 PlayerSarchRangeCenter()
     {
