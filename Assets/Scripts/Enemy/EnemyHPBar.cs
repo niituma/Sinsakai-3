@@ -23,7 +23,8 @@ public class EnemyHPBar : MonoBehaviour
     {
         if (slider?.value <= 0)
         {
-            Instantiate(_corpse, this.transform.position, this.transform.rotation);
+            var obj = Instantiate(_corpse, this.transform.position, this.transform.rotation);
+            obj.transform.parent = this.transform.parent;
             Destroy(this.gameObject);
         }
     }
