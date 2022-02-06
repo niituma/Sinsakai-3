@@ -177,6 +177,10 @@ public class PlayerController : MonoBehaviour
             _isAvo = _input.avd;
             StartCoroutine(DelayMethod(0.3f, () => _isAvo = false));
         }
+        if (_isAvo)
+        {
+            _stopmovedir = false;
+        }
         if (_isSwoop)
         {
             _rb.AddForce(transform.up * -1f, ForceMode.Impulse);
@@ -324,6 +328,7 @@ public class PlayerController : MonoBehaviour
     {
         if (_magic.MagicMode == PlayerMagic.Action.Earth)
         {
+
             _rockGunOn = _input.aim;
 
             if (_rockGunOn)
@@ -347,6 +352,7 @@ public class PlayerController : MonoBehaviour
                 {
                     StartCoroutine(_magic.ShootTimer());
                 }
+
             }
             else
             {
@@ -634,7 +640,7 @@ public class PlayerController : MonoBehaviour
     }
     void Jump()
     {
-        if (!_isclimd)
+        if (!_isclimd && !_rockGunOn)
         {
             Vector3 velosity = _rb.velocity;
             if (IsGrounded())

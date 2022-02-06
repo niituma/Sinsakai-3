@@ -7,9 +7,15 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] bool cursorLocked = true;
     bool _ispause = default;
+    [SerializeField] GameObject _fadePanel = default;
+    [SerializeField] GameObject _player = default;
+    ControllerSystem _playercon;
+    FadeOutIn _fade;
     public bool Ispause { get => _ispause; set => _ispause = value; }
     private void Start()
     {
+        _playercon = _player.GetComponent<ControllerSystem>();
+        _fade = _fadePanel.GetComponent<FadeOutIn>();
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -18,6 +24,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetButtonDown("Cancel"))
         {
             SetCursorState();
+            _playercon.aim = false;
             _ispause = !_ispause;
         }
     }
@@ -31,8 +38,8 @@ public class GameManager : MonoBehaviour
     {
         _ispause = false;
     }
-    public void LoadScene(int num)
+    public void GameOver()
     {
-        SceneManager.LoadScene(num);
+        _fade.IsFadeOut(1);
     }
 }
