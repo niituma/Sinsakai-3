@@ -28,10 +28,11 @@ public class MinimapIcon : MonoBehaviour
 
     private void Update()
     {
+
         DispIcon();
         if (Vector3.Distance(this.transform.position, _player.transform.position) > 0)
         {
-            transform.position = Vector3.MoveTowards(this.transform.position, _player.transform.position + _offset, 100 * Time.deltaTime);
+            transform.position =  _player.transform.position + _offset;
         }
     }
 
@@ -42,7 +43,6 @@ public class MinimapIcon : MonoBehaviour
     {
         // アイコンを表示する座標
         var iconPos = new Vector3(this.transform.position.x, defaultPosY, this.transform.position.z);
-
         // ミニマップ範囲内の場合はそのまま表示する
         if (CheckInsideMap())
         {
@@ -50,6 +50,7 @@ public class MinimapIcon : MonoBehaviour
             transform.position = iconPos;
             return;
         }
+        
 
         // マップ範囲外の場合、ミニマップ端までのベクトルを求めて半透明で表示する
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, outRangeAlpha);

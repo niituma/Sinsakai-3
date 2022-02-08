@@ -407,7 +407,7 @@ public class PlayerController : MonoBehaviour
         Vector3 origin5 = _climdDownRay.transform.position;
         origin2.y = transform.position.y + curOriginGrabOffset.y;
         origin3.y = origin2.y;
-        raydir = transform.forward + new Vector3(0, 10, 0); // X軸方向を表すベクトル
+        raydir = transform.forward + new Vector3(0, 5, 0); // X軸方向を表すベクトル
         Vector3 raydir2 = transform.forward;
 
         Ray ray = new Ray(origin, raydir); // Rayを生成
@@ -455,7 +455,7 @@ public class PlayerController : MonoBehaviour
         ;
         if (Physics.Raycast(ray, out hit, _raydis, layerMask))
         {
-            if (hit.collider.tag == "Handle" && !_isclimd)
+            if (hit.collider.tag == "Handle" && !_isclimd && IsGrounded())
             {
                 if (_input.jump)
                 {
@@ -560,6 +560,7 @@ public class PlayerController : MonoBehaviour
         if (_isclimd)
         {
             _rb.isKinematic = true;
+            _rb.useGravity = false;
             yrot = yrotC.eulerAngles;
             this.transform.DOMove(handPos, 1f);
         }
@@ -690,6 +691,7 @@ public class PlayerController : MonoBehaviour
                 break;
             case 4:
                 _rb.isKinematic = false;
+                _rb.useGravity = true;
                 _stopmovedir = false;
                 break;
             default:

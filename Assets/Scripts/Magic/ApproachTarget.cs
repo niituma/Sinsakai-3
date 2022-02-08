@@ -15,6 +15,7 @@ public class ApproachTarget : MonoBehaviour
     /// <summary>敵のターゲットロックできる範囲の半径</summary>
     [SerializeField] float _targetsRangeRadius = 1f;
     [SerializeField] GameObject _createIce = default;
+    float _timer = 0;
     List<Collider> _enemyList = new List<Collider>();
     GameObject _world = default;
     GameObject[] _targets = default;
@@ -28,11 +29,16 @@ public class ApproachTarget : MonoBehaviour
         _world = GameObject.FindGameObjectWithTag("World");
         _targets = GameObject.FindGameObjectsWithTag("Enemy");
         _rb.velocity = this.transform.forward * _moveSpeed;
-        Destroy(gameObject, _lifetime);
     }
     void Update()
     {
         _rb.AddForce(Vector3.up * _upspeed);
+
+        _timer += Time.deltaTime;
+        if (_timer > _lifetime)
+        {
+            Destroy(gameObject);
+        }
 
         EnemyList = Physics.OverlapSphere(GetTargetsRangeCenter(), _targetsRangeRadius).Where(t => t.tag == "Enemy").ToList();
         if (EnemyList != null)

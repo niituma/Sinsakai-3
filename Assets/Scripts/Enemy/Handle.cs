@@ -10,10 +10,10 @@ public class Handle : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        newhandpos = new Vector3(_handpos.position.x, _handpos.position.y - _yoffset, _handpos.position.z);
     }
     private void Update()
     {
+        newhandpos = new Vector3(_handpos.position.x, _handpos.position.y - _yoffset, _handpos.position.z);
     }
     private void OnTriggerEnter(Collider other)
     {
