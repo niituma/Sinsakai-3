@@ -64,7 +64,6 @@ public class PlayerController : MonoBehaviour
     [Header("ClimdController")]
     [SerializeField] GameObject _handleSachcollider = default;
     [SerializeField] GameObject _handleSachcollider2 = default;
-    [SerializeField] GameObject _handleSachcollider3 = default;
     bool _isclimd = default;
     bool _isHandleSarch = default;
     bool _isAttackIK = default;
@@ -72,14 +71,14 @@ public class PlayerController : MonoBehaviour
     Vector3 raydir = default;
     [SerializeField] GameObject _climdUpRay = default;
     [SerializeField] GameObject _climdDownRay = default;
-    [SerializeField] private GameObject LHand;
-    [SerializeField] private GameObject RHand;
+    [SerializeField] GameObject LHand;
+    [SerializeField] GameObject RHand;
+    [SerializeField] GameObject _changeLeftRayPos = default;
+    [SerializeField] GameObject _changeRightRayPos = default;
     bool _isLover = default;
     bool _isRover = default;
     [SerializeField] Vector3 curOriginGrabOffset = new Vector3(0, 1.2f, 0);
     [SerializeField] Vector3 _wallSarchRayOffset = new Vector3(0, 1.6f, 0);
-    [SerializeField] Vector3 _SarchRayOffset = new Vector3(4f, 0, 0);
-    [SerializeField] Vector3 _SarchRayOffset2 = new Vector3(-1.2f, 0, 0);
     [SerializeField] bool _isSwoop;
 
     ControllerSystem _input;
@@ -405,6 +404,8 @@ public class PlayerController : MonoBehaviour
         Vector3 origin3 = RHand.transform.position;
         Vector3 origin4 = transform.position + _wallSarchRayOffset;
         Vector3 origin5 = _climdDownRay.transform.position;
+        Vector3 origin6 = _changeLeftRayPos.transform.position;
+        Vector3 origin7 = _changeRightRayPos.transform.position;
         origin2.y = transform.position.y + curOriginGrabOffset.y;
         origin3.y = origin2.y;
         raydir = transform.forward + new Vector3(0, 5, 0); // X軸方向を表すベクトル
@@ -415,8 +416,8 @@ public class PlayerController : MonoBehaviour
         Ray ray3 = new Ray(origin3, raydir2);
         Ray ray4 = new Ray(origin4, raydir2);
         Ray ray5 = new Ray(origin5, raydir2 + new Vector3(0, -90, 0));
-        Ray ray6 = new Ray(origin2, raydir2 + _SarchRayOffset);
-        Ray ray7 = new Ray(origin3, raydir2 + _SarchRayOffset2);
+        Ray ray6 = new Ray(origin6, raydir2);
+        Ray ray7 = new Ray(origin7, raydir2);
         Debug.DrawRay(ray.origin, ray.direction * _raydis, Color.blue); // 長さ３０、赤色で可視化
         Debug.DrawRay(ray4.origin, ray4.direction * _raydis, Color.blue);
         if (_isclimd)
@@ -501,6 +502,12 @@ public class PlayerController : MonoBehaviour
                     {
                         if (hit.collider.tag == "Handle" && h < 0 && _input.jump)
                         {
+                            var handle = hit.collider.gameObject.GetComponent<Handle>();
+                            StartCoroutine(DelayMethod(0.5f, () =>
+                            {
+                                handle.ChanegeNextHandle();
+                                YrotAnim();
+                            }));
                             _anim.CrossFade("Braced Hang Hop Left", 0.2f);
                         }
                     }
@@ -518,6 +525,12 @@ public class PlayerController : MonoBehaviour
                     {
                         if (hit.collider.tag == "Handle" && h > 0 && _input.jump)
                         {
+                            var handle = hit.collider.gameObject.GetComponent<Handle>();
+                            StartCoroutine(DelayMethod(0.5f, () =>
+                            {
+                                handle.ChanegeNextHandle();
+                                YrotAnim();
+                            }));
                             _anim.CrossFade("Braced Hang Hop Right", 0.2f);
                         }
                     }
@@ -575,7 +588,6 @@ public class PlayerController : MonoBehaviour
             case 1:
                 _handleSachcollider.SetActive(true);
                 _handleSachcollider2.SetActive(false);
-                _handleSachcollider3.SetActive(false);
                 break;
             case 2:
                 _handleSachcollider.SetActive(false);
@@ -583,7 +595,6 @@ public class PlayerController : MonoBehaviour
                 break;
             case 3:
                 _handleSachcollider.SetActive(false);
-                _handleSachcollider3.SetActive(true);
                 break;
             default:
                 break;

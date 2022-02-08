@@ -7,9 +7,11 @@ public class Handle : MonoBehaviour
     [SerializeField] Transform _handpos;
     [SerializeField] float _yoffset = 6.5f;
     Vector3 newhandpos;
+    GameObject _player;
     // Start is called before the first frame update
     void Start()
     {
+        _player = GameObject.FindGameObjectWithTag("Player");
     }
     private void Update()
     {
@@ -22,6 +24,11 @@ public class Handle : MonoBehaviour
             var player = other.GetComponentInParent<PlayerController>();
             player.GrabLedge(newhandpos,this.transform);
         }
+    }
+    public void ChanegeNextHandle()
+    {
+        var player = _player.GetComponent<PlayerController>();
+        player.GrabLedge(newhandpos, this.transform);
     }
 
 
