@@ -61,6 +61,10 @@ public class PlayerController : MonoBehaviour
     public bool _lookon = default;
     [SerializeField] public List<Collider> _currentenemy = new List<Collider>();
 
+    [Header("Grapple")]
+    [SerializeField] GameObject _grapplePoint = default;
+    bool _isgrapple = default;
+
     [Header("ClimdController")]
     [SerializeField] GameObject _handleSachcollider = default;
     [SerializeField] GameObject _handleSachcollider2 = default;
@@ -170,6 +174,18 @@ public class PlayerController : MonoBehaviour
                 _skillDashTime = 0;
             }
         }
+        //if (Input.GetKeyDown(KeyCode.F))
+        //{
+        //    _isgrapple = true;
+        //}
+        if (_grapplePoint.activeSelf)
+        {
+            if (Vector3.Distance(_grapplePoint.transform.position, transform.position) < 2f)
+            {
+                //_anim.applyRootMotion = true;
+                //_grapplePoint.SetActive(false);
+            }
+        }
         _isjump = _input.jump;
         if (_input.avd)
         {
@@ -202,6 +218,11 @@ public class PlayerController : MonoBehaviour
         _anim.SetBool("Hit", _ishit);
         _anim.SetBool("Avoidance", _input.avd);
         _anim.SetBool("LockOn", _lookon);
+        _anim.SetBool("Grapple", _isgrapple);
+        if (_isgrapple)
+        {
+            _isgrapple = false;
+        }
         if (_ishit)
         {
             _hp.Damage();
@@ -757,6 +778,11 @@ public class PlayerController : MonoBehaviour
         }
         ));
         _isSwoop = false;
+    }
+    public void Grapple()
+    {
+        _anim.applyRootMotion = false;
+        _grapplePoint.SetActive(true);
     }
     public void YrotAnim()
     {
