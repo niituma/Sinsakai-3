@@ -18,7 +18,7 @@ public class TargetLookOn : MonoBehaviour
 
     void Start()
     {
-        _player = GameObject.Find("Player");
+        _player = GameObject.FindGameObjectWithTag("Player");
         targets = playercon.GetComponent<PlayerController>();
     }
 
