@@ -9,6 +9,8 @@ public class PlayerHP : MonoBehaviour
     //最大HPと現在のHP。
     [SerializeField] float maxHp = 200;
     float currentHp = 200;
+    [Tooltip("Playerが死亡する"), SerializeField]
+    bool _isDead = false;
     //Sliderを入れる
     [SerializeField] public Slider slider;
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
@@ -19,6 +21,7 @@ public class PlayerHP : MonoBehaviour
     [SerializeField] int _maxShield = 3;
     [SerializeField] float _heelShieldTimer = 0;
     [SerializeField] float _heelShieldlimitTime = 10f;
+    //[SerializeField] GameManager _gm = default;
     int _damageCut = 60;
     int _breakDamageCut = 20;
     bool _isShieldBreak = default;
@@ -35,7 +38,7 @@ public class PlayerHP : MonoBehaviour
 
     private void Update()
     {
-        if (slider?.value <= 0)
+        if (slider?.value <= 0 || _isDead)
         {
             _playerCon.TargetOff(slider.value);
             Instantiate(_corpse, this.transform.position, this.transform.rotation);

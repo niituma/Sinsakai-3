@@ -9,6 +9,8 @@ public class FadeOutIn : MonoBehaviour
 {
     [SerializeField]float _fadeInSpeed = 0.8f;
     [SerializeField] float _fadeOutSpeed = 0.01f;
+    [Tooltip("画面が真っ暗になってからシーン遷移を待つ時間"), SerializeField] 
+    float _sceneDlaytime = 3f;
     float red, green, blue;
     float alfa;
     [SerializeField] bool _isFadeOut = default;
@@ -63,7 +65,7 @@ public class FadeOutIn : MonoBehaviour
         fadeImage.color = new Color(red, green, blue, alfa);    // c)変更した透明度をパネルに反映する
         if (alfa >= 1)
         {
-            StartCoroutine(DelayMethod(3f, () =>
+            StartCoroutine(DelayMethod(_sceneDlaytime, () =>
             {
                 _isFadeOut = false;  //d)パネルの表示をオフにする
                 SceneManager.LoadScene(_scenenum);
