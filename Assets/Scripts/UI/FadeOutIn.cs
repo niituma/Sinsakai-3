@@ -7,7 +7,8 @@ using UnityEngine.UI;
 
 public class FadeOutIn : MonoBehaviour
 {
-    [SerializeField]float _fadeSpeed = 0.8f;
+    [SerializeField]float _fadeInSpeed = 0.8f;
+    [SerializeField] float _fadeOutSpeed = 0.01f;
     float red, green, blue;
     float alfa;
     [SerializeField] bool _isFadeOut = default;
@@ -48,7 +49,7 @@ public class FadeOutIn : MonoBehaviour
     }
     void StartFadeIn()
     {
-        alfa -= _fadeSpeed * Time.deltaTime;                //a)不透明度を徐々に下げる
+        alfa -= _fadeInSpeed * Time.deltaTime;                //a)不透明度を徐々に下げる
         fadeImage.color = new Color(red, green, blue, alfa);    //b)変更した不透明度パネルに反映する
         if (alfa <= 0)
         {
@@ -58,11 +59,11 @@ public class FadeOutIn : MonoBehaviour
     }
     void StartFadeOut()
     {
-        alfa += Time.deltaTime;         // b)不透明度を徐々にあげる
+        alfa += _fadeOutSpeed * Time.deltaTime;         // b)不透明度を徐々にあげる
         fadeImage.color = new Color(red, green, blue, alfa);    // c)変更した透明度をパネルに反映する
         if (alfa >= 1)
         {
-            StartCoroutine(DelayMethod(0.5f, () =>
+            StartCoroutine(DelayMethod(3f, () =>
             {
                 _isFadeOut = false;  //d)パネルの表示をオフにする
                 SceneManager.LoadScene(_scenenum);

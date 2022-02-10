@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     bool _ispause = default;
     [SerializeField] GameObject _fadePanel = default;
     [SerializeField] GameObject _player = default;
+    [SerializeField] GameObject _gameOverText = default;
     ControllerSystem _playercon;
     FadeOutIn _fade;
     public bool Ispause { get => _ispause; set => _ispause = value; }
@@ -40,6 +41,7 @@ public class GameManager : MonoBehaviour
     }
     public void GameOver()
     {
+        _gameOverText.SetActive(true);
         _fade.IsFadeOut(1);
     }
 }
