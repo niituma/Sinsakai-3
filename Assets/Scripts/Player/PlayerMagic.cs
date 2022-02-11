@@ -51,11 +51,13 @@ public class PlayerMagic : MonoBehaviour
 
     Animator _anim = default;
     ControllerSystem _input;
+    PlayerAudio _paudio;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        _paudio = GetComponent<PlayerAudio>();
         _anim = GetComponent<Animator>();
         _input = GetComponent<ControllerSystem>();
         _overparticle = _magicoverparticle.GetComponent<ParticleSystem>();
@@ -84,7 +86,7 @@ public class PlayerMagic : MonoBehaviour
         if (!shooting)
         {
             shooting = true;
-
+            _paudio.RockGun();
             Shoot();
             yield return new WaitForSeconds(shootInterval);
             shooting = false;

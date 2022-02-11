@@ -1,44 +1,60 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
     [SerializeField] AudioClip BGM = default;
     [SerializeField] AudioClip GameOverBGM = default;
+    [SerializeField] AudioClip _cancelSE = default;
+    [SerializeField] AudioClip _pushSE = default;
     bool _isAudioChange = false;
-    [SerializeField] bool on;
     [SerializeField] GameManager _gm;
-    AudioSource _audio;
+    [SerializeField] AudioSource _audioBGM;
+    [SerializeField] AudioSource _audioPlayerSFX;
+    [SerializeField] AudioSource _audioSE;
 
     public bool IsAudioChange { get => _isAudioChange; set => _isAudioChange = value; }
 
     // Start is called before the first frame update
     void Start()
     {
-        _audio = GetComponent<AudioSource>();
-        _audio.clip = BGM;
-        _audio.Play();
+
+        _audioBGM.clip = BGM;
+        _audioBGM.Play();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (on)
-        {
-            _audio.Play();
-        }
          if (_isAudioChange && _gm.IsGameOver)
         {
-            _audio.clip = GameOverBGM;
-            _audio.Play();
-            _audio.loop = false;
+            _audioBGM.clip = GameOverBGM;
+            _audioBGM.Play();
+            _audioBGM.loop = false;
             _isAudioChange = false;
         }
         else if (_isAudioChange)
         {
-            _audio.clip = BGM;
+            _audioBGM.clip = BGM;
             _isAudioChange = false;
         }
+    }
+    public void ButtonPushSound()
+    {
+        _audioSE.PlayOneShot(_pushSE);
+    }
+    public void ButtonCanselSound()
+    {
+        _audioSE.PlayOneShot(_cancelSE);
+    }
+    public void BGMOff()
+    {
+        StartCoroutine(DelayMethod(1f,() => _audioBGM.Stop()));
+    }
+    IEnumerator DelayMethod(float time, Action action)
+    {
+        yield return new WaitForSeconds(time);
+        action?.Invoke();
     }
 }

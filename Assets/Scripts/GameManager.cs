@@ -30,6 +30,14 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetButtonDown("Cancel") && _player)
         {
+            if (_ispause)
+            {
+                _audioManager.ButtonCanselSound();
+            }
+            else
+            {
+                _audioManager.ButtonPushSound();
+            }
             SetCursorState();
             _playercon.aim = false;
             _ispause = !_ispause;

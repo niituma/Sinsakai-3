@@ -10,6 +10,10 @@ public class SoundIconActive : MonoBehaviour
     [SerializeField] Slider _slider;
     [SerializeField] AudioSource BGM;
 
+    private void Start()
+    {
+        BGM.volume = _slider.value;
+    }
     public void ChangeVolume()
     {
         BGM.volume = _slider.value;
