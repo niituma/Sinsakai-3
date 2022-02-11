@@ -10,6 +10,8 @@ public class EnemyS : EnemyBase
     [SerializeField] float _doattacktime = 5f;
     [SerializeField] float _isGroundedLength = 1.1f;
     GameObject _player;
+    [SerializeField] AudioClip _attackSound = default;
+    AudioSource _audio;
     bool _turn = default;
     //向くスピード(秒速)
     float _speedturn = 8.0f;
@@ -17,6 +19,7 @@ public class EnemyS : EnemyBase
     // Start is called before the first frame update
     private new void Start()
     {
+        _audio = GetComponent<AudioSource>();
         _anim = GetComponent<Animator>();
         _player = GameObject.Find("Player");
         base.Start();
@@ -38,7 +41,8 @@ public class EnemyS : EnemyBase
 
             var lookRotation = Quaternion.LookRotation(dir);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * _speedturn);
-            StartCoroutine(DelayMethod(0.3f, () => {
+            StartCoroutine(DelayMethod(0.3f, () =>
+            {
                 if (!player)
                 {
                     _anim.SetBool("Sarch", _turn);
@@ -125,5 +129,9 @@ public class EnemyS : EnemyBase
                 _isattack = false;
             }
         }
+    }
+    void AttackSound()
+    {
+        _audio.PlayOneShot(_attackSound);
     }
 }
