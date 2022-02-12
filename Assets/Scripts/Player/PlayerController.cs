@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameObject _shockWave = default;
     [SerializeField] GameObject _speedRightFoot = default;
     [SerializeField] GameObject _speedLeftFoot = default;
+    [SerializeField] bool _isnotDamage = default;
     bool _rockGunOn = default;
     bool _isrockAimEff = false;
     bool _isattacklockdir = default;
@@ -30,6 +31,9 @@ public class PlayerController : MonoBehaviour
     bool _isAvo = default;
     bool _justAvo = default;
     public bool JustAvo { get => _justAvo; set => _justAvo = value; }
+    public bool IsnotDamage { get => _isnotDamage; set => _isnotDamage = value; }
+    public bool Ishit { get => _ishit; set => _ishit = value; }
+
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     Vector3 _dir;
     bool _isSkillDash = default;
@@ -40,7 +44,7 @@ public class PlayerController : MonoBehaviour
     float _attackanimationspeedy;
     int _magicModeIndex = 0;
     bool _stopmovedir = default;
-    public bool _ishit = default;
+    private bool _ishit = default;
     bool _isjump = default;
 
     [Header("索敵、攻撃範囲")]
@@ -215,7 +219,6 @@ public class PlayerController : MonoBehaviour
         if (!_isclimd)
             _anim.SetBool("Jump", _isjump);
         _anim.SetBool("Combo", _magic.Iscombo);
-        _anim.SetBool("Hit", _ishit);
         _anim.SetBool("Avoidance", _input.avd);
         _anim.SetBool("LockOn", _lookon);
         _anim.SetBool("Grapple", _isgrapple);
@@ -223,11 +226,13 @@ public class PlayerController : MonoBehaviour
         {
             _isgrapple = false;
         }
-        if (_ishit)
-        {
-            _hp.Damage();
-            _ishit = false;
-        }
+        _anim.SetBool("Hit", _ishit);
+            if (_ishit && _isnotDamage)
+            {
+                _ishit = false;
+                _hp.Damage();
+                StartCoroutine(DelayMethod(1.5f, () => _isnotDamage = false));
+            }
 
         if (_input.avd)
         {
@@ -260,9 +265,10 @@ public class PlayerController : MonoBehaviour
                 Time.timeScale = 1;
             }));
         }
-        else if (other.tag == "EnemyHit" && !JustAvo)
+        else if (other.tag == "EnemyHit" && !JustAvo && !_isnotDamage)
         {
             _ishit = true;
+            _isnotDamage = true;
         }
     }
     void Move()

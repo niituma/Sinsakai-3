@@ -228,7 +228,7 @@ public class EnemyBase : MonoBehaviour
 
             if (target)
             {
-                target._ishit = true;
+                target.Ishit = true;
             }
         }
     }

@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public class PlayerHP : MonoBehaviour
 {
-    [SerializeField] bool mutekimode = default;
+    [SerializeField] bool _godMode = default;
     //最大HPと現在のHP。
     [SerializeField] float maxHp = 200;
     float currentHp = 200;
@@ -17,7 +17,7 @@ public class PlayerHP : MonoBehaviour
     [SerializeField] GameObject _corpse = default;
     [SerializeField] GameObject _shieldEff = default;
     [SerializeField] GameObject _shieldBreakEff = default;
-    int _shieldCount = 0;
+    [SerializeField]int _shieldCount = 0;
     [SerializeField] int _maxShield = 3;
     [SerializeField] float _heelShieldTimer = 0;
     [SerializeField] float _heelShieldlimitTime = 10f;
@@ -67,7 +67,7 @@ public class PlayerHP : MonoBehaviour
     //ColliderオブジェクトのIsTriggerにチェック入れること。
     private void OnTriggerEnter(Collider collision)
     {
-        if (slider && !mutekimode && !_playerCon.JustAvo)
+        if (slider && !_godMode && !_playerCon.JustAvo && !_playerCon.IsnotDamage)
         {
             if (_shieldCount > 0)
             {
@@ -80,8 +80,9 @@ public class PlayerHP : MonoBehaviour
                         Instantiate(_shieldBreakEff, hitPos, Quaternion.identity);
                     }
                     else if (_shieldCount <= _maxShield)
+                    {
                         Instantiate(_shieldEff, hitPos, Quaternion.identity);
-
+                    }
                     _shieldCount--;
                 }
             }
@@ -89,7 +90,7 @@ public class PlayerHP : MonoBehaviour
     }
     public void Damage()
     {
-        if (slider && !mutekimode)
+        if (slider && !_godMode)
         {
             float damage = Random.Range(15, 21);
 
