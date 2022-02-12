@@ -23,16 +23,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameObject _shockWave = default;
     [SerializeField] GameObject _speedRightFoot = default;
     [SerializeField] GameObject _speedLeftFoot = default;
-    [SerializeField] bool _isnotDamage = default;
     bool _rockGunOn = default;
     bool _isrockAimEff = false;
     bool _isattacklockdir = default;
     float _slowtime = 0.3f;
     bool _isAvo = default;
-    bool _justAvo = default;
-    public bool JustAvo { get => _justAvo; set => _justAvo = value; }
-    public bool IsnotDamage { get => _isnotDamage; set => _isnotDamage = value; }
     public bool Ishit { get => _ishit; set => _ishit = value; }
+    public bool IsAvo { get => _isAvo; set => _isAvo = value; }
+    public bool RockGunOn { get => _rockGunOn; set => _rockGunOn = value; }
 
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     Vector3 _dir;
@@ -43,7 +41,7 @@ public class PlayerController : MonoBehaviour
     float _attackanimationspeedx;
     float _attackanimationspeedy;
     int _magicModeIndex = 0;
-    bool _stopmovedir = default;
+    [SerializeField]bool _stopmovedir = default;
     private bool _ishit = default;
     bool _isjump = default;
 
@@ -194,11 +192,7 @@ public class PlayerController : MonoBehaviour
         if (_input.avd)
         {
             _isAvo = _input.avd;
-            StartCoroutine(DelayMethod(0.3f, () => _isAvo = false));
-        }
-        if (_isAvo)
-        {
-            _stopmovedir = false;
+            StartCoroutine(DelayMethod(0.2f, () => _isAvo = false));
         }
         if (_isSwoop)
         {
@@ -227,11 +221,11 @@ public class PlayerController : MonoBehaviour
             _isgrapple = false;
         }
         _anim.SetBool("Hit", _ishit);
-            if (_ishit && _isnotDamage)
+            if (_ishit && _hp.IsnotDamage)
             {
                 _ishit = false;
                 _hp.Damage();
-                StartCoroutine(DelayMethod(1.5f, () => _isnotDamage = false));
+                StartCoroutine(DelayMethod(1.5f, () => _hp.IsnotDamage = false));
             }
 
         if (_input.avd)
@@ -252,24 +246,6 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         Move();
-    }
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "EnemyHit" && _isAvo)
-        {
-            JustAvo = true;
-            Time.timeScale = _slowtime;
-            StartCoroutine(DelayMethod(0.3f, () =>
-            {
-                JustAvo = false;
-                Time.timeScale = 1;
-            }));
-        }
-        else if (other.tag == "EnemyHit" && !JustAvo && !_isnotDamage)
-        {
-            _ishit = true;
-            _isnotDamage = true;
-        }
     }
     void Move()
     {
@@ -398,7 +374,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (_rockGunOn && !_aimIK.IsAimChange && _magic.MagicMode != PlayerMagic.Action.Earth)
         {
-            _aimIK.chageAim(0f, 0.5f);
+            _aimIK.chageAim(0f, 1f);
             DOTween.To(() => zoom.m_CameraDistance, num => zoom.m_CameraDistance = num, 2.5f, 0.5f);
             DOTween.To(() => zoom2.m_CameraDistance, num => zoom2.m_CameraDistance = num, 2f, 0.5f);
 
@@ -707,7 +683,7 @@ public class PlayerController : MonoBehaviour
         bool isGrounded = Physics.Linecast(start, end); // 引いたラインに何かがぶつかっていたら true とする
         return isGrounded;
     }
-    IEnumerator DelayMethod(float time, Action action)
+    public IEnumerator DelayMethod(float time, Action action)
     {
         yield return new WaitForSeconds(time);
         action?.Invoke();

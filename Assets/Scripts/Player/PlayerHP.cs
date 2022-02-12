@@ -17,15 +17,19 @@ public class PlayerHP : MonoBehaviour
     [SerializeField] GameObject _corpse = default;
     [SerializeField] GameObject _shieldEff = default;
     [SerializeField] GameObject _shieldBreakEff = default;
-    [SerializeField]int _shieldCount = 0;
+    [SerializeField] int _shieldCount = 0;
     [SerializeField] int _maxShield = 3;
     [SerializeField] float _heelShieldTimer = 0;
     [SerializeField] float _heelShieldlimitTime = 10f;
-    //[SerializeField] GameManager _gm = default;
+    float _slowtime = 0.3f;
+    bool _justAvo = default;
+    bool _isnotDamage = default;
     int _damageCut = 60;
     int _breakDamageCut = 20;
     bool _isShieldBreak = default;
     public bool IsShieldBreak { get => _isShieldBreak; set => _isShieldBreak = value; }
+    public bool IsnotDamage { get => _isnotDamage; set => _isnotDamage = value; }
+
     PlayerController _playerCon;
 
 
@@ -67,26 +71,43 @@ public class PlayerHP : MonoBehaviour
     //ColliderオブジェクトのIsTriggerにチェック入れること。
     private void OnTriggerEnter(Collider collision)
     {
-        if (slider && !_godMode && !_playerCon.JustAvo && !_playerCon.IsnotDamage)
+        if (collision.tag == "EnemyHit" && _playerCon.IsAvo && !_isnotDamage && !_playerCon.RockGunOn)
         {
-            if (_shieldCount > 0)
+            _justAvo = true;
+            Time.timeScale = _slowtime;
+            StartCoroutine(_playerCon.DelayMethod(0.3f, () =>
             {
-                Vector3 hitPos = collision.bounds.ClosestPoint(this.transform.position);
-                if (collision.tag == "EnemyHit" && !IsShieldBreak)
+                _justAvo = false;
+                Time.timeScale = 1;
+            }));
+        }
+        else if (collision.tag == "EnemyHit" && !_justAvo && !_isnotDamage)
+        {
+            _playerCon.Ishit = true;
+            _isnotDamage = true;
+            if (!_godMode)
+            {
+                if (_shieldCount > 0)
                 {
-                    if (_shieldCount == 1)
+                    Vector3 hitPos = collision.bounds.ClosestPoint(this.transform.position);
+                    if (collision.tag == "EnemyHit" && !IsShieldBreak)
                     {
-                        IsShieldBreak = true;
-                        Instantiate(_shieldBreakEff, hitPos, Quaternion.identity);
+                        if (_shieldCount == 1)
+                        {
+                            IsShieldBreak = true;
+                            Instantiate(_shieldBreakEff, hitPos, Quaternion.identity);
+                        }
+                        else if (_shieldCount <= _maxShield)
+                        {
+                            Instantiate(_shieldEff, hitPos, Quaternion.identity);
+                        }
+                        _shieldCount--;
+                        
                     }
-                    else if (_shieldCount <= _maxShield)
-                    {
-                        Instantiate(_shieldEff, hitPos, Quaternion.identity);
-                    }
-                    _shieldCount--;
                 }
             }
         }
+
     }
     public void Damage()
     {
