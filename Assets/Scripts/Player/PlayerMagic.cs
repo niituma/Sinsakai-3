@@ -8,23 +8,29 @@ public class PlayerMagic : MonoBehaviour
     [SerializeField] GameObject _magicoverparticle = default;
     ParticleSystem _overparticle = default;
     [SerializeField] GameObject _magicMuzzle = default;
-    [SerializeField] GameObject _magiceff = default;
+    [SerializeField] GameObject _IceBallEff = default;
     [SerializeField] GameObject _impactEff = default;
     [SerializeField] GameObject _FireSEff = default;
-    [SerializeField] GameObject _IceBommerEff = default;
+    [SerializeField] GameObject _IceLanceEff = default;
     [SerializeField] GameObject _EarthSpikeEff = default;
     [SerializeField] GameObject _rightattackmuzzle = default;
     [SerializeField] GameObject _leftattackmuzzle = default;
     [SerializeField] GameObject _rockAimPoint = default;
     [SerializeField] GameObject _shootHitEff = default;
     [SerializeField] float _magicCoolDownSpeed = 2f;
-    [SerializeField] float _magiclimiter = 0f;
+    [SerializeField]float _magiclimiter = 0f;
     [SerializeField] float _magiclimit = 100f;
+    [SerializeField] float _coolDownTimer = 0;
+    [SerializeField] float _magicCoolDown = 5f;
     [SerializeField] float shootInterval = 0.15f;
     float shootRange = 50;
     bool shooting = default;
+    float _reloadTimer;
+    bool _isReloadCool = false;
+    public bool IsReloadCool { get => _isReloadCool; set => _isReloadCool = value; }
+    [SerializeField] float _reloadTime = 3f;
     [SerializeField] int maxAmmo = 100;
-    int ammo;
+    [SerializeField] int ammo;
     [SerializeField] GameObject _world = default;
     public int Ammo
     {
@@ -67,27 +73,78 @@ public class PlayerMagic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        AttackMotion();
+        if (!IsReloadCool && Ammo == 0)
+        {
+            IsReloadCool = true;
+        }
+        else if (IsReloadCool && Ammo == maxAmmo)
+        {
+            IsReloadCool = false;
+        }
+
+        if (Ammo < maxAmmo && !_input.shoot || Ammo < maxAmmo && IsReloadCool)
+        {
+            _reloadTimer += Time.deltaTime;
+            if (_reloadTimer >= _reloadTime)
+            {
+                Ammo++;
+                _reloadTimer = 0;
+            }
+        }
+
+        if (_coolDownTimer > 0)
+        {
+            _coolDownTimer -= _magicCoolDownSpeed * Time.deltaTime;
+        }
+        else if (_coolDownTimer < 0)
+        {
+            _coolDownTimer = 0;
+        }
+        
         MagicOverFlow();
+    }
+    private void LateUpdate()
+    {
+        AttackMotion();
     }
     void AttackMotion()
     {
+        _anim.SetInteger("MagicMode", (int)MagicMode);
         _anim.SetBool("Punch", _input.attack);
-        _input.attack = false;
-        if (_magiclimiter < _magiclimit)
+        if (_magiclimiter < _magiclimit && _coolDownTimer <= 0)
         {
             _anim.SetBool("Magic", _input.fire);
         }
-        _input.fire = false;
-        _anim.SetInteger("MagicMode", (int)MagicMode);
+        else
+        {
+            _anim.SetBool("Magic", false);
+        }
+
+        if (_input.attack)
+        {
+            _input.attack = false;
+        }
+        if (_input.fire)
+        {
+            _input.fire = false;
+        }
     }
     public IEnumerator ShootTimer()
     {
         if (!shooting)
         {
             shooting = true;
-            _paudio.RockGun();
-            Shoot();
+            if (!IsReloadCool)
+            {
+                MPCost(2);
+                _paudio.RockGun();
+                Shoot();
+            }
+            else
+            {
+                _paudio.NotGunBullet();
+            }
+
             yield return new WaitForSeconds(shootInterval);
             shooting = false;
         }
@@ -114,7 +171,7 @@ public class PlayerMagic : MonoBehaviour
                     enemy._stateMode = EnemyBase.State.SHit;
                 }
             }
-            var obj=　Instantiate(_shootHitEff, hit.point, this.transform.rotation);
+            var obj = Instantiate(_shootHitEff, hit.point, this.transform.rotation);
             obj.transform.parent = _world.transform;
             //★ここに敵へのダメージ処理などを追加
         }
@@ -158,28 +215,45 @@ public class PlayerMagic : MonoBehaviour
         {
             case 0:
                 obj = Instantiate(_impactEff, _leftattackmuzzle.transform.position, this.transform.rotation);
+                MPCost(5);
                 break;
             case 1:
                 obj = Instantiate(_impactEff, _rightattackmuzzle.transform.position, this.transform.rotation);
+                MPCost(5);
                 break;
             case 2:
-                obj = Instantiate(_magiceff, _rightattackmuzzle.transform.position, this.transform.rotation);
-                _magiclimiter += 13f;
+                obj = Instantiate(_IceBallEff, _rightattackmuzzle.transform.position, this.transform.rotation);
+                MPCost(30);
+                CoolDown(30);
                 break;
             case 3:
                 obj = Instantiate(_FireSEff, transform.position, Quaternion.identity);
+                MPCost(20);
+                CoolDown(15);
                 break;
             case 4:
-                obj = Instantiate(_IceBommerEff, _rightattackmuzzle.transform.position, this.transform.rotation);
+                obj = Instantiate(_IceLanceEff, _rightattackmuzzle.transform.position, this.transform.rotation);
+                MPCost(10);
                 break;
             case 5:
                 obj = Instantiate(_EarthSpikeEff, _magicMuzzle.transform.position, this.transform.rotation);
+                MPCost(30);
+                CoolDown(20);
                 break;
             default:
                 break;
         }
 
         obj.transform.parent = _world.transform;
+    }
+    float MPCost(float cost)
+    {
+        return _magiclimiter += cost;
+    }
+
+    void CoolDown(float cost)
+    {
+        _coolDownTimer = cost;
     }
     void ConboSwith(int OnOff)
     {

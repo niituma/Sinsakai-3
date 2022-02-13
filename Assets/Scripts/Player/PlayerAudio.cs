@@ -12,6 +12,7 @@ public class PlayerAudio : MonoBehaviour
     [SerializeField] AudioClip _iceLance = default;
     [SerializeField] AudioClip _rockGun = default;
     [SerializeField] AudioClip _earthRock = default;
+    [SerializeField] AudioClip _notBullet = default;
     [Header("行動サウンド")]
     [SerializeField] AudioClip _touch = default;
     [SerializeField] AudioClip _climb = default;
@@ -65,6 +66,10 @@ public class PlayerAudio : MonoBehaviour
     public void RockGun()
     {
         _playerSFX.PlayOneShot(_rockGun);
+    }
+    public void NotGunBullet()
+    {
+        _playerSFX.PlayOneShot(_notBullet);
     }
     void EarthRock()
     {

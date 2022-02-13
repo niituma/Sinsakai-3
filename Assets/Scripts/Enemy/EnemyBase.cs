@@ -272,8 +272,18 @@ public class EnemyBase : MonoBehaviour
     {
         _time = 0;
     }
-    void StopMoveSwitch()
+    void StopMoveSwitch(int num)
     {
-        _stopmove = !_stopmove;
+        switch (num)
+        {
+            case 1:
+                _stopmove = true;
+                break;
+            case 2:
+                _stopmove = false;
+                break;
+            default:
+                break;
+        }
     }
 }

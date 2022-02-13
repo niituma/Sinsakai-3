@@ -350,7 +350,7 @@ public class PlayerController : MonoBehaviour
                     _isrockAimEff = true;
                 }
 
-                if (_magic.Ammo > 0 && _input.shoot)
+                if (_input.shoot)
                 {
                     StartCoroutine(_magic.ShootTimer());
                 }
@@ -655,7 +655,7 @@ public class PlayerController : MonoBehaviour
     }
     void Jump()
     {
-        if (!_isclimd && !_rockGunOn)
+        if (!_isclimd && !_rockGunOn && !_stopmovedir)
         {
             Vector3 velosity = _rb.velocity;
             if (IsGrounded())
