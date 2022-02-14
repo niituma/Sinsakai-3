@@ -238,7 +238,7 @@ public class PlayerMagic : MonoBehaviour
             case 5:
                 obj = Instantiate(_EarthSpikeEff, _magicMuzzle.transform.position, this.transform.rotation);
                 MPCost(30);
-                CoolDown(20);
+                CoolDown(15);
                 break;
             default:
                 break;

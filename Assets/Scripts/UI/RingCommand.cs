@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using DG.Tweening;
 using UnityEngine.UI;
@@ -10,9 +11,10 @@ public class RingCommand : UIBehaviour, ILayoutGroup
     public float offsetAngle;
     float value = 0;
     float scroll = 0;
+    int _magicModeIndex = 0;
     bool _isuseWheel = true;
     bool _isrotation = true;
-
+    [SerializeField] PlayerMagic _magic;
     private void Update()
     {
         if (_isuseWheel)
@@ -29,10 +31,14 @@ public class RingCommand : UIBehaviour, ILayoutGroup
             if (scroll > 0)
             {
                 value = offsetAngle + 120;
+                _magicModeIndex++;
+                MagicChange();
             }
             else if (scroll < 0)
             {
                 value = offsetAngle - 120;
+                _magicModeIndex--;
+                MagicChange();
             }
 
             DOTween.To(() => offsetAngle, x => offsetAngle = x, value, 0.5f).OnComplete(() =>
@@ -56,6 +62,18 @@ public class RingCommand : UIBehaviour, ILayoutGroup
         Arrange();
     }
     #endregion
+    void MagicChange()
+    {
+        if (_magicModeIndex > 2)
+        {
+            _magicModeIndex = 0;
+        }
+        else if (_magicModeIndex < 0)
+        {
+            _magicModeIndex = 2;
+        }
+        _magic.MagicMode = (PlayerMagic.Action)(_magicModeIndex % Enum.GetNames(typeof(PlayerMagic.Action)).Length);
+    }
 
     void Arrange()
     {
@@ -69,6 +87,14 @@ public class RingCommand : UIBehaviour, ILayoutGroup
             child.anchoredPosition = new Vector2(
                 Mathf.Cos(currentAngle * Mathf.Deg2Rad),
                 Mathf.Sin(currentAngle * Mathf.Deg2Rad)) * radius;
+        }
+        if (offsetAngle < 0)
+        {
+            offsetAngle = 330;
+        }
+        else if (offsetAngle > 330)
+        {
+            offsetAngle = 90;
         }
     }
 }

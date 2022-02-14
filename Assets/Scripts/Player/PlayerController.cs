@@ -40,7 +40,6 @@ public class PlayerController : MonoBehaviour
     float _animationspeed;
     float _attackanimationspeedx;
     float _attackanimationspeedy;
-    int _magicModeIndex = 0;
     [SerializeField]bool _stopmovedir = default;
     private bool _ishit = default;
     bool _isjump = default;
@@ -153,13 +152,6 @@ public class PlayerController : MonoBehaviour
         {
             _isSkillDash = true;
             Instantiate(_shockWave, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            _magicModeIndex++;
-            _magic.MagicMode = (PlayerMagic.Action)(_magicModeIndex % System.Enum.GetNames(typeof(PlayerMagic.Action)).Length);
-            if (_magicModeIndex > 2)
-                _magicModeIndex = 0;
         }
         if (_isSkillDash)
         {
