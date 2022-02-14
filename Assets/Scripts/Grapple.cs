@@ -6,8 +6,10 @@ public class Grapple : MonoBehaviour
     private Vector3 grapplePoint;
     public LayerMask whatIsGrappleable;
     public Transform gunTip, camera, player;
-    private float maxDistance = 100f;
-    private SpringJoint joint;
+    [SerializeField] float maxDistance = 20f;
+    [SerializeField] float _grapplrPointHeight = 2f;
+    [SerializeField] float _grapplrPointDis = 5;
+    private ConfigurableJoint joint;
 
     void Awake()
     {
@@ -24,6 +26,7 @@ public class Grapple : MonoBehaviour
         {
             StopGrapple();
         }
+        Debug.DrawLine(gunTip.position, player.position + (player.up * _grapplrPointHeight + player.forward * _grapplrPointDis), Color.red);
     }
 
     //Called after Update
@@ -38,28 +41,44 @@ public class Grapple : MonoBehaviour
     void StartGrapple()
     {
         RaycastHit hit;
-        if (Physics.Raycast(camera.position, camera.forward, out hit, maxDistance, whatIsGrappleable))
+        if (Physics.Linecast(gunTip.position, player.position + (player.up * _grapplrPointHeight + player.forward * _grapplrPointDis), out hit))
         {
             grapplePoint = hit.point;
-            joint = player.gameObject.AddComponent<SpringJoint>();
-            joint.autoConfigureConnectedAnchor = false;
-            joint.anchor = new Vector3(0, 0.8f, 0);
-            joint.connectedAnchor = grapplePoint;
-
-            float distanceFromPoint = Vector3.Distance(player.position, grapplePoint);
-
-            //The distance grapple will try to keep from grapple point. 
-            joint.maxDistance = distanceFromPoint * 0.8f;
-            joint.minDistance = distanceFromPoint * 0.25f;
-
-            //Adjust these values to fit your game.
-            joint.spring = 4.5f;
-            joint.damper = 7f;
-            joint.massScale = 4.5f;
-
-            lr.positionCount = 2;
-            currentGrapplePosition = gunTip.position;
         }
+        else
+        {
+            grapplePoint = player.position + (player.up * 1.5f + player.forward * 4f);
+            Debug.DrawLine(gunTip.position, player.position + (player.up * 1.5f + player.forward * 4f), Color.red);
+        }
+        joint = player.gameObject.AddComponent<ConfigurableJoint>();
+        SoftJointLimitSpring SoftJointLimitSpring = joint.linearLimitSpring;
+        SoftJointLimit SoftJointLimit = joint.linearLimit;
+        JointDrive jointxDrive = joint.xDrive;
+        JointDrive jointyDrive = joint.xDrive;
+        JointDrive jointzDrive = joint.zDrive;
+
+        joint.autoConfigureConnectedAnchor = false;
+        joint.anchor = new Vector3(0, 0.8f, 0);
+        joint.connectedAnchor = grapplePoint;
+
+        joint.xMotion = ConfigurableJointMotion.Limited;
+        joint.yMotion = ConfigurableJointMotion.Limited;
+        joint.zMotion = ConfigurableJointMotion.Limited;
+        SoftJointLimitSpring.spring = 5;
+        SoftJointLimit.limit = 0.1f;
+        jointxDrive.positionSpring = 200;
+        jointyDrive.positionSpring = 200;
+        jointyDrive.positionDamper = 50;
+        jointzDrive.positionSpring = 200;
+
+        joint.linearLimitSpring = SoftJointLimitSpring;
+        joint.linearLimit = SoftJointLimit;
+        joint.xDrive = jointxDrive;
+        joint.yDrive = jointyDrive;
+        joint.zDrive = jointzDrive;
+
+        lr.positionCount = 2;
+        currentGrapplePosition = gunTip.position;
     }
 
 
