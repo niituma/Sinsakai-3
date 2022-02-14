@@ -21,7 +21,7 @@ public class EnemyS : EnemyBase
     {
         _audio = GetComponent<AudioSource>();
         _anim = GetComponent<Animator>();
-        _player = GameObject.Find("Player");
+        _player = GameObject.FindGameObjectWithTag("Player");
         base.Start();
     }
 
@@ -34,7 +34,7 @@ public class EnemyS : EnemyBase
         {
             StartCoroutine(LookEnemy());
         }
-        if (_turn)
+        if (_turn && _player)
         {
             var dir = _player.transform.position - transform.position;
             dir.y = 0;

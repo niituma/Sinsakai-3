@@ -44,7 +44,7 @@ public class TargetLookOn : MonoBehaviour
         {
             isneartarget = false;
         }
-        if (targets)
+        if (targets && _player)
         {
             if (Vector3.Distance(transform.position, _player.transform.position) >= distance)
             {
