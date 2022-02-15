@@ -1,32 +1,46 @@
 ﻿using UnityEngine;
+using System;
+using System.Collections;
+using System.Linq;
 
 public class Grapple : MonoBehaviour
 {
-    private LineRenderer lr;
-    private Vector3 grapplePoint;
-    public LayerMask whatIsGrappleable;
-    public Transform gunTip, camera, player;
-    [SerializeField] float maxDistance = 20f;
+    Vector3 _grapplePoint;
+    Vector3 _currentGrapplePosition;
+    [SerializeField] LayerMask _whatIsGrappleable;
+    [SerializeField] Transform _gunTip, _player;
+    [SerializeField] float _maxDistance = 20f;
     [SerializeField] float _grapplrPointHeight = 2f;
     [SerializeField] float _grapplrPointDis = 5;
-    private ConfigurableJoint joint;
+    [SerializeField] float _canceljointDis = 0.5f;
+    bool _isCanceljoint = false;
+    Collider _grappleHandlePos;
+    ConfigurableJoint _joint;
+    PlayerController _playercon;
+    LineRenderer _lr;
+
+    public ConfigurableJoint Joint { get => _joint; set => _joint = value; }
 
     void Awake()
     {
-        lr = GetComponent<LineRenderer>();
+        _lr = GetComponent<LineRenderer>();
+        _playercon = GetComponent<PlayerController>();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        _grappleHandlePos = _playercon.GrapplePoints.Where(g => g.tag == "GrapplePos")
+            .OrderBy(g => Vector3.Distance(g.transform.position, transform.position)).ToList().FirstOrDefault();
+
+        if ((Vector3.Distance(_gunTip.position, _grapplePoint) < _canceljointDis && !_isCanceljoint) || (Input.GetKeyUp(KeyCode.F) && _isCanceljoint))
         {
-            StartGrapple();
-        }
-        else if (Input.GetKeyUp(KeyCode.F))
-        {
+            if (_isCanceljoint)
+            {
+                _isCanceljoint = false;
+            }
             StopGrapple();
         }
-        Debug.DrawLine(gunTip.position, player.position + (player.up * _grapplrPointHeight + player.forward * _grapplrPointDis), Color.red);
+        Debug.DrawLine(_gunTip.position, _player.position + (_player.up * _grapplrPointHeight + _player.forward * _grapplrPointDis), Color.red);
     }
 
     //Called after Update
@@ -38,47 +52,69 @@ public class Grapple : MonoBehaviour
     /// <summary>
     /// Call whenever we want to start a grapple
     /// </summary>
-    void StartGrapple()
+    public void StartGrapple()
     {
         RaycastHit hit;
-        if (Physics.Linecast(gunTip.position, player.position + (player.up * _grapplrPointHeight + player.forward * _grapplrPointDis), out hit))
+        if (_grappleHandlePos)
         {
-            grapplePoint = hit.point;
+            _grapplePoint = _grappleHandlePos.transform.position;
+            _isCanceljoint = true;
+        }
+        else if (Physics.Linecast(_gunTip.position, _player.position + (_player.up * _grapplrPointHeight + _player.forward * _grapplrPointDis), out hit))
+        {
+            _grapplePoint = hit.point;
         }
         else
         {
-            grapplePoint = player.position + (player.up * 1.5f + player.forward * 4f);
-            Debug.DrawLine(gunTip.position, player.position + (player.up * 1.5f + player.forward * 4f), Color.red);
+            _grapplePoint = _player.position + (_player.up * _grapplrPointHeight + _player.forward * _grapplrPointDis);
         }
-        joint = player.gameObject.AddComponent<ConfigurableJoint>();
-        SoftJointLimitSpring SoftJointLimitSpring = joint.linearLimitSpring;
-        SoftJointLimit SoftJointLimit = joint.linearLimit;
-        JointDrive jointxDrive = joint.xDrive;
-        JointDrive jointyDrive = joint.xDrive;
-        JointDrive jointzDrive = joint.zDrive;
+        _joint = _player.gameObject.AddComponent<ConfigurableJoint>();
+        if (_joint && !_grappleHandlePos)
+        {
+            StartCoroutine(DestroyJoint());
+        }
 
-        joint.autoConfigureConnectedAnchor = false;
-        joint.anchor = new Vector3(0, 0.8f, 0);
-        joint.connectedAnchor = grapplePoint;
+        StartCoroutine(DelayMethod(0.4f, () =>
+        {
+            if (!_joint) return;
+            SoftJointLimitSpring SoftJointLimitSpring = _joint.linearLimitSpring;
+            SoftJointLimit SoftJointLimit = _joint.linearLimit;
+            JointDrive jointxDrive = _joint.xDrive;
+            JointDrive jointyDrive = _joint.xDrive;
+            JointDrive jointzDrive = _joint.zDrive;
 
-        joint.xMotion = ConfigurableJointMotion.Limited;
-        joint.yMotion = ConfigurableJointMotion.Limited;
-        joint.zMotion = ConfigurableJointMotion.Limited;
-        SoftJointLimitSpring.spring = 5;
-        SoftJointLimit.limit = 0.1f;
-        jointxDrive.positionSpring = 200;
-        jointyDrive.positionSpring = 200;
-        jointyDrive.positionDamper = 50;
-        jointzDrive.positionSpring = 200;
+            _joint.autoConfigureConnectedAnchor = false;
+            _joint.anchor = new Vector3(0, 0.8f, 0);
+            _joint.connectedAnchor = _grapplePoint;
 
-        joint.linearLimitSpring = SoftJointLimitSpring;
-        joint.linearLimit = SoftJointLimit;
-        joint.xDrive = jointxDrive;
-        joint.yDrive = jointyDrive;
-        joint.zDrive = jointzDrive;
+            _joint.xMotion = ConfigurableJointMotion.Limited;
+            _joint.yMotion = ConfigurableJointMotion.Limited;
+            _joint.zMotion = ConfigurableJointMotion.Limited;
+            if (_grappleHandlePos)
+            {
+                SoftJointLimitSpring.spring = 30f;
+                SoftJointLimit.limit = 1f;
+                jointyDrive.maximumForce = 0;
+                jointyDrive.positionDamper = 100;
+            }
+            else
+            {
+                SoftJointLimitSpring.spring = 5;
+                SoftJointLimit.limit = 0.1f;
+                jointyDrive.positionDamper = 50;
+            }
+            jointxDrive.positionSpring = 200;
+            jointyDrive.positionSpring = 200;
+            jointzDrive.positionSpring = 200;
 
-        lr.positionCount = 2;
-        currentGrapplePosition = gunTip.position;
+            _joint.linearLimitSpring = SoftJointLimitSpring;
+            _joint.linearLimit = SoftJointLimit;
+            _joint.xDrive = jointxDrive;
+            _joint.yDrive = jointyDrive;
+            _joint.zDrive = jointzDrive;
+        }));
+        _lr.positionCount = 2;
+        _currentGrapplePosition = _gunTip.position;
     }
 
 
@@ -87,30 +123,46 @@ public class Grapple : MonoBehaviour
     /// </summary>
     void StopGrapple()
     {
-        lr.positionCount = 0;
-        Destroy(joint);
+        _lr.positionCount = 0;
+        Destroy(_joint);
     }
 
-    private Vector3 currentGrapplePosition;
+
 
     void DrawRope()
     {
         //If not grappling, don't draw rope
-        if (!joint) return;
+        if (!_joint) return;
 
-        currentGrapplePosition = Vector3.Lerp(currentGrapplePosition, grapplePoint, Time.deltaTime * 8f);
-
-        lr.SetPosition(0, gunTip.position);
-        lr.SetPosition(1, currentGrapplePosition);
+        _currentGrapplePosition = Vector3.Lerp(_currentGrapplePosition, _grapplePoint, Time.deltaTime * 4f);
+        if (_lr.positionCount != 0)
+        {
+            _lr.SetPosition(0, _gunTip.position);
+            _lr.SetPosition(1, _currentGrapplePosition);
+        }
     }
 
     public bool IsGrappling()
     {
-        return joint != null;
+        return _joint != null;
     }
 
     public Vector3 GetGrapplePoint()
     {
-        return grapplePoint;
+        return _grapplePoint;
+    }
+    IEnumerator DestroyJoint()
+    {
+        if (!_joint)
+        {
+            yield break;
+        }
+        yield return new WaitForSeconds(1.0f);
+        StopGrapple();
+    }
+    public IEnumerator DelayMethod(float time, Action action)
+    {
+        yield return new WaitForSeconds(time);
+        action?.Invoke();
     }
 }

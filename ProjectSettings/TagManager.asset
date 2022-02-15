@@ -14,6 +14,7 @@ TagManager:
   - EnemyHit
   - World
   - GameManager
+  - GrapplePos
   layers:
   - Default
   - TransparentFX

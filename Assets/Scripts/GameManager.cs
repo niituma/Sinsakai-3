@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.Playables;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject _player = default;
     [SerializeField] GameObject _gameOverText = default;
     [SerializeField] AudioManager _audioManager;
+    [SerializeField] PlayableDirector playableDirector;
     ControllerSystem _playercon;
     FadeOutIn _fade;
     public bool Ispause { get => _ispause; set => _ispause = value; }
@@ -32,11 +33,13 @@ public class GameManager : MonoBehaviour
         {
             if (_ispause)
             {
+                playableDirector.Resume();
                 _audioManager.ButtonCanselSound();
             }
             else
             {
                 _audioManager.ButtonPushSound();
+                playableDirector.Pause();
             }
             SetCursorState();
             _playercon.aim = false;

@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
     public bool Ishit { get => _ishit; set => _ishit = value; }
     public bool IsAvo { get => _isAvo; set => _isAvo = value; }
     public bool RockGunOn { get => _rockGunOn; set => _rockGunOn = value; }
+    public List<Collider> GrapplePoints { get => _grapplePoint; set => _grapplePoint = value; }
 
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     Vector3 _dir;
@@ -63,8 +64,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public List<Collider> _currentenemy = new List<Collider>();
 
     [Header("Grapple")]
-    [SerializeField] GameObject _grapplePoint = default;
-    bool _isgrapple = default;
+    [SerializeField] List<Collider> _grapplePoint = new List<Collider>();
+    [SerializeField] Vector3 _getGrapplePosRangeCenter = default;
+    [SerializeField] float _grapplePosRangeRadius = 1f;
 
     [Header("ClimdController")]
     [SerializeField] GameObject _handleSachcollider = default;
@@ -94,6 +96,7 @@ public class PlayerController : MonoBehaviour
     AttackAimIK _aimIK;
     Rigidbody _rb = default;
     Animator _anim = default;
+    Grapple _grapple;
 
     Vector3 yrot = new Vector3(0, 0, 0);
 
@@ -112,6 +115,7 @@ public class PlayerController : MonoBehaviour
         aim = _mousecamera.GetCinemachineComponent<CinemachinePOV>();
         _crosshair = GameObject.Find("CrossHair");
         target = _crosshaircanvas.GetComponent<TargetLookOn>();
+        _grapple = GetComponent<Grapple>();
     }
 
     void Update()
@@ -168,17 +172,9 @@ public class PlayerController : MonoBehaviour
                 _skillDashTime = 0;
             }
         }
-        //if (Input.GetKeyDown(KeyCode.F))
-        //{
-        //    _isgrapple = true;
-        //}
-        if (_grapplePoint.activeSelf)
+        if (Input.GetKeyDown(KeyCode.F) && !_grapple.Joint)
         {
-            if (Vector3.Distance(_grapplePoint.transform.position, transform.position) < 2f)
-            {
-                //_anim.applyRootMotion = true;
-                //_grapplePoint.SetActive(false);
-            }
+            _anim.CrossFade("Grapple",0f);
         }
         _isjump = _input.jump;
         if (_input.avd)
@@ -207,11 +203,6 @@ public class PlayerController : MonoBehaviour
         _anim.SetBool("Combo", _magic.Iscombo);
         _anim.SetBool("Avoidance", _input.avd);
         _anim.SetBool("LockOn", _lookon);
-        _anim.SetBool("Grapple", _isgrapple);
-        if (_isgrapple)
-        {
-            _isgrapple = false;
-        }
         _anim.SetBool("Hit", _ishit);
             if (_ishit && _hp.IsnotDamage)
             {
@@ -309,6 +300,8 @@ public class PlayerController : MonoBehaviour
             // 攻撃範囲を赤い線でシーンビューに表示する
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(GetTargetsRangeCenter(), _targetsRangeRadius);
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(GetGrappingPosRangeCenter(), _grapplePosRangeRadius);
         }
     }
     Vector3 GetTargetsRangeCenter()
@@ -316,6 +309,13 @@ public class PlayerController : MonoBehaviour
         Vector3 center = this.transform.position + this.transform.forward * _gettargetsRangeCenter.z
             + this.transform.up * _gettargetsRangeCenter.y
             + this.transform.right * _gettargetsRangeCenter.x;
+        return center;
+    }
+    Vector3 GetGrappingPosRangeCenter()
+    {
+        Vector3 center = this.transform.position + this.transform.forward * _getGrapplePosRangeCenter.z
+            + this.transform.up * _getGrapplePosRangeCenter.y
+            + this.transform.right * _getGrapplePosRangeCenter.x;
         return center;
     }
     void RockAttack()
@@ -383,13 +383,14 @@ public class PlayerController : MonoBehaviour
     void Targets()
     {
         _currentenemy = FilterTargetObject(Physics.OverlapSphere(GetTargetsRangeCenter(), _targetsRangeRadius).ToList());
+        GrapplePoints = FilterTargetObject(Physics.OverlapSphere(GetGrappingPosRangeCenter(), _grapplePosRangeRadius).ToList());
     }
     protected List<Collider> FilterTargetObject(List<Collider> detection)
     {
-        return detection.Where(h => h.tag == "Enemy").Where(h =>
+        return detection.Where(h =>  h.tag == "Enemy" || h.tag == "GrapplePos").Where(h =>
         {
             Vector3 screenPoint = Camera.main.WorldToViewportPoint(h.transform.position);
-            return screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > -0.25 && screenPoint.y < 0.9;
+            return screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > -0.25 && screenPoint.y < 1.1;
         }).ToList();
     }
     void Climb()
@@ -700,6 +701,14 @@ public class PlayerController : MonoBehaviour
                 _rb.useGravity = true;
                 _stopmovedir = false;
                 break;
+            case 5:
+                _stopmovedir = true;
+                _rb.useGravity = false;
+                break;
+            case 6:
+                _stopmovedir = false;
+                _rb.useGravity = true;
+                break;
             default:
                 Debug.LogWarning("movenumが指定の範囲外です。Animationのイベントから指定してください。");
                 break;
@@ -752,11 +761,6 @@ public class PlayerController : MonoBehaviour
         }
         ));
         _isSwoop = false;
-    }
-    public void Grapple()
-    {
-        _anim.applyRootMotion = false;
-        _grapplePoint.SetActive(true);
     }
     public void YrotAnim()
     {
