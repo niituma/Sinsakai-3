@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 using System;
+using UnityEngine.Events;
 
 /// <summary>
 /// Rigidbodyの速度を保存しておくクラス
@@ -18,6 +19,8 @@ public class RigidbodyVelocity
 
 public class Pausable : MonoBehaviour
 {
+    [SerializeField] UnityEvent _closeconPanel;
+    [SerializeField] GameObject _conPanel = default;
     /// <summary>/// 動かなくするPlayer/// </summary>
     [SerializeField] GameObject _player;
     [SerializeField] GameObject _pausePanel = default;
@@ -42,12 +45,19 @@ public class Pausable : MonoBehaviour
         // ポーズ状態が変更されていたら、Pause/Resumeを呼び出す。
         if (prevPausing != _gameManager.Ispause)
         {
+
             if (_gameManager.Ispause)
             {
                 _pausePanel.SetActive(true);
                 Pause();
             }
-            else
+            else if (!_gameManager.Ispause && _conPanel.activeSelf)
+            {
+                _closeconPanel.Invoke();
+                _gameManager.Ispause = true;
+                return;
+            }
+            else if (!_gameManager.Ispause && !_conPanel.activeSelf)
             {
                 Resume();
                 _pausePanel.SetActive(false);

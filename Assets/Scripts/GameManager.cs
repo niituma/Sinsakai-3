@@ -19,11 +19,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] AudioManager _audioManager;
     [SerializeField] PlayableDirector playableDirector;
     [SerializeField] CinemachineVirtualCamera _camera;
+    bool _isjoycon = false;
     CinemachinePOV _cameramove;
     ControllerSystem _playercon;
     FadeOutIn _fade;
     public bool Ispause { get => _ispause; set => _ispause = value; }
     public bool IsGameOver { get => _isGameOver; set => _isGameOver = value; }
+    public bool Isjoycon { get => _isjoycon; set => _isjoycon = value; }
 
     private void Start()
     {
@@ -39,11 +41,13 @@ public class GameManager : MonoBehaviour
         _joycon = Input.GetJoystickNames();
         if (_joycon[0] == "")
         {
+            Isjoycon = false;
             _cameramove.m_HorizontalAxis.m_InputAxisName = "X Axes";
             _cameramove.m_VerticalAxis.m_InputAxisName = "Y Axes";
         }
         else
         {
+            Isjoycon = true;
             _cameramove.m_HorizontalAxis.m_InputAxisName = "X PadAxes";
             _cameramove.m_VerticalAxis.m_InputAxisName = "Y PadAxes";
         }
