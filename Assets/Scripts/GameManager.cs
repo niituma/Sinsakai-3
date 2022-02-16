@@ -33,13 +33,19 @@ public class GameManager : MonoBehaviour
         {
             if (_ispause)
             {
-                playableDirector.Resume();
+                if (playableDirector)
+                {
+                    playableDirector.Resume();
+                }
                 _audioManager.ButtonCanselSound();
             }
             else
             {
+                if (playableDirector)
+                {
+                    playableDirector.Pause();
+                }
                 _audioManager.ButtonPushSound();
-                playableDirector.Pause();
             }
             SetCursorState();
             _playercon.aim = false;

@@ -14,6 +14,7 @@ public class PlayerAudio : MonoBehaviour
     [SerializeField] AudioClip _earthRock = default;
     [SerializeField] AudioClip _notBullet = default;
     [Header("行動サウンド")]
+    [SerializeField] AudioClip _grapple = default;
     [SerializeField] AudioClip _touch = default;
     [SerializeField] AudioClip _climb = default;
     [SerializeField] AudioClip _jump = default;
@@ -74,6 +75,10 @@ public class PlayerAudio : MonoBehaviour
     void EarthRock()
     {
         _playerSFX.PlayOneShot(_earthRock);
+    }
+    void Grapple()
+    {
+        _playerSFX.PlayOneShot(_grapple);
     }
     IEnumerator DelayMethod(float time, Action action)
     {

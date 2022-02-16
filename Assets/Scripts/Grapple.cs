@@ -29,7 +29,7 @@ public class Grapple : MonoBehaviour
 
     void Update()
     {
-        _grappleHandlePos = _playercon.GrapplePoints.Where(g => g.tag == "GrapplePos")
+        _grappleHandlePos = _playercon?.GrapplePoints?.Where(g => g.tag == "GrapplePos")
             .OrderBy(g => Vector3.Distance(g.transform.position, transform.position)).ToList().FirstOrDefault();
 
         if ((Vector3.Distance(_gunTip.position, _grapplePoint) < _canceljointDis && !_isCanceljoint) || (Input.GetKeyUp(KeyCode.F) && _isCanceljoint))

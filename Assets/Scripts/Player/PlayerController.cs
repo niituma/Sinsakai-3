@@ -172,7 +172,7 @@ public class PlayerController : MonoBehaviour
                 _skillDashTime = 0;
             }
         }
-        if (Input.GetKeyDown(KeyCode.F) && !_grapple.Joint)
+        if (Input.GetKeyDown(KeyCode.F) && !_grapple.Joint && !_isclimd)
         {
             _anim.CrossFade("Grapple",0f);
         }
