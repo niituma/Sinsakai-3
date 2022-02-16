@@ -23,7 +23,10 @@ public class StoneActive : MonoBehaviour
             _eff2.SetActive(true);
             _spin.enabled = true;
             _anim.SetTrigger("Active");
-            FindObjectOfType<OpenGade>().OpenCount();
+            foreach(var o in FindObjectsOfType<OpenGade>())
+            {
+                o.OpenCount();
+            }
             Destroy(this.GetComponent<StoneActive>());
         }
     }

@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
+using Cinemachine;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] bool cursorLocked = true;
     bool _ispause = default;
     bool _isGameOver = default;
+    string[] _joycon;
     /// <summary>/// 1回だけ実行するためのbool/// </summary>
     bool _isone = true;
     [SerializeField] GameObject _fadePanel = default;
@@ -15,6 +18,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject _gameOverText = default;
     [SerializeField] AudioManager _audioManager;
     [SerializeField] PlayableDirector playableDirector;
+    [SerializeField] CinemachineVirtualCamera _camera;
+    CinemachinePOV _cameramove;
     ControllerSystem _playercon;
     FadeOutIn _fade;
     public bool Ispause { get => _ispause; set => _ispause = value; }
@@ -22,6 +27,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        _cameramove = _camera.GetCinemachineComponent<CinemachinePOV>();
         _playercon = _player.GetComponent<ControllerSystem>();
         _fade = _fadePanel.GetComponent<FadeOutIn>();
         Cursor.visible = false;
@@ -29,6 +35,19 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
+        //コントローラーが接続されているか確認してInputを変える
+        _joycon = Input.GetJoystickNames();
+        if (_joycon[0] == "")
+        {
+            _cameramove.m_HorizontalAxis.m_InputAxisName = "X Axes";
+            _cameramove.m_VerticalAxis.m_InputAxisName = "Y Axes";
+        }
+        else
+        {
+            _cameramove.m_HorizontalAxis.m_InputAxisName = "X PadAxes";
+            _cameramove.m_VerticalAxis.m_InputAxisName = "Y PadAxes";
+        }
+
         if (Input.GetButtonDown("Cancel") && _player)
         {
             if (_ispause)

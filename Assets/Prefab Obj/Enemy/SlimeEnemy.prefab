@@ -878,6 +878,9 @@ MonoBehaviour:
   _attacktimer: 0
   _doattacktime: 5
   _isGroundedLength: 1.1
+  _layerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   _attackSound: {fileID: 8300000, guid: d1ccd3d1fdcff8945a223a599138b63a, type: 3}
 --- !u!114 &8153350629041271799
 MonoBehaviour:

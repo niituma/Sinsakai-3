@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameObject _shockWave = default;
     [SerializeField] GameObject _speedRightFoot = default;
     [SerializeField] GameObject _speedLeftFoot = default;
+    [SerializeField] LayerMask Layer = default;
     bool _rockGunOn = default;
     bool _isrockAimEff = false;
     bool _isattacklockdir = default;
@@ -33,6 +34,7 @@ public class PlayerController : MonoBehaviour
     public bool RockGunOn { get => _rockGunOn; set => _rockGunOn = value; }
     public List<Collider> GrapplePoints { get => _grapplePoint; set => _grapplePoint = value; }
 
+
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     Vector3 _dir;
     bool _isSkillDash = default;
@@ -41,7 +43,7 @@ public class PlayerController : MonoBehaviour
     float _animationspeed;
     float _attackanimationspeedx;
     float _attackanimationspeedy;
-    [SerializeField]bool _stopmovedir = default;
+    [SerializeField] bool _stopmovedir = default;
     private bool _ishit = default;
     bool _isjump = default;
 
@@ -67,6 +69,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] List<Collider> _grapplePoint = new List<Collider>();
     [SerializeField] Vector3 _getGrapplePosRangeCenter = default;
     [SerializeField] float _grapplePosRangeRadius = 1f;
+    int _grappleMaxcout = 2;
+    int _grapplecout = 0;
+    public int Grapplecout { get => _grapplecout; set => _grapplecout = value; }
 
     [Header("ClimdController")]
     [SerializeField] GameObject _handleSachcollider = default;
@@ -146,13 +151,13 @@ public class PlayerController : MonoBehaviour
         Vector3 velo = new Vector3(_rb.velocity.x, _rb.velocity.y, _rb.velocity.x);
         velo.y = _rb.velocity.y;
         _rb.velocity = velo;
-        if (Input.GetKeyDown(KeyCode.C) && _isclimd)
+        if (Input.GetButtonDown("SkillDash") && _isclimd)
         {
             _anim.CrossFade("Braced Jump From Wall", 0.2f);
             _stopmovedir = true;
             _isclimd = false;
         }
-        else if (Input.GetKeyDown(KeyCode.C) && !_isclimd && _input.move != Vector2.zero && !_isSkillDash && !_rockGunOn)
+        else if (Input.GetButtonDown("SkillDash") && !_isclimd && _input.move != Vector2.zero && !_isSkillDash && !_rockGunOn)
         {
             _isSkillDash = true;
             Instantiate(_shockWave, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
@@ -172,10 +177,16 @@ public class PlayerController : MonoBehaviour
                 _skillDashTime = 0;
             }
         }
-        if (Input.GetKeyDown(KeyCode.F) && !_grapple.Joint && !_isclimd)
+        if (Input.GetButtonDown("Wire") && !_grapple.Joint && !_isclimd && _grapplecout < _grappleMaxcout)
         {
-            _anim.CrossFade("Grapple",0f);
+            _anim.CrossFade("Grapple", 0f);
+            _grapplecout++;
         }
+        if (IsGrounded() && _grapplecout > 0)
+        {
+            _grapplecout = 0;
+        }
+
         _isjump = _input.jump;
         if (_input.avd)
         {
@@ -201,15 +212,18 @@ public class PlayerController : MonoBehaviour
         if (!_isclimd)
             _anim.SetBool("Jump", _isjump);
         _anim.SetBool("Combo", _magic.Iscombo);
-        _anim.SetBool("Avoidance", _input.avd);
         _anim.SetBool("LockOn", _lookon);
         _anim.SetBool("Hit", _ishit);
-            if (_ishit && _hp.IsnotDamage)
-            {
-                _ishit = false;
-                _hp.Damage();
-                StartCoroutine(DelayMethod(1.5f, () => _hp.IsnotDamage = false));
-            }
+        if (_ishit && _hp.IsnotDamage)
+        {
+            _ishit = false;
+            _hp.Damage();
+            StartCoroutine(DelayMethod(1.5f, () => _hp.IsnotDamage = false));
+        }
+        if (!RockGunOn)
+        {
+            _anim.SetBool("Avoidance", _input.avd);
+        }
 
         if (_input.avd)
         {
@@ -382,12 +396,12 @@ public class PlayerController : MonoBehaviour
 
     void Targets()
     {
-        _currentenemy = FilterTargetObject(Physics.OverlapSphere(GetTargetsRangeCenter(), _targetsRangeRadius).ToList());
-        GrapplePoints = FilterTargetObject(Physics.OverlapSphere(GetGrappingPosRangeCenter(), _grapplePosRangeRadius).ToList());
+        _currentenemy = FilterTargetObject(Physics.OverlapSphere(GetTargetsRangeCenter(), _targetsRangeRadius).ToList()).Where(e => e.tag == "Enemy").ToList();
+        GrapplePoints = Physics.OverlapSphere(GetGrappingPosRangeCenter(), _grapplePosRangeRadius).Where(g => g.tag == "GrapplePos").ToList();
     }
     protected List<Collider> FilterTargetObject(List<Collider> detection)
     {
-        return detection.Where(h =>  h.tag == "Enemy" || h.tag == "GrapplePos").Where(h =>
+        return detection.Where(h =>
         {
             Vector3 screenPoint = Camera.main.WorldToViewportPoint(h.transform.position);
             return screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > -0.25 && screenPoint.y < 1.1;
@@ -673,7 +687,7 @@ public class PlayerController : MonoBehaviour
         Vector3 start = this.transform.position + col.center;   // start: 体の中心
         Vector3 end = start + Vector3.down * _isGroundedLength;  // end: start から真下の地点
         Debug.DrawLine(start, end); // 動作確認用に Scene ウィンドウ上で線を表示する
-        bool isGrounded = Physics.Linecast(start, end); // 引いたラインに何かがぶつかっていたら true とする
+        bool isGrounded = Physics.Linecast(start, end, Layer); // 引いたラインに何かがぶつかっていたら true とする
         return isGrounded;
     }
     public IEnumerator DelayMethod(float time, Action action)

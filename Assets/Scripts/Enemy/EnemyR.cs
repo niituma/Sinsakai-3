@@ -9,6 +9,7 @@ public class EnemyR : EnemyBase
     [SerializeField] float _attacktimer = 0;
     [SerializeField] float _doattacktime = 5f;
     [SerializeField] float _isGroundedLength = 1.1f;
+    [SerializeField] LayerMask _layerMask = default;
     bool _isattack;
 
     /// <summary>どれくらい見るか</summary>
@@ -78,15 +79,12 @@ public class EnemyR : EnemyBase
     }
     bool IsGrounded()
     {
-        int layerNo = LayerMask.NameToLayer("Ground");
-        // マスクへの変換（ビットシフト）
-        int layerMask = 1 << layerNo;
         // Physics.Linecast() を使って足元から線を張り、そこに何かが衝突していたら true とする
         CapsuleCollider col = GetComponent<CapsuleCollider>();
         Vector3 start = this.transform.position + col.center;   // start: 体の中心
         Vector3 end = start + Vector3.down * _isGroundedLength;  // end: start から真下の地点
         Debug.DrawLine(start, end); // 動作確認用に Scene ウィンドウ上で線を表示する
-        bool isGrounded = Physics.Linecast(start, end, layerMask); // 引いたラインに何かがぶつかっていたら true とする
+        bool isGrounded = Physics.Linecast(start, end, _layerMask); // 引いたラインに何かがぶつかっていたら true とする
         return isGrounded;
     }
     void AttackTime()

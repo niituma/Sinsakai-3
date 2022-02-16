@@ -1200,7 +1200,7 @@ GameObject:
   - component: {fileID: 5394469736643330863}
   - component: {fileID: 5394469736643330853}
   - component: {fileID: 2169949202793315455}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: DeadEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}

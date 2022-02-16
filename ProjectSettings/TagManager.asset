@@ -15,6 +15,7 @@ TagManager:
   - World
   - GameManager
   - GrapplePos
+  - FireMagic
   layers:
   - Default
   - TransparentFX
@@ -33,7 +34,7 @@ TagManager:
   - DeadEnemy
   - Map
   - MapUI
-  - 
+  - Grapple
   - 
   - 
   - 

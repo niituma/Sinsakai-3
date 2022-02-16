@@ -28,11 +28,11 @@ public class TargetLookOn : MonoBehaviour
         {
             targetList = targets._currentenemy ?? targets?._currentenemy.Where(t => t.tag == "Enemy")
                 .OrderBy(t => Vector3.Distance(t.transform.position, _player.transform.position)).ToList();
-        }
-        if (targeton)
-        {
-            _nowtarget = targetList.FirstOrDefault();
-            _targetindex = 0;
+            if (targeton)
+            {
+                _nowtarget = targetList.FirstOrDefault();
+                _targetindex = 0;
+            }
         }
 
         if (_nowtarget)

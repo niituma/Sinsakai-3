@@ -1593,7 +1593,10 @@ MonoBehaviour:
   _stateMode: 0
   _attacktimer: 3
   _doattacktime: 4
-  _isGroundedLength: 1.1
+  _isGroundedLength: 1.2
+  _layerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   _weight: 0.797
   _bodyWeight: 0.652
   _headWeight: 0.657

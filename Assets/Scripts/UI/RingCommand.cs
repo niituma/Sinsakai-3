@@ -11,6 +11,7 @@ public class RingCommand : UIBehaviour, ILayoutGroup
     public float offsetAngle;
     float value = 0;
     float scroll = 0;
+    float padscroll = 0;
     int _magicModeIndex = 0;
     bool _isuseWheel = true;
     bool _isrotation = true;
@@ -20,7 +21,10 @@ public class RingCommand : UIBehaviour, ILayoutGroup
         if (_isuseWheel)
         {
             scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (scroll != 0)
+            padscroll = Input.GetAxis("ChangeMagic");
+
+
+            if (scroll != 0 || padscroll != 0)
             {
                 _isuseWheel = false;
             }
@@ -28,13 +32,13 @@ public class RingCommand : UIBehaviour, ILayoutGroup
         if (!_isuseWheel && _isrotation)
         {
             _isrotation = false;
-            if (scroll > 0)
+            if (scroll > 0 || padscroll > 0)
             {
                 value = offsetAngle + 120;
                 _magicModeIndex++;
                 MagicChange();
             }
-            else if (scroll < 0)
+            else if (scroll < 0 || padscroll < 0)
             {
                 value = offsetAngle - 120;
                 _magicModeIndex--;

@@ -32,7 +32,7 @@ public class Grapple : MonoBehaviour
         _grappleHandlePos = _playercon?.GrapplePoints?.Where(g => g.tag == "GrapplePos")
             .OrderBy(g => Vector3.Distance(g.transform.position, transform.position)).ToList().FirstOrDefault();
 
-        if ((Vector3.Distance(_gunTip.position, _grapplePoint) < _canceljointDis && !_isCanceljoint) || (Input.GetKeyUp(KeyCode.F) && _isCanceljoint))
+        if ((Vector3.Distance(_gunTip.position, _grapplePoint) < _canceljointDis && !_isCanceljoint) || (Input.GetButtonUp("Wire") && _isCanceljoint))
         {
             if (_isCanceljoint)
             {
@@ -57,6 +57,7 @@ public class Grapple : MonoBehaviour
         RaycastHit hit;
         if (_grappleHandlePos)
         {
+            _playercon.Grapplecout = 1;
             _grapplePoint = _grappleHandlePos.transform.position;
             _isCanceljoint = true;
         }
