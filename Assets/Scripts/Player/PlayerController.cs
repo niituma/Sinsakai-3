@@ -197,10 +197,10 @@ public class PlayerController : MonoBehaviour
         {
             _rb.AddForce(transform.up * -1f, ForceMode.Impulse);
         }
-        Jump();
         RockAttack();
         TargetLookOn();
         Climb();
+        Jump();
         Targets();
     }
     void FixedUpdate()
