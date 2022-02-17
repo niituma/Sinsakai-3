@@ -54,10 +54,6 @@ public class RingCommand : UIBehaviour, ILayoutGroup
 
         Arrange();
     }
-    protected override void OnValidate()
-    {
-        Arrange();
-    }
     // 要素数が変わると自動的に呼ばれるコールバック
     #region ILayoutController implementation
     public void SetLayoutHorizontal() { }
