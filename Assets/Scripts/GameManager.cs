@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject _player = default;
     [SerializeField] GameObject _gameOverText = default;
     [SerializeField] AudioManager _audioManager;
-    [SerializeField] PlayableDirector playableDirector;
+    [SerializeField] PlayableDirector _playableDirector;
     [SerializeField] CinemachineVirtualCamera _camera;
     bool _isjoycon = false;
     CinemachinePOV _cameramove;
@@ -56,17 +56,17 @@ public class GameManager : MonoBehaviour
         {
             if (_ispause)
             {
-                if (playableDirector)
+                if (_playableDirector)
                 {
-                    playableDirector.Resume();
+                    _playableDirector.Resume();
                 }
                 _audioManager.ButtonCanselSound();
             }
             else
             {
-                if (playableDirector)
+                if (_playableDirector)
                 {
-                    playableDirector.Pause();
+                    _playableDirector.Pause();
                 }
                 _audioManager.ButtonPushSound();
             }

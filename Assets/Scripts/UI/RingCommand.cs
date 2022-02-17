@@ -7,11 +7,11 @@ using UnityEngine.EventSystems;
 
 public class RingCommand : UIBehaviour, ILayoutGroup
 {
-    public float radius = 100;
-    public float offsetAngle;
-    float value = 0;
-    float scroll = 0;
-    float padscroll = 0;
+    public float _radius = 100;
+    public float _offsetAngle;
+    float _value = 0;
+    float _scroll = 0;
+    float _padscroll = 0;
     int _magicModeIndex = 0;
     bool _isuseWheel = true;
     bool _isrotation = true;
@@ -20,11 +20,11 @@ public class RingCommand : UIBehaviour, ILayoutGroup
     {
         if (_isuseWheel)
         {
-            scroll = Input.GetAxis("Mouse ScrollWheel");
-            padscroll = Input.GetAxis("ChangeMagic");
+            _scroll = Input.GetAxis("Mouse ScrollWheel");
+            _padscroll = Input.GetAxis("ChangeMagic");
 
 
-            if (scroll != 0 || padscroll != 0)
+            if (_scroll != 0 || _padscroll != 0)
             {
                 _isuseWheel = false;
             }
@@ -32,20 +32,20 @@ public class RingCommand : UIBehaviour, ILayoutGroup
         if (!_isuseWheel && _isrotation)
         {
             _isrotation = false;
-            if (scroll > 0 || padscroll > 0)
+            if (_scroll > 0 || _padscroll > 0)
             {
-                value = offsetAngle + 120;
+                _value = _offsetAngle + 120;
                 _magicModeIndex++;
                 MagicChange();
             }
-            else if (scroll < 0 || padscroll < 0)
+            else if (_scroll < 0 || _padscroll < 0)
             {
-                value = offsetAngle - 120;
+                _value = _offsetAngle - 120;
                 _magicModeIndex--;
                 MagicChange();
             }
 
-            DOTween.To(() => offsetAngle, x => offsetAngle = x, value, 0.5f).OnComplete(() =>
+            DOTween.To(() => _offsetAngle, x => _offsetAngle = x, _value, 0.5f).OnComplete(() =>
             {
                 _isuseWheel = true;
                 _isrotation = true;
@@ -83,18 +83,18 @@ public class RingCommand : UIBehaviour, ILayoutGroup
         for (int elementId = 0; elementId < transform.childCount; elementId++)
         {
             var child = transform.GetChild(elementId) as RectTransform;
-            float currentAngle = splitAngle * elementId + offsetAngle;
+            float currentAngle = splitAngle * elementId + _offsetAngle;
             child.anchoredPosition = new Vector2(
                 Mathf.Cos(currentAngle * Mathf.Deg2Rad),
-                Mathf.Sin(currentAngle * Mathf.Deg2Rad)) * radius;
+                Mathf.Sin(currentAngle * Mathf.Deg2Rad)) * _radius;
         }
-        if (offsetAngle < 0)
+        if (_offsetAngle < 0)
         {
-            offsetAngle = 330;
+            _offsetAngle = 330;
         }
-        else if (offsetAngle > 330)
+        else if (_offsetAngle > 330)
         {
-            offsetAngle = 90;
+            _offsetAngle = 90;
         }
     }
 }

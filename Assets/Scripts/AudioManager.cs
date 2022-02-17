@@ -5,7 +5,7 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     [SerializeField] AudioClip BGM = default;
-    [SerializeField] AudioClip GameOverBGM = default;
+    [SerializeField] AudioClip _gameOverBGM = default;
     [SerializeField] AudioClip _cancelSE = default;
     [SerializeField] AudioClip _pushSE = default;
     bool _isAudioChange = false;
@@ -29,7 +29,7 @@ public class AudioManager : MonoBehaviour
     {
          if (_isAudioChange && _gm.IsGameOver)
         {
-            _audioBGM.clip = GameOverBGM;
+            _audioBGM.clip = _gameOverBGM;
             _audioBGM.Play();
             _audioBGM.loop = false;
             _isAudioChange = false;

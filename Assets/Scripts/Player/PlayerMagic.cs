@@ -22,9 +22,9 @@ public class PlayerMagic : MonoBehaviour
     [SerializeField] float _magiclimit = 100f;
     [SerializeField] float _coolDownTimer = 0;
     [SerializeField] float _magicCoolDown = 5f;
-    [SerializeField] float shootInterval = 0.15f;
-    float shootRange = 50;
-    bool shooting = default;
+    [SerializeField] float _shootInterval = 0.15f;
+    float _shootDis = 50;
+    bool _isshooting = default;
     float _reloadTimer;
     bool _isReloadCool = false;
     public bool IsReloadCool { get => _isReloadCool; set => _isReloadCool = value; }
@@ -131,9 +131,9 @@ public class PlayerMagic : MonoBehaviour
     }
     public IEnumerator ShootTimer()
     {
-        if (!shooting)
+        if (!_isshooting)
         {
-            shooting = true;
+            _isshooting = true;
             if (!IsReloadCool)
             {
                 MPCost(2);
@@ -145,8 +145,8 @@ public class PlayerMagic : MonoBehaviour
                 _paudio.NotGunBullet();
             }
 
-            yield return new WaitForSeconds(shootInterval);
-            shooting = false;
+            yield return new WaitForSeconds(_shootInterval);
+            _isshooting = false;
         }
         else
         {
@@ -157,9 +157,9 @@ public class PlayerMagic : MonoBehaviour
     {
         Ray ray = new Ray(_rockAimPoint.transform.position, _rockAimPoint.transform.forward);
         RaycastHit hit;
-        Debug.DrawRay(ray.origin, ray.direction * shootRange, Color.red);
+        Debug.DrawRay(ray.origin, ray.direction * _shootDis, Color.red);
         //レイを飛ばして、ヒットしたオブジェクトの情報を得る
-        if (Physics.Raycast(ray, out hit, shootRange))
+        if (Physics.Raycast(ray, out hit, _shootDis))
         {
             //ヒットエフェクトON
             if (hit.collider.tag == "Enemy")

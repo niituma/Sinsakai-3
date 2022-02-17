@@ -8,57 +8,56 @@ public class TargetLookOn : MonoBehaviour
     [SerializeField] int _targetindex;
     GameObject _player = default;
     [SerializeField] Collider _nowtarget = null;
-    [SerializeField] GameObject playercon;
-    [SerializeField] float distance = 5f;
-    PlayerController targets;
-    [SerializeField] List<Collider> targetList = new List<Collider>();
-    public bool isneartarget = default;
-    public bool targeton = true;
-    public bool targetchange = default;
+    [SerializeField] float _distance = 5f;
+    PlayerController _targets;
+    [SerializeField] List<Collider> _targetList = new List<Collider>();
+    public bool _isneartarget = default;
+    public bool _targeton = true;
+    public bool _targetchange = default;
 
     void Start()
     {
         _player = GameObject.FindGameObjectWithTag("Player");
-        targets = playercon.GetComponent<PlayerController>();
+        _targets = _player.GetComponent<PlayerController>();
     }
 
     void Update()
     {
-        if (targets)
+        if (_targets)
         {
-            targetList = targets._currentenemy ?? targets?._currentenemy.Where(t => t.tag == "Enemy")
+            _targetList = _targets._currentenemy ?? _targets?._currentenemy.Where(t => t.tag == "Enemy")
                 .OrderBy(t => Vector3.Distance(t.transform.position, _player.transform.position)).ToList();
-            if (targeton)
+            if (_targeton)
             {
-                _nowtarget = targetList.FirstOrDefault();
+                _nowtarget = _targetList.FirstOrDefault();
                 _targetindex = 0;
             }
         }
 
         if (_nowtarget)
         {
-            isneartarget = true;
+            _isneartarget = true;
             transform.position = _nowtarget.transform.position + new Vector3(0, 1.3f, 0);
         }
         else
         {
-            isneartarget = false;
+            _isneartarget = false;
         }
-        if (targets && _player)
+        if (_targets && _player)
         {
-            if (Vector3.Distance(transform.position, _player.transform.position) >= distance)
+            if (Vector3.Distance(transform.position, _player.transform.position) >= _distance)
             {
-                isneartarget = false;
+                _isneartarget = false;
                 _targetindex = 0;
             }
         }
     }
     public void ChangeTarget()
     {
-        if (targetList.Count > 1)
+        if (_targetList.Count > 1)
         {
             _targetindex++;
-            _nowtarget = targetList[_targetindex % targetList.Count];
+            _nowtarget = _targetList[_targetindex % _targetList.Count];
         }
     }
 }

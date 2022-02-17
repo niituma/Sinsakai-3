@@ -8,12 +8,12 @@ using UnityEngine.Events;
 /// </summary>
 public class RigidbodyVelocity
 {
-    public Vector3 velocity;
-    public Vector3 angularVeloccity;
+    public Vector3 _velocity;
+    public Vector3 _angularVeloccity;
     public RigidbodyVelocity(Rigidbody rigidbody)
     {
-        velocity = rigidbody.velocity;
-        angularVeloccity = rigidbody.angularVelocity;
+        _velocity = rigidbody.velocity;
+        _angularVeloccity = rigidbody.angularVelocity;
     }
 }
 
@@ -130,8 +130,8 @@ public class Pausable : MonoBehaviour
         for (int i = 0; i < _pausingRigidbodies.Length; i++)
         {
             _pausingRigidbodies[i].WakeUp();
-            _pausingRigidbodies[i].velocity = _rigidbodyVelocities[i].velocity;
-            _pausingRigidbodies[i].angularVelocity = _rigidbodyVelocities[i].angularVeloccity;
+            _pausingRigidbodies[i].velocity = _rigidbodyVelocities[i]._velocity;
+            _pausingRigidbodies[i].angularVelocity = _rigidbodyVelocities[i]._angularVeloccity;
         }
         for (int i = 0; i < _pausingAnimators.Length; i++)
         {

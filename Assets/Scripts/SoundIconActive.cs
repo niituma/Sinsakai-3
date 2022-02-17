@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class SoundIconActive : MonoBehaviour
 {
-    [SerializeField] GameObject SoundIcon = default;
-    [SerializeField] GameObject MuteIcon = default;
+    [SerializeField] GameObject _soundIcon = default;
+    [SerializeField] GameObject _muteIcon = default;
     [SerializeField] Slider _slider;
     [SerializeField] AudioSource BGM;
 
@@ -20,13 +20,13 @@ public class SoundIconActive : MonoBehaviour
 
         if (_slider.value > 0)
         {
-            SoundIcon.SetActive(true);
-            MuteIcon.SetActive(false);
+            _soundIcon.SetActive(true);
+            _muteIcon.SetActive(false);
         }
         else
         {
-            SoundIcon.SetActive(false);
-            MuteIcon.SetActive(true);
+            _soundIcon.SetActive(false);
+            _muteIcon.SetActive(true);
         }
     }
 }

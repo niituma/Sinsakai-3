@@ -9,9 +9,8 @@ public class Grapple : MonoBehaviour
     Vector3 _currentGrapplePosition;
     [SerializeField] LayerMask _whatIsGrappleable;
     [SerializeField] Transform _gunTip, _player;
-    [SerializeField] float _maxDistance = 20f;
-    [SerializeField] float _grapplrPointHeight = 2f;
-    [SerializeField] float _grapplrPointDis = 5;
+    [SerializeField] float _grapplePointHeight = 2f;
+    [SerializeField] float _grapplePointDis = 5;
     [SerializeField] float _canceljointDis = 0.5f;
     bool _isCanceljoint = false;
     Collider _grappleHandlePos;
@@ -40,7 +39,7 @@ public class Grapple : MonoBehaviour
             }
             StopGrapple();
         }
-        Debug.DrawLine(_gunTip.position, _player.position + (_player.up * _grapplrPointHeight + _player.forward * _grapplrPointDis), Color.red);
+        Debug.DrawLine(_gunTip.position, _player.position + (_player.up * _grapplePointHeight + _player.forward * _grapplePointDis), Color.red);
     }
 
     //Called after Update
@@ -61,13 +60,13 @@ public class Grapple : MonoBehaviour
             _grapplePoint = _grappleHandlePos.transform.position;
             _isCanceljoint = true;
         }
-        else if (Physics.Linecast(_gunTip.position, _player.position + (_player.up * _grapplrPointHeight + _player.forward * _grapplrPointDis), out hit))
+        else if (Physics.Linecast(_gunTip.position, _player.position + (_player.up * _grapplePointHeight + _player.forward * _grapplePointDis), out hit))
         {
             _grapplePoint = hit.point;
         }
         else
         {
-            _grapplePoint = _player.position + (_player.up * _grapplrPointHeight + _player.forward * _grapplrPointDis);
+            _grapplePoint = _player.position + (_player.up * _grapplePointHeight + _player.forward * _grapplePointDis);
         }
         _joint = _player.gameObject.AddComponent<ConfigurableJoint>();
         if (_joint && !_grappleHandlePos)
