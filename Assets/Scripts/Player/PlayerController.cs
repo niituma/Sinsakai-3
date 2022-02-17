@@ -197,13 +197,16 @@ public class PlayerController : MonoBehaviour
         {
             _rb.AddForce(transform.up * -1f, ForceMode.Impulse);
         }
+        Jump();
         RockAttack();
         TargetLookOn();
         Climb();
-        Jump();
         Targets();
-
-
+    }
+    void FixedUpdate()
+    {
+        Move();
+        
     }
     private void LateUpdate()
     {
@@ -240,10 +243,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
-    {
-        Move();
-    }
     void Move()
     {
         float _targetSpeed;
