@@ -32,8 +32,6 @@ public class ApproachTarget : MonoBehaviour
     }
     void Update()
     {
-        _rb.AddForce(Vector3.up * _upspeed);
-
         _timer += Time.deltaTime;
         if (_timer > _lifetime)
         {
@@ -55,6 +53,10 @@ public class ApproachTarget : MonoBehaviour
                 }
             }
         }
+    }
+    private void FixedUpdate()
+    {
+        _rb.AddForce(Vector3.up * _upspeed);
     }
     void OnDrawGizmosSelected()
     {

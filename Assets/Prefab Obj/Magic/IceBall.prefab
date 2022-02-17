@@ -14121,7 +14121,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _lifetime: 3
   _moveSpeed: 3
-  _upspeed: 0.5
+  _upspeed: 0.8
   _lookonSpeed: 3
   _moveDistance: 1.4
   _gettargetsRangeCenter: {x: 0, y: 0, z: 0}
