@@ -1,0 +1,9 @@
+diff a/Assets/Scripts/AudioManager.cs b/Assets/Scripts/AudioManager.cs	(rejected hunks)
+@@ -19,7 +19,6 @@
+     // Start is called before the first frame update
+     void Start()
+     {
+-
+         _audioBGM.clip = BGM;
+         _audioBGM.Play();
+     }
