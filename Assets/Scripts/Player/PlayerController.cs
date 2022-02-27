@@ -52,7 +52,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] bool _stopmovedir = default;
     //攻撃を受けたかどうか
     private bool _ishit = default;
-    bool _isjump = default;
 
     [Header("索敵、攻撃範囲")]
     [SerializeField] Vector3 _gettargetsRangeCenter = default;
@@ -199,7 +198,6 @@ public class PlayerController : MonoBehaviour
             _grapplecout = 0;
         }
 
-        _isjump = _input.jump;
         if (_input.avd)
         {
             _isAvo = _input.avd;
@@ -212,23 +210,23 @@ public class PlayerController : MonoBehaviour
         RockAttack();
         TargetLookOn();
         Climb();
-        Jump();
+
         Targets();
     }
     void FixedUpdate()
     {
         Move();
-        
+        Jump();
     }
     private void LateUpdate()
     {
         _anim.SetBool("Climb", _isclimd);
         _anim.SetBool("Grounded", IsGrounded());
-        if (!_isclimd)
-            _anim.SetBool("Jump", _isjump);
         _anim.SetBool("Combo", _magic.Iscombo);
         _anim.SetBool("LockOn", _lockon);
         _anim.SetBool("Hit", _ishit);
+        _anim.SetBool("Jump", false);
+
         if (_ishit && _hp.IsnotDamage)
         {
             _ishit = false;
@@ -680,7 +678,9 @@ public class PlayerController : MonoBehaviour
             {
                 if (_input.jump)
                 {
+                    _anim.SetBool("Jump", true);
                     _rb.AddForce(Vector3.up * _jumpPower, ForceMode.Impulse);
+                    _input.jump = false;
                 }
                 else if (!_input.jump && velosity.y > 0)
                     velosity.y *= _gravityPower;
@@ -688,8 +688,6 @@ public class PlayerController : MonoBehaviour
 
             _rb.velocity = velosity;
         }
-        if (_input.jump)
-            _input.jump = false;
     }
     bool IsGrounded()
     {

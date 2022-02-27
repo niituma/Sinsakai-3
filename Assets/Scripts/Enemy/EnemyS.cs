@@ -103,9 +103,8 @@ public class EnemyS : EnemyBase
     }
     bool IsGrounded()
     {
-        
         // Physics.Linecast() を使って足元から線を張り、そこに何かが衝突していたら true とする
-        SphereCollider col = GetComponent<SphereCollider>();
+        CapsuleCollider col = GetComponent<CapsuleCollider>();
         Vector3 start = this.transform.position + col.center;   // start: 体の中心
         Vector3 end = start + Vector3.down * _isGroundedLength;  // end: start から真下の地点
         Debug.DrawLine(start, end); // 動作確認用に Scene ウィンドウ上で線を表示する

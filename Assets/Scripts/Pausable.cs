@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 using System;
+using UnityEngine.Playables;
 using UnityEngine.Events;
 
 /// <summary>
@@ -19,7 +20,9 @@ public class RigidbodyVelocity
 
 public class Pausable : MonoBehaviour
 {
+    bool cursorLocked = true;
     [SerializeField] UnityEvent _closeconPanel;
+    [SerializeField] PlayableDirector _playableDirector;
     [SerializeField] GameObject _conPanel = default;
     /// <summary>/// 動かなくするPlayer/// </summary>
     [SerializeField] GameObject _player;
@@ -45,30 +48,40 @@ public class Pausable : MonoBehaviour
         // ポーズ状態が変更されていたら、Pause/Resumeを呼び出す。
         if (prevPausing != _gameManager.Ispause)
         {
-
-            if (_gameManager.Ispause)
-            {
-                _pausePanel.SetActive(true);
-                Pause();
-            }
-            else if (!_gameManager.Ispause && _conPanel.activeSelf)
+            if (!_gameManager.Ispause && _conPanel.activeSelf)
             {
                 _closeconPanel.Invoke();
                 _gameManager.Ispause = true;
                 return;
             }
+            else if (_gameManager.Ispause)
+            {
+                _pausePanel.SetActive(true);
+                Pause();
+                SetCursorState();
+            }
             else if (!_gameManager.Ispause && !_conPanel.activeSelf)
             {
                 Resume();
+                SetCursorState();
                 _pausePanel.SetActive(false);
             }
             prevPausing = _gameManager.Ispause;
         }
     }
-
-    /// <summary>///中断/// </summary>
-    void Pause()
+    public void SetCursorState()
     {
+        cursorLocked = !cursorLocked;
+        Cursor.visible = cursorLocked ? false : true;
+        Cursor.lockState = cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
+    }
+    /// <summary>///中断/// </summary>
+    public void Pause()
+    {
+        if (_playableDirector)
+        {
+            _playableDirector.Pause();
+        }
         //playerの物理的な動きを止める
         _player.GetComponent<Rigidbody>().isKinematic = true;
         // Rigidbodyの停止
@@ -122,8 +135,12 @@ public class Pausable : MonoBehaviour
     }
 
     /// <summary>/// 再開/// </summary>
-    void Resume()
+    public void Resume()
     {
+        if (_playableDirector)
+        {
+            _playableDirector.Resume();
+        }
         //playerの物理的な動きを再開
         _player.GetComponent<Rigidbody>().isKinematic = false;
         // Rigidbodyの再開

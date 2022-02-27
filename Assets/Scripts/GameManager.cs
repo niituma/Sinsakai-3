@@ -1,9 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Playables;
 using Cinemachine;
-using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -17,7 +15,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject _player = default;
     [SerializeField] GameObject _gameOverText = default;
     [SerializeField] AudioManager _audioManager;
-    [SerializeField] PlayableDirector _playableDirector;
     [SerializeField] CinemachineVirtualCamera _camera;
     bool _isjoycon = false;
     CinemachinePOV _cameramove;
@@ -54,25 +51,16 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetButtonDown("Cancel") && _player)
         {
-            if (_ispause)
+            _playercon.aim = false;
+            _ispause = !_ispause;
+            if (!_ispause)
             {
-                if (_playableDirector)
-                {
-                    _playableDirector.Resume();
-                }
                 _audioManager.ButtonCanselSound();
             }
             else
             {
-                if (_playableDirector)
-                {
-                    _playableDirector.Pause();
-                }
                 _audioManager.ButtonPushSound();
             }
-            SetCursorState();
-            _playercon.aim = false;
-            _ispause = !_ispause;
         }
 
         //Playerが死んだとき
@@ -82,12 +70,6 @@ public class GameManager : MonoBehaviour
             _audioManager.IsAudioChange = true;
             _isone = false;
         }
-    }
-    public void SetCursorState()
-    {
-        cursorLocked = !cursorLocked;
-        Cursor.visible = cursorLocked ? false : true;
-        Cursor.lockState = cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
     }
     public void ClosePauseUI()
     {
