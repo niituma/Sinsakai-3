@@ -86,6 +86,8 @@ public class PlayerController : MonoBehaviour
     [Header("ClimdController")]
     [SerializeField] GameObject _handleSachcollider = default;
     [SerializeField] GameObject _handleSachcollider2 = default;
+    [SerializeField] bool _isNextHandle = default;
+    bool _iscacth = default;
     bool _isclimd = default;
     bool _isHandleSarch = default;
     bool _isAttackIK = default;
@@ -207,10 +209,9 @@ public class PlayerController : MonoBehaviour
         {
             _rb.AddForce(transform.up * -1f, ForceMode.Impulse);
         }
+        Climb();
         RockAttack();
         TargetLookOn();
-        Climb();
-
         Targets();
     }
     void FixedUpdate()
@@ -477,35 +478,64 @@ public class PlayerController : MonoBehaviour
         {
             if (hit.collider.tag == "Handle" && !_isclimd && IsGrounded())
             {
-                if (_input.jump)
+                if (!_iscacth)
                 {
+                    _iscacth = true;
+                }
+
+                if (_input.jump && _iscacth && !_isNextHandle)
+                {
+                    _isNextHandle = true;
                     _isclimd = true;
+                    var handle = hit.collider.gameObject.GetComponent<Handle>();
+                    StartCoroutine(DelayMethod(0.8f, () =>
+                    {
+                        handle.ChanegeNextHandle(0f);
+                        YrotAnim();
+                    }));
+                    //_anim.CrossFade("Hanging", 0.2f);
+                    _input.jump = false;
                 }
             }
             else if (_isclimd)
             {
-                if (_input.jump && v > 0)
+                if (_input.jump && v > 0 && !_isNextHandle)
                 {
-                    _anim.SetBool("NextUpClimb", true);
-                }
-                else
-                {
-                    _anim.SetBool("NextUpClimb", false);
+                    _isNextHandle = true;
+                    var handle = hit.collider.gameObject.GetComponent<Handle>();
+                    StartCoroutine(DelayMethod(0.4f, () =>
+                    {
+                        handle.ChanegeNextHandle(0.12f);
+                        YrotAnim();
+                    }));
+                    _anim.CrossFade("Next Handle", 0.2f);
+                    _input.jump = false;
                 }
             }
+            else
+            {
+                _iscacth = false;
+            }
+        }
+        else
+        {
+            _iscacth = false;
         }
         if (Physics.Raycast(ray5, out hit, _raydis, layerMask))
         {
             if (_isclimd)
             {
-
-                if (_input.jump && v < 0)
+                if (_input.jump && v < 0 && !_isNextHandle)
                 {
-                    _anim.SetBool("NextDownClimb", true);
-                }
-                else
-                {
-                    _anim.SetBool("NextDownClimb", false);
+                    _isNextHandle = true;
+                    var handle = hit.collider.gameObject.GetComponent<Handle>();
+                    StartCoroutine(DelayMethod(0.4f, () =>
+                    {
+                        handle.ChanegeNextHandle(0f);
+                        YrotAnim();
+                    }));
+                    _anim.CrossFade("Braced Hang Hop Down", 0.2f);
+                    _input.jump = false;
                 }
             }
         }
@@ -519,15 +549,17 @@ public class PlayerController : MonoBehaviour
                     _isLOver = true;
                     if (Physics.Raycast(ray6, out hit, _raydis, layerMask))
                     {
-                        if (hit.collider.tag == "Handle" && h < 0 && _input.jump)
+                        if (hit.collider.tag == "Handle" && h < 0 && _input.jump && !_isNextHandle)
                         {
+                            _isNextHandle = true;
                             var handle = hit.collider.gameObject.GetComponent<Handle>();
                             StartCoroutine(DelayMethod(0.5f, () =>
                             {
-                                handle.ChanegeNextHandle();
+                                handle.ChanegeNextHandle(0f);
                                 YrotAnim();
                             }));
                             _anim.CrossFade("Braced Hang Hop Left", 0.2f);
+                            _input.jump = false;
                         }
                     }
 
@@ -542,15 +574,17 @@ public class PlayerController : MonoBehaviour
                     _isROver = true;
                     if (Physics.Raycast(ray7, out hit, _raydis, layerMask))
                     {
-                        if (hit.collider.tag == "Handle" && h > 0 && _input.jump)
+                        if (hit.collider.tag == "Handle" && h > 0 && _input.jump && !_isNextHandle)
                         {
+                            _isNextHandle = true;
                             var handle = hit.collider.gameObject.GetComponent<Handle>();
                             StartCoroutine(DelayMethod(0.5f, () =>
                             {
-                                handle.ChanegeNextHandle();
+                                handle.ChanegeNextHandle(0f);
                                 YrotAnim();
                             }));
                             _anim.CrossFade("Braced Hang Hop Right", 0.2f);
+                            _input.jump = false;
                         }
                     }
                 }
@@ -566,6 +600,7 @@ public class PlayerController : MonoBehaviour
                         _isclimd = false;
                         _stopmovedir = true;
                     }
+                    _input.jump = false;
                 }
             }
             if (h == 0)
@@ -586,6 +621,10 @@ public class PlayerController : MonoBehaviour
         {
             _climdIK.ChangeWeight(0, 1);
         }
+        if (_input.jump)
+        {
+            _input.jump = false;
+        }
     }
     public void GrabLedge(Vector3 handPos, Transform yrotC)
     {
@@ -594,30 +633,14 @@ public class PlayerController : MonoBehaviour
             _rb.isKinematic = true;
             _rb.useGravity = false;
             yrot = yrotC.eulerAngles;
-            this.transform.DOMove(handPos, 1f);
+            this.transform.DOMove(handPos, 0.4f);
         }
     }
 
-    void HandleSarchSwitch(int UpDown)
+    void HandleSarchSwitch()
     {
         _isHandleSarch = !_isHandleSarch;
         _climdIK.ChangeWeight(0, 1);
-        switch (UpDown)
-        {
-            case 1:
-                _handleSachcollider.SetActive(true);
-                _handleSachcollider2.SetActive(false);
-                break;
-            case 2:
-                _handleSachcollider.SetActive(false);
-                _handleSachcollider2.SetActive(true);
-                break;
-            case 3:
-                _handleSachcollider.SetActive(false);
-                break;
-            default:
-                break;
-        }
     }
 
     void TargetLookOn()
@@ -674,7 +697,7 @@ public class PlayerController : MonoBehaviour
         if (!_isclimd && !_rockGunOn && !_stopmovedir)
         {
             Vector3 velosity = _rb.velocity;
-            if (IsGrounded())
+            if (IsGrounded() && !_iscacth)
             {
                 if (_input.jump)
                 {
@@ -784,6 +807,11 @@ public class PlayerController : MonoBehaviour
         }
         ));
         _isSwoop = false;
+    }
+    void IsNextHandle()
+    {
+        _isNextHandle = false;
+        Debug.Log("aa");
     }
     public void YrotAnim()
     {

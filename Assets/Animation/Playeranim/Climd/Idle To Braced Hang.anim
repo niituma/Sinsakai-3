@@ -26048,7 +26048,7 @@ AnimationClip:
     m_StartTime: 0
     m_StopTime: 1.2666668
     m_OrientationOffsetY: 0
-    m_Level: -0.1
+    m_Level: 0
     m_CycleOffset: 0
     m_HasAdditiveReferencePose: 0
     m_LoopTime: 0
@@ -51180,6 +51180,13 @@ AnimationClip:
     messageOptions: 0
   - time: 0.6666667
     functionName: HandleTouch
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 1.1666666
+    functionName: IsNextHandle
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

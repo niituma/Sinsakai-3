@@ -25,8 +25,9 @@ public class Handle : MonoBehaviour
             player.GrabLedge(newhandpos,this.transform);
         }
     }
-    public void ChanegeNextHandle()
+    public void ChanegeNextHandle(float offset)
     {
+        newhandpos.y += offset;
         var player = _player.GetComponent<PlayerController>();
         player.GrabLedge(newhandpos, this.transform);
     }
