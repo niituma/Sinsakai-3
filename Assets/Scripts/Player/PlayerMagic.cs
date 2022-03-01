@@ -18,7 +18,7 @@ public class PlayerMagic : MonoBehaviour
     [SerializeField] GameObject _rockAimPoint = default;
     [SerializeField] GameObject _shootHitEff = default;
     [SerializeField] float _magicCoolDownSpeed = 2f;
-    [SerializeField]float _magiclimiter = 0f;
+    [SerializeField] float _magiclimiter = 0f;
     [SerializeField] float _magiclimit = 100f;
     [SerializeField] float _coolDownTimer = 0;
     [SerializeField] float _magicCoolDown = 5f;
@@ -100,7 +100,7 @@ public class PlayerMagic : MonoBehaviour
         {
             _coolDownTimer = 0;
         }
-        
+
         MagicOverFlow();
     }
     private void LateUpdate()
@@ -165,11 +165,15 @@ public class PlayerMagic : MonoBehaviour
             if (hit.collider.tag == "Enemy")
             {
                 EnemyBase enemy = hit.collider.GetComponent<EnemyBase>();
-
                 if (enemy)
                 {
                     enemy._stateMode = EnemyBase.State.SHit;
                 }
+            }
+            else if (hit.collider.tag == "Boss")
+            {
+                var boss = GameObject.FindGameObjectWithTag("BossDragon").GetComponent<BossController>();
+                boss._stateMode = BossController.State.SHit;
             }
             var obj = Instantiate(_shootHitEff, hit.point, this.transform.rotation);
             obj.transform.parent = _world.transform;

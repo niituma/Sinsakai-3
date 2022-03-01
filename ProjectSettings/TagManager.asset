@@ -17,6 +17,9 @@ TagManager:
   - GrapplePos
   - FireMagic
   - StartButton
+  - PMagicBall
+  - Boss
+  - BossDragon
   layers:
   - Default
   - TransparentFX

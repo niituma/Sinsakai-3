@@ -55682,16 +55682,16 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 1.2
-    functionName: IsNextHandle
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 1.2
     functionName: StopMoveSwitch
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 2
+    messageOptions: 0
+  - time: 1.2333333
+    functionName: IsNextHandle
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
     messageOptions: 0

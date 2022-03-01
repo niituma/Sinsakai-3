@@ -811,7 +811,6 @@ public class PlayerController : MonoBehaviour
     void IsNextHandle()
     {
         _isNextHandle = false;
-        Debug.Log("aa");
     }
     public void YrotAnim()
     {
