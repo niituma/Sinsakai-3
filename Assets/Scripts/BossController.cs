@@ -24,9 +24,23 @@ public class BossController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(_stateMode == State.SHit)
+        BossDamage();
+    }
+    void BossDamage()
+    {
+        if (_stateMode == State.SHit)
         {
-            _myhp.Damage(2,5);
+            _myhp.Damage(5, 10);
+            _stateMode = State.Wait;
+        }
+        else if (_stateMode == State.Hit)
+        {
+            _myhp.Damage(30, 50);
+            _stateMode = State.Wait;
+        }
+        else if (_stateMode == State.BHit)
+        {
+            _myhp.Damage(100, 150);
             _stateMode = State.Wait;
         }
     }

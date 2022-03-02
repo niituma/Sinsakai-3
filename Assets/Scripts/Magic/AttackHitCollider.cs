@@ -6,6 +6,7 @@ public class AttackHitCollider : MonoBehaviour
 {
     [SerializeField] float _attackRangeRadius = 1f;
     [SerializeField] Vector3 _attackRangeCenter = default;
+    bool _ishitboss = default;
     public enum Action
     {
         NomalAttack,
@@ -20,7 +21,6 @@ public class AttackHitCollider : MonoBehaviour
         {
             EnemyBase enemy = c.gameObject.GetComponent<EnemyBase>();
             EnemyHPBar Ehp = c.gameObject.GetComponent<EnemyHPBar>();
-
             if (enemy)
             {
                 if (_hitmode == Action.BigAttack)
@@ -33,7 +33,25 @@ public class AttackHitCollider : MonoBehaviour
                     enemy.Ishit = true;
                     enemy._stateMode = EnemyBase.State.Hit;
                 }
+            }
 
+            if (c.tag == "Boss")
+            {
+                if (_ishitboss)
+                {
+                    continue;
+                }
+
+                var boss = GameObject.FindGameObjectWithTag("BossDragon").GetComponent<BossController>();
+                if (_hitmode == Action.BigAttack)
+                {
+                    boss._stateMode = BossController.State.BHit;
+                }
+                else
+                {
+                    boss._stateMode = BossController.State.Hit;
+                }
+                _ishitboss = true;
             }
         }
     }

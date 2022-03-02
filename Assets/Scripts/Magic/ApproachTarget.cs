@@ -78,7 +78,7 @@ public class ApproachTarget : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag != "Enemy" && other.tag != "Player")
+        if (other.tag != "Enemy" && other.tag != "Player" && other.tag != "Postprocessing")
         {
             Destroy(this.gameObject);
         }

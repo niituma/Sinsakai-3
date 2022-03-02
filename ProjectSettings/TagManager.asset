@@ -20,6 +20,7 @@ TagManager:
   - PMagicBall
   - Boss
   - BossDragon
+  - Postprocessing
   layers:
   - Default
   - TransparentFX

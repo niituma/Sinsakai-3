@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &8412526567265521538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 907803276987435354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 728dd673369712f43ac49ff0dfccc74f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hitmode: 0
 --- !u!1 &4442557159170737206
 GameObject:
   m_ObjectHideFlags: 0
@@ -15944,7 +15957,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7139613958251426248
 Transform:
   m_ObjectHideFlags: 0
@@ -16008,7 +16021,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7139613958256880633}
-  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -65.46678, y: -14.091756, z: -60.306335}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -16065,7 +16078,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b70ba4f275a9ec44d9c10ace2ed714d6, type: 2}
+  - {fileID: 2100000, guid: 146e8e97c3650204dabc0aedd05dab9d, type: 2}
   - {fileID: 2100000, guid: fa8eb28165501e1418e828ddb72cb752, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -16096,7 +16109,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.19999886
+        value: 0.0847036
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -16243,7 +16256,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _debug: 0
   _movePower: 100
-  _dashmovePower: 280
+  _dashmovePower: 220
   _skillDashPower: 400
   _skillDashLimitTime: 2
   _jumpPower: 6
@@ -16255,6 +16268,9 @@ MonoBehaviour:
     type: 3}
   _speedRightFoot: {fileID: 7236598706967725602}
   _speedLeftFoot: {fileID: 7236598707346258102}
+  _layer:
+    serializedVersion: 2
+    m_Bits: 130871
   _stopmovedir: 0
   _gettargetsRangeCenter: {x: 0, y: 0, z: 0}
   _targetsRangeRadius: 13
@@ -16262,14 +16278,14 @@ MonoBehaviour:
   _targetcamera: {fileID: 0}
   _crosshaircanvas: {fileID: 0}
   _changeVerticalAxisValue: 5
-  _lookon: 0
+  _lockon: 0
   _currentenemy: []
-  _grapplePoint:
-  - {fileID: 0}
-  _getGrapplePosRangeCenter: {x: 0, y: 0, z: 0}
-  _grapplePosRangeRadius: 1
+  _grapplePoint: []
+  _getGrapplePosRangeCenter: {x: 0, y: 3, z: 4}
+  _grapplePosRangeRadius: 5
   _handleSachcollider: {fileID: 7139613958251426249}
   _handleSachcollider2: {fileID: 7139613958639915946}
+  _isNextHandle: 0
   _raydis: 0.7
   _climdUpRay: {fileID: 7139613958708478608}
   _climdDownRay: {fileID: 7139613957775098356}
@@ -16277,7 +16293,7 @@ MonoBehaviour:
   RHand: {fileID: 7139613958764109625}
   _changeLeftRayPos: {fileID: 7139613958742270089}
   _changeRightRayPos: {fileID: 7139613957771780378}
-  curOriginGrabOffset: {x: 0, y: 1.2, z: 0}
+  _curOriginGrabOffset: {x: 0, y: 1.2, z: 0}
   _wallSarchRayOffset: {x: 0, y: 1.6, z: 0}
   _isSwoop: 0
 --- !u!114 &7139613958256880631
@@ -16314,7 +16330,7 @@ MonoBehaviour:
   _magiclimit: 100
   _coolDownTimer: 0
   _magicCoolDown: 5
-  shootInterval: 0.2
+  _shootInterval: 0.2
   _reloadTime: 0.3
   maxAmmo: 30
   ammo: 0
@@ -16399,6 +16415,7 @@ MonoBehaviour:
   _rockGun: {fileID: 8300000, guid: ddb29d9121f768d46843e559971f103e, type: 3}
   _earthRock: {fileID: 8300000, guid: 06c3c912ac25a5b479b478de0e842bb4, type: 3}
   _notBullet: {fileID: 8300000, guid: ba6be583736cd6d4797c0cfdcbebcdca, type: 3}
+  _grapple: {fileID: 8300000, guid: e2daf1c6cebc7c948b19cd6d53369bbf, type: 3}
   _touch: {fileID: 8300000, guid: 34ae598054834584ca444ef721b00475, type: 3}
   _climb: {fileID: 8300000, guid: a78c51bf3bb0c0344927db9b38534320, type: 3}
   _jump: {fileID: 8300000, guid: 110dd4fd9be278b49b70965763506a43, type: 3}
@@ -16421,9 +16438,8 @@ MonoBehaviour:
     m_Bits: 4294967295
   _gunTip: {fileID: 7139613958772917622}
   _player: {fileID: 7139613958256880625}
-  _maxDistance: 20
-  _grapplrPointHeight: 2
-  _grapplrPointDis: 10
+  _grapplePointHeight: 2
+  _grapplePointDis: 10
   _canceljointDis: 0.8
 --- !u!1 &7139613958302150509
 GameObject:
@@ -17590,6 +17606,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1033453992092389668}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &907803276987435354 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 202304278501906558, guid: 0b5356e4f505e0b4b9adeace4735ae21,
+    type: 3}
+  m_PrefabInstance: {fileID: 1033453992092389668}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7139613958342180999
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17770,15 +17792,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a486bd2fda8af9b4283322435cb3167d, type: 3}
---- !u!1 &7236598707346258102 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 538339857701062309, guid: a486bd2fda8af9b4283322435cb3167d,
-    type: 3}
-  m_PrefabInstance: {fileID: 7139613958802538003}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7236598707346000084 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 538339857700796103, guid: a486bd2fda8af9b4283322435cb3167d,
+    type: 3}
+  m_PrefabInstance: {fileID: 7139613958802538003}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7236598707346258102 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 538339857701062309, guid: a486bd2fda8af9b4283322435cb3167d,
     type: 3}
   m_PrefabInstance: {fileID: 7139613958802538003}
   m_PrefabAsset: {fileID: 0}
