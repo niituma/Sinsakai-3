@@ -8,18 +8,19 @@ public class BossController : MonoBehaviour
 {
     GameObject _player;
     float _playerDis;
-    [SerializeField] float _targetspeed = 2f;
+    [SerializeField] float _speed = 2f;
     [SerializeField] float _shortDis = 3f;
     [SerializeField] float _longDis = 10f;
     [SerializeField] float _turnSpeed = 8f;
+    [SerializeField] float _changespeed = 10f;
     bool _waitAttackTimer = false;
     float _attackTimer = 0;
     [SerializeField] float _attacklimitTime = 5f;
-    [SerializeField] bool _isFly = false;
+    bool _isFly = false;
     [SerializeField] float _flyingTime = 20f;
-    bool _isScream = false;
-    [SerializeField] float _screamTime = 5f;
+    float _flyTimer = 0;
     float _downHP = 0;
+    float _animationspeed;
     bool _island = default;
     bool _isDown;
     public enum State
@@ -49,31 +50,17 @@ public class BossController : MonoBehaviour
     {
         _playerDis = Vector3.Distance(_player.transform.position, transform.position);
 
-        if (!_waitAttackTimer)
+        if (!_isFly)
         {
-            _attackTimer += Time.deltaTime;
-            if (_attackTimer >= _attacklimitTime)
+            _flyTimer += Time.deltaTime;
+            if (_flyTimer >= _flyingTime)
             {
-                Attack();
-                _waitAttackTimer = true;
-                _attackTimer = 0;
+                _isFly = true;
+                _attackTimer = 2;
+                _flyTimer = 0;
             }
         }
-        if (!_isDown)
-        {
-            Move();
-        }
 
-        //それぞれの攻撃された時のダメージ量
-        BossDamage();
-        //一定以上のHPになったらHITアニメーションをする
-        if (!_isFly && _downHP >= _myhp.CurrentHp)
-        {
-            _isDown = true;
-            _downHP = _myhp.CurrentHp - 400;
-            _anim.CrossFade("Get Hit", 0.2f);
-            StartCoroutine(DelayMethod(3f, () => _isDown = false));
-        }
         //一定時間になったら降りるようにする
         if (_isFly && !_island)
         {
@@ -86,54 +73,94 @@ public class BossController : MonoBehaviour
             }));
         }
 
-        if (_isScream)
+        if (!_waitAttackTimer)
         {
-            StartCoroutine(DelayMethod(_screamTime, () => _isScream = false));
+            _attackTimer += Time.deltaTime;
+            if (_attackTimer >= _attacklimitTime)
+            {
+                _waitAttackTimer = true;
+                _attackTimer = 0;
+                Attack();
+            }
+        }
+
+        //それぞれの攻撃された時のダメージ量
+        BossDamage();
+        //一定以上のHPになったらHITアニメーションをする
+        if (!_isFly && _downHP >= _myhp.CurrentHp)
+        {
+            _isDown = true;
+            _downHP = _myhp.CurrentHp - 400;
+            _anim.CrossFade("Get Hit", 0.2f);
+            StartCoroutine(DelayMethod(3f, () => _isDown = false));
+        }
+
+        if (!_isDown)
+        {
+            Move();
         }
     }
     private void LateUpdate()
     {
         _anim.SetBool("IsFly", _isFly);
+        _anim.SetFloat("Speed", _animationspeed);
     }
     void Move()
     {
-        var dir = _player.transform.position - transform.position;
-        dir.y = 0;
-
-        var lookRotation = Quaternion.LookRotation(dir);
-        transform.rotation = Quaternion.Lerp(transform.rotation, lookRotation, Time.deltaTime * _turnSpeed);
-
-        if (Vector3.Distance(transform.position, _player.transform.position) >= _shortDis)
+        if (!_waitAttackTimer)
         {
-            _agent.destination = _player.transform.position; ;
+            var dir = _player.transform.position - transform.position;
+            dir.y = 0;
+
+            var lookRotation = Quaternion.LookRotation(dir);
+            transform.rotation = Quaternion.Lerp(transform.rotation, lookRotation, Time.deltaTime * _turnSpeed);
         }
+
+        if (_playerDis >= _shortDis && !_isFly && !_waitAttackTimer)
+        {
+            _agent.destination = _player.transform.position;
+            _agent.speed = _speed;
+        }
+        else
+        {
+            _agent.destination = transform.position;
+            _agent.speed = 0;
+        }
+
+        _animationspeed = Mathf.Lerp(_animationspeed, _agent.speed, Time.deltaTime * _changespeed);
     }
     void Attack()
     {
         if (_isFly)
         {
             _anim.CrossFade("Fly Fireball Shoot", 0.2f);
+            StartCoroutine(DelayMethod(1f, () => _waitAttackTimer = false));
+            return;
         }
         else
         {
             if (!_isDown)
             {
-                if (_playerDis <= _shortDis && !_isScream)
+                int number = UnityEngine.Random.Range(0, 10);
+                if (number < 2)
                 {
-                    _anim.CrossFade("Basic Attack", 0.2f);
+                    _anim.CrossFade("Scream", 0.2f);
+                    StartCoroutine(DelayMethod(4f, () => _waitAttackTimer = false));
+                    return;
                 }
-                else if (_playerDis >= _longDis && !_isScream)
+
+                if (_playerDis <= _shortDis)
+                {
+                    _anim.CrossFade("Tail Attack", 0.2f);
+                }
+                else if (_playerDis >= _longDis)
                 {
                     _anim.CrossFade("Fireball Shoot", 0.2f);
                 }
-                else
-                {
-                    _anim.CrossFade("Scream", 0.2f);
-                }
             }
+            StartCoroutine(DelayMethod(1.5f, () => _waitAttackTimer = false));
         }
 
-        StartCoroutine(DelayMethod(5f, () => _waitAttackTimer = false));
     }
     void BossDamage()
     {

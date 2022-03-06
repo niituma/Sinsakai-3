@@ -17,7 +17,7 @@ public class BossDes : MonoBehaviour
     void Start()
     {
         shaderProperty = Shader.PropertyToID("_cutoff");
-        _boss = GameObject.FindGameObjectWithTag("Boss");
+        _boss = GameObject.FindGameObjectWithTag("DeadBoss");
         _renderer = GetComponent<Renderer>();
         ps = GetComponentInChildren<ParticleSystem>();
 
@@ -30,11 +30,9 @@ public class BossDes : MonoBehaviour
 
     void Update()
     {
-        if (timer < spawnEffectTime + pause)
-        {
-            timer += Time.deltaTime;
-        }
-        else
+
+        timer += Time.deltaTime;
+        if (timer >= spawnEffectTime + pause)
         {
             Destroy(_boss);
         }
