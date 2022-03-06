@@ -1544,7 +1544,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mutekimode: 0
-  maxHp: 200
+  maxHp: 150
   slider: {fileID: 1405800443253577984}
   _corpse: {fileID: 5394469736643330852, guid: 92db6536cfb2354459040e191eb8699f, type: 3}
 --- !u!114 &4394114294313922638

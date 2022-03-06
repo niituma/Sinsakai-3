@@ -13,6 +13,9 @@ public class EnemyHPBar : MonoBehaviour
     /// <summary>入力された方向の XZ 平面でのベクトル</summary>
     [SerializeField] GameObject _corpse = default;
 
+    public float CurrentHp { get => currentHp; set => currentHp = value; }
+    public float MaxHp { get => maxHp; set => maxHp = value; }
+
     void Start()
     {
         currentHp = maxHp;
