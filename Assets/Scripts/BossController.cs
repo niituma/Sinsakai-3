@@ -20,7 +20,7 @@ public class BossController : MonoBehaviour
     [SerializeField] float _flyingTime = 20f;
     float _flyTimer = 0;
     [SerializeField] GameObject _fireBall = default;
-    [SerializeField] GameObject _shockWave = default;
+    [SerializeField] GameObject _flameFire = default;
     [SerializeField] GameObject _mouse = default;
     float _downHP = 0;
     float _animationspeed;
@@ -152,6 +152,7 @@ public class BossController : MonoBehaviour
                 if (number < 2)
                 {
                     _anim.CrossFade("Scream", 0.2f);
+                    _flameFire.SetActive(true);
                     StartCoroutine(DelayMethod(4f, () => _waitAttackTimer = false));
                     return;
                 }

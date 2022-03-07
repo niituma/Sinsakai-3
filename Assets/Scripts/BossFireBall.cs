@@ -6,10 +6,10 @@ public class BossFireBall : MonoBehaviour
 {
     GameObject _player;
     [SerializeField] float _speed = 3f;
-    float _trakingTimer = 1.5f;
+    [SerializeField] float _trakingTimer = 1.5f;
     float time = 0.0f;
-    [SerializeField]GameObject _eff = default;
-    Vector3 _offset = new Vector3(0,1.3f,0);
+    [SerializeField] GameObject _eff = default;
+    Vector3 _offset = new Vector3(0, 1.3f, 0);
     Rigidbody _rb;
     // Start is called before the first frame update
     void Start()
@@ -33,7 +33,7 @@ public class BossFireBall : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag != "Postprocessing"&& other.tag != "Boss")
+        if (other.tag != "Postprocessing" && other.tag != "Boss")
         {
             Destroy(gameObject);
         }
