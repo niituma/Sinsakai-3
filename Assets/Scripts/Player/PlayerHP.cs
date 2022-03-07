@@ -71,7 +71,7 @@ public class PlayerHP : MonoBehaviour
     //ColliderオブジェクトのIsTriggerにチェック入れること。
     private void OnTriggerEnter(Collider collision)
     {
-        if (collision.tag == "EnemyHit" && _playerCon.IsAvo && !_isnotDamage && !_playerCon.RockGunOn)
+        if ((collision.tag == "EnemyHit" || collision.tag == "BossTail") && _playerCon.IsAvo && !_isnotDamage && !_playerCon.RockGunOn)
         {
             _justAvo = true;
             Time.timeScale = _slowtime;
@@ -81,16 +81,24 @@ public class PlayerHP : MonoBehaviour
                 Time.timeScale = 1;
             }));
         }
-        else if (collision.tag == "EnemyHit" && !_justAvo && !_isnotDamage)
+        else if ((collision.tag == "EnemyHit" || collision.tag == "BossTail") && !_justAvo && !_isnotDamage)
         {
             _playerCon.Ishit = true;
             _isnotDamage = true;
+            if (collision.tag == "EnemyHit")
+            {
+                Damage(15,21);
+            }
+            else if (collision.tag == "BossTail")
+            {
+                Damage(50,66);
+            }
             if (!_godMode)
             {
                 if (_shieldCount > 0)
                 {
                     Vector3 hitPos = collision.bounds.ClosestPoint(this.transform.position);
-                    if (collision.tag == "EnemyHit" && !IsShieldBreak)
+                    if ((collision.tag == "EnemyHit" || collision.tag == "BossTail") && !IsShieldBreak)
                     {
                         if (_shieldCount == 1)
                         {
@@ -102,18 +110,18 @@ public class PlayerHP : MonoBehaviour
                             Instantiate(_shieldEff, hitPos, Quaternion.identity);
                         }
                         _shieldCount--;
-                        
+
                     }
                 }
             }
         }
 
     }
-    public void Damage()
+    public void Damage(int min,int max)
     {
         if (slider && !_godMode)
         {
-            float damage = Random.Range(15, 21);
+            float damage = Random.Range(min, max);
 
             //damageを何パーセントかカットする  割合 =（百分率 / 100）
             if (_shieldCount > 0 && !IsShieldBreak)

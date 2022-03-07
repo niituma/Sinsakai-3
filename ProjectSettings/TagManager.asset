@@ -22,6 +22,7 @@ TagManager:
   - BossDragon
   - Postprocessing
   - DeadBoss
+  - BossTail
   layers:
   - Default
   - TransparentFX

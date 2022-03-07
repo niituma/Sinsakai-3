@@ -19,6 +19,9 @@ public class BossController : MonoBehaviour
     bool _isFly = false;
     [SerializeField] float _flyingTime = 20f;
     float _flyTimer = 0;
+    [SerializeField] GameObject _fireBall = default;
+    [SerializeField] GameObject _shockWave = default;
+    [SerializeField] GameObject _mouse = default;
     float _downHP = 0;
     float _animationspeed;
     bool _island = default;
@@ -48,7 +51,11 @@ public class BossController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _playerDis = Vector3.Distance(_player.transform.position, transform.position);
+        if (_player)
+        {
+            _playerDis = Vector3.Distance(_player.transform.position, transform.position);
+        }
+
 
         if (!_isFly)
         {
@@ -161,6 +168,11 @@ public class BossController : MonoBehaviour
             StartCoroutine(DelayMethod(1.5f, () => _waitAttackTimer = false));
         }
 
+    }
+    void FireBallAttack()
+    {
+        var obj = Instantiate(_fireBall, _mouse.transform.position, this.transform.rotation);
+        obj.transform.parent = this.transform.root;
     }
     void BossDamage()
     {

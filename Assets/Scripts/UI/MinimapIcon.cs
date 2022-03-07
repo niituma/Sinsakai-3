@@ -30,10 +30,14 @@ public class MinimapIcon : MonoBehaviour
     {
 
         DispIcon();
-        if (Vector3.Distance(this.transform.position, _player.transform.position) > 0)
+        if (_player)
         {
-            transform.position =  _player.transform.position + _offset;
+            if (Vector3.Distance(this.transform.position, _player.transform.position) > 0)
+            {
+                transform.position = _player.transform.position + _offset;
+            }
         }
+
     }
 
     /// <summary>
@@ -50,7 +54,7 @@ public class MinimapIcon : MonoBehaviour
             transform.position = iconPos;
             return;
         }
-        
+
 
         // マップ範囲外の場合、ミニマップ端までのベクトルを求めて半透明で表示する
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, outRangeAlpha);

@@ -231,7 +231,6 @@ public class PlayerController : MonoBehaviour
         if (_ishit && _hp.IsnotDamage)
         {
             _ishit = false;
-            _hp.Damage();
             StartCoroutine(DelayMethod(1.5f, () => _hp.IsnotDamage = false));
         }
         if (!RockGunOn)
