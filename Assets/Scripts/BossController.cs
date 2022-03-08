@@ -10,7 +10,6 @@ public class BossController : MonoBehaviour
     float _playerDis;
     [SerializeField] float _speed = 2f;
     [SerializeField] float _shortDis = 3f;
-    [SerializeField] float _longDis = 10f;
     [SerializeField] float _turnSpeed = 8f;
     [SerializeField] float _changespeed = 10f;
     bool _waitAttackTimer = false;
@@ -22,6 +21,12 @@ public class BossController : MonoBehaviour
     [SerializeField] GameObject _fireBall = default;
     [SerializeField] GameObject _flameFire = default;
     [SerializeField] GameObject _mouse = default;
+    AudioSource _audio;
+    [SerializeField] AudioClip _wingSound = default;
+    [SerializeField] AudioClip _landSound = default;
+    [SerializeField] AudioClip _screamSound = default;
+    [SerializeField] AudioClip _TailSound = default;
+    [SerializeField] AudioClip _downSound = default;
     float _downHP = 0;
     float _animationspeed;
     bool _island = default;
@@ -41,6 +46,7 @@ public class BossController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _audio = GetComponent<AudioSource>();
         _anim = GetComponent<Animator>();
         _myhp = GetComponent<EnemyHPBar>();
         _agent = GetComponent<NavMeshAgent>();
@@ -99,6 +105,7 @@ public class BossController : MonoBehaviour
             _isDown = true;
             _downHP = _myhp.CurrentHp - 400;
             _anim.CrossFade("Get Hit", 0.2f);
+            _audio.PlayOneShot(_downSound);
             StartCoroutine(DelayMethod(3f, () => _isDown = false));
         }
 
@@ -161,7 +168,7 @@ public class BossController : MonoBehaviour
                 {
                     _anim.CrossFade("Tail Attack", 0.2f);
                 }
-                else if (_playerDis >= _longDis)
+                else if (_playerDis > _shortDis)
                 {
                     _anim.CrossFade("Fireball Shoot", 0.2f);
                 }
@@ -174,6 +181,22 @@ public class BossController : MonoBehaviour
     {
         var obj = Instantiate(_fireBall, _mouse.transform.position, this.transform.rotation);
         obj.transform.parent = this.transform.root;
+    }
+    void Wing()
+    {
+        _audio.PlayOneShot(_wingSound);
+    }
+    void Scream()
+    {
+        _audio.PlayOneShot(_screamSound);
+    }
+    void Land()
+    {
+        _audio.PlayOneShot(_landSound);
+    }
+    void Tail()
+    {
+        _audio.PlayOneShot(_TailSound);
     }
     void BossDamage()
     {
