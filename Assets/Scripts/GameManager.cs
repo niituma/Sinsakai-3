@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
         }
         //コントローラーが接続されているか確認してInputを変える
         _joycon = Input.GetJoystickNames();
-        if (_joycon[0] == "")
+        if (_joycon.Length == 0)
         {
             Isjoycon = false;
             _cameramove.m_HorizontalAxis.m_InputAxisName = "X Axes";
@@ -49,9 +49,18 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Isjoycon = true;
-            _cameramove.m_HorizontalAxis.m_InputAxisName = "X PadAxes";
-            _cameramove.m_VerticalAxis.m_InputAxisName = "Y PadAxes";
+            if (_joycon[0] == "")
+            {
+                Isjoycon = false;
+                _cameramove.m_HorizontalAxis.m_InputAxisName = "X Axes";
+                _cameramove.m_VerticalAxis.m_InputAxisName = "Y Axes";
+            }
+            else
+            {
+                Isjoycon = true;
+                _cameramove.m_HorizontalAxis.m_InputAxisName = "X PadAxes";
+                _cameramove.m_VerticalAxis.m_InputAxisName = "Y PadAxes";
+            }
         }
 
         if (Input.GetButtonDown("Cancel") && _player)
