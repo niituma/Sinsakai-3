@@ -87,11 +87,11 @@ public class PlayerHP : MonoBehaviour
             _isnotDamage = true;
             if (collision.tag == "EnemyHit")
             {
-                Damage(15,21);
+                Damage(15, 21);
             }
             else if (collision.tag == "BossTail")
             {
-                Damage(50,66);
+                Damage(50, 66);
             }
             if (!_godMode)
             {
@@ -117,7 +117,7 @@ public class PlayerHP : MonoBehaviour
         }
 
     }
-    public void Damage(int min,int max)
+    public void Damage(int min, int max)
     {
         if (slider && !_godMode)
         {
@@ -133,5 +133,10 @@ public class PlayerHP : MonoBehaviour
             float value = (float)currentHp / (float)maxHp;
             DOTween.To(() => slider.value, x => slider.value = x, value, 0.5f);
         }
+    }
+    public void Heel()
+    {
+        currentHp = Mathf.Min(maxHp, currentHp + 50);
+        slider.value = (float)currentHp / (float)maxHp;
     }
 }

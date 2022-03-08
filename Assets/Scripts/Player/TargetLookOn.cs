@@ -25,7 +25,7 @@ public class TargetLookOn : MonoBehaviour
     {
         if (_targets)
         {
-            _targetList = _targets._currentenemy ?? _targets?._currentenemy.Where(t => t.tag == "Enemy")
+            _targetList = _targets._currentenemy ?? _targets?._currentenemy.Where(t => t.tag == "Enemy" || t.tag == "BossTarget")
                 .OrderBy(t => Vector3.Distance(t.transform.position, _player.transform.position)).ToList();
             if (_targeton)
             {

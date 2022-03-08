@@ -17,11 +17,11 @@ public class AttackBossHit : MonoBehaviour
             var boss = GameObject.FindGameObjectWithTag("BossDragon").GetComponent<EnemyHPBar>();
             if (_hitmode == Action.BigAttack)
             {
-                boss.Damage(10, 13);
+                boss.Damage(3, 5);
             }
             else
             {
-                boss.Damage(3, 5);
+                boss.Damage(8, 11);
             }
 
         }

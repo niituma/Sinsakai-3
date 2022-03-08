@@ -205,10 +205,6 @@ public class PlayerController : MonoBehaviour
             _isAvo = _input.avd;
             StartCoroutine(DelayMethod(0.2f, () => _isAvo = false));
         }
-        if (_isSwoop)
-        {
-            _rb.AddForce(transform.up * -1f, ForceMode.Impulse);
-        }
         Climb();
         RockAttack();
         TargetLookOn();
@@ -218,6 +214,10 @@ public class PlayerController : MonoBehaviour
     {
         Move();
         Jump();
+        if (_isSwoop)
+        {
+            _rb.AddForce(transform.up * -1f, ForceMode.Impulse);
+        }
     }
     private void LateUpdate()
     {
@@ -405,7 +405,7 @@ public class PlayerController : MonoBehaviour
 
     void Targets()
     {
-        _currentenemy = FilterTargetObject(Physics.OverlapSphere(GetTargetsRangeCenter(), _targetsRangeRadius).ToList()).Where(e => e.tag == "Enemy").ToList();
+        _currentenemy = FilterTargetObject(Physics.OverlapSphere(GetTargetsRangeCenter(), _targetsRangeRadius).ToList()).Where(e => e.tag == "Enemy" || e.tag == "BossTarget").ToList();
         GrapplePoints = Physics.OverlapSphere(GetGrappingPosRangeCenter(), _grapplePosRangeRadius).Where(g => g.tag == "GrapplePos").ToList();
     }
     protected List<Collider> FilterTargetObject(List<Collider> detection)

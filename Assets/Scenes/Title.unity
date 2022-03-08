@@ -383,9 +383,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _fadeInSpeed: 0.8
   _fadeOutSpeed: 0.6
+  _timeLineFadeOutSpeed: 0.01
   _sceneDlaytime: 1
   _isFadeOut: 0
   _isFadeIn: 1
+  _isTimeLineFadeOut: 0
+  _bossTimeLine: {fileID: 0}
 --- !u!114 &292828060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -789,7 +792,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_UiScaleMode: 0
-  m_ReferencePixelsPerUnit: 100
+  m_ReferencePixelsPerUnit: 1
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
   m_ScreenMatchMode: 0

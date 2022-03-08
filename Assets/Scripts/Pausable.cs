@@ -23,6 +23,7 @@ public class Pausable : MonoBehaviour
     bool cursorLocked = true;
     [SerializeField] UnityEvent _closeconPanel;
     [SerializeField] PlayableDirector _playableDirector;
+    [SerializeField] PlayableDirector _bassPlayableDirector;
     [SerializeField] GameObject _conPanel = default;
     /// <summary>/// 動かなくするPlayer/// </summary>
     [SerializeField] GameObject _player;
@@ -82,6 +83,10 @@ public class Pausable : MonoBehaviour
         {
             _playableDirector.Pause();
         }
+        if (_bassPlayableDirector)
+        {
+            _bassPlayableDirector.Pause();
+        }
         //playerの物理的な動きを止める
         _player.GetComponent<Rigidbody>().isKinematic = true;
         // Rigidbodyの停止
@@ -140,6 +145,10 @@ public class Pausable : MonoBehaviour
         if (_playableDirector)
         {
             _playableDirector.Resume();
+        }
+        if (_bassPlayableDirector)
+        {
+            _bassPlayableDirector.Resume();
         }
         //playerの物理的な動きを再開
         _player.GetComponent<Rigidbody>().isKinematic = false;

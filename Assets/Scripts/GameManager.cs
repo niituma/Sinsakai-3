@@ -6,6 +6,7 @@ using Cinemachine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] bool cursorLocked = true;
+    [SerializeField] Transform _resetPos = default;
     bool _ispause = default;
     bool _isGameOver = default;
     string[] _joycon;
@@ -34,6 +35,10 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
+        if (_player.transform.position.y < -10f)
+        {
+            _player.transform.position = _resetPos.position;
+        }
         //コントローラーが接続されているか確認してInputを変える
         _joycon = Input.GetJoystickNames();
         if (_joycon[0] == "")
