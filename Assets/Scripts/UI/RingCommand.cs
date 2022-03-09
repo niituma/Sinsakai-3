@@ -18,6 +18,7 @@ public class RingCommand : UIBehaviour, ILayoutGroup
     [SerializeField] PlayerMagic _magic;
     private void Update()
     {
+        Arrange();
         if (_isuseWheel)
         {
             _scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -52,7 +53,6 @@ public class RingCommand : UIBehaviour, ILayoutGroup
             });
         }
 
-        Arrange();
     }
     // 要素数が変わると自動的に呼ばれるコールバック
     #region ILayoutController implementation

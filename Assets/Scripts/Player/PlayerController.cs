@@ -190,7 +190,7 @@ public class PlayerController : MonoBehaviour
                 _skillDashTime = 0;
             }
         }
-        if (Input.GetButtonDown("Wire") && !_grapple.Joint && !_isclimd && _grapplecout < _grappleMaxcout)
+        if (Input.GetButtonDown("Wire") && !_grapple.Joint && !_isclimd && !_stopmovedir && _grapplecout < _grappleMaxcout)
         {
             _anim.CrossFade("Grapple", 0f);
             _grapplecout++;
@@ -492,7 +492,6 @@ public class PlayerController : MonoBehaviour
                         handle.ChanegeNextHandle(0f);
                         YrotAnim();
                     }));
-                    //_anim.CrossFade("Hanging", 0.2f);
                     _input.jump = false;
                 }
             }
@@ -596,8 +595,8 @@ public class PlayerController : MonoBehaviour
                 {
                     if (_isclimd)
                     {
-                        _isclimd = false;
                         _stopmovedir = true;
+                        _isclimd = false;
                     }
                     _input.jump = false;
                 }
