@@ -11,4 +11,4 @@
 
 ・ゲームURL
 
-    [リンク](https://unityroom.com/games/magiccore)
+   　[ゲームURL](https://unityroom.com/games/magiccore)
